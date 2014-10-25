@@ -7,6 +7,7 @@
 #include <boost\bind.hpp>
 #include <boost\signals2.hpp>
 #include ".\sop\object.h"
+#include ".\sop\exception.h"
 
 namespace sop
 {
@@ -23,12 +24,26 @@ namespace sop
         /*
           Command handler function signature.
         */
-        typedef std::string (CommandHandler)(const std::vector<const std::string>&);
+        typedef void (CommandHandler)(const std::vector<const std::string>&);
 
         /*
           Command handler function signal signature.
         */
         typedef boost::signals2::signal<CommandHandler> CommandHandlerSignal;
+
+        /*
+          Exception that is thrown if shell line is invalid.
+        */
+        static class ParsingException : public sop::Exception
+        {
+          public:
+            ParsingException();
+            explicit ParsingException(const std::string & value);
+            virtual ~ParsingException();
+            virtual std::string getClassName() const;
+          protected:
+          private:
+        };
 
         explicit Shell(sop::system::Kernel * kernel);
         virtual ~Shell();
@@ -52,13 +67,31 @@ namespace sop
           Registers class method as a handler for the command.
         */
         template <class ClassType>
-        bool registerCommand(const std::string & command,std::string (ClassType::*method)(const std::vector<const std::string>&), ClassType * object)
+        bool registerCommand(const std::string & command,void (ClassType::*method)(const std::vector<const std::string>&), ClassType * object)
         {
           return doRegisterCommand(command,boost::bind(method,object,_1));
         }
 
-      protected:
+        /*
+          Parses line to vector of arguments.
+          First argument is the command, the rest are the parameters.
+          If line contains only whitespaces then the vector is empty.
+          If any problem is encountered then sop::system::Shell::ParsingException is thrown.
+        */
+        std::vector<std::string> parse(const std::string & line);
 
+        /*
+          Converts vector of strings to vector of constant strings.
+        */
+        std::vector<const std::string> toVectorOfConst(const std::vector<std::string> & vect);
+
+        /*
+          Returns vector of all registered commands in the shell.
+        */
+        std::vector<std::string> getRegisteredCommands();
+
+
+      protected:
       private:
 
         /*

@@ -63,7 +63,7 @@ void sop::system::Kernel::initialize()
       {
         _modules[i]->initialize();
       }
-      catch(const sop::system::exceptions::ModuleInitializationException & exception)
+      catch(const sop::system::exceptions::ModuleInitializationException &)
       {
         _logger->logKernel(sop::logger::Logger::Level::SEVERE, "Module: "+_modules[i]->getClassName()+" initialization has failed.");
         throw sop::system::exceptions::KernelInitializationException("Module: "+_modules[i]->getClassName()+" initialization has failed.");
