@@ -2,10 +2,16 @@
 #define _SOP_SYSTEM_SYSTEM_H_
 
 #include <string>
+#include <vector>
 #include <boost\shared_ptr.hpp>
 #include ".\sop\object.h"
 #include ".\sop\system\shell.h"
 #include ".\sop\logger\logger.h"
+#include ".\sop\users\module.h"
+#include ".\sop\files\module.h"
+#include ".\sop\processes\module.h"
+#include ".\sop\memory\module.h"
+#include ".\sop\processor\module.h"
 
 namespace sop
 {
@@ -20,6 +26,14 @@ namespace sop
     class System : public sop::Object
     {
       public:
+        enum State{
+          ERROR,
+          PRE_INIT,
+          INITIALIZED,
+          RUNNING,
+          SHUTTING_DOWN
+        };
+
         /*
           Creates system with default logging level.
         */
@@ -61,14 +75,50 @@ namespace sop
         */
         sop::system::Shell * getShell();
 
+        sop::users::Module * getUsersModule();
+        const sop::users::Module * getUsersModule() const;
 
+        sop::files::Module * getFilesModule();
+        const sop::files::Module * getFilesModule() const;
 
+        sop::processes::Module * getProcessesModule();
+        const sop::processes::Module * getProcessesModule() const;
+
+        sop::memory::Module * getMemoryModule();
+        const sop::memory::Module * getMemoryModule() const;
+
+        sop::processor::Module * getProcessorModule();
+        const sop::processor::Module * getProcessorModule() const;
+
+        std::vector<sop::system::Module*> getModules();
+        std::vector<const sop::system::Module*> getModules() const;
+
+        /*
+          Sets system state to shutting down.
+        */
+        void shutDown() const;
+
+        State getSystemState() const;
+
+        /*
+          Returns true if server is shutting down.
+          Returns false otherwise.
+        */
+        bool isShuttingDown() const;
 
       protected:
         
       private:
+        mutable State _system_state;
         boost::shared_ptr<sop::logger::Logger> _logger;
         sop::system::Shell _shell;
+        sop::users::Module _users_module;
+        sop::files::Module _files_module;
+        sop::processes::Module _processes_module;
+        sop::memory::Module _memory_module;
+        sop::processor::Module _processor_module;
+        std::vector<sop::system::Module*> _modules;
+
     };
   }
 }
