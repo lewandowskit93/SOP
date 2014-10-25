@@ -39,4 +39,20 @@ void sop::system::Shell::step()
   std::getline(std::cin,_last_input_line);
   _kernel->getLogger()->logShell(sop::logger::Logger::Level::INFO, "Shell command readed.");
   _kernel->getLogger()->logShell(sop::logger::Logger::Level::FINEST,"Readed line: "+_last_input_line);
+  std::string command = _last_input_line; // ToDo: parse
+  if(_commands.count(command)==1)
+  {
+    std::string result;
+    /*result = */(*_commands[command])(std::vector<const std::string>()); // ToDo: getting result
+    std::cout<<result<<std::endl;
+  }
+  else
+  {
+    _kernel->getLogger()->logShell(sop::logger::Logger::Level::FINE,"Unknown shell command: "+command);
+  }
+}
+
+bool sop::system::Shell::registerCommand(const std::string & command, CommandHandler * function)
+{
+  return doRegisterCommand(command,function);
 }
