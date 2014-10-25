@@ -37,6 +37,36 @@
     <Filter Include="Header Files\sop\system\exceptions">
       <UniqueIdentifier>{ecf17171-9c0c-46b9-b218-a9bd40a9bd73}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\sop\users">
+      <UniqueIdentifier>{aeab3c3b-12b7-485d-956c-6c89ab7913fb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\sop\files">
+      <UniqueIdentifier>{74083613-e04b-411a-9102-3f0afb2f5bc8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\sop\processes">
+      <UniqueIdentifier>{70a88273-b8f5-40b7-b9f0-1d8adf16bad7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\sop\memory">
+      <UniqueIdentifier>{c254316f-e827-4848-ac8f-5338f06a3135}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\sop\processor">
+      <UniqueIdentifier>{1749ff36-fd15-4222-a655-2e5e66a58197}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\sop\users">
+      <UniqueIdentifier>{e64cc0b4-9333-45e2-b5dc-11c3bd306948}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\sop\files">
+      <UniqueIdentifier>{d1e79683-fcc0-48d8-95aa-42845a8cc29a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\sop\processes">
+      <UniqueIdentifier>{f1351008-2215-4139-9c51-96296cd2bb4b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\sop\processor">
+      <UniqueIdentifier>{9905d79a-aa07-48f1-9bad-8dbe16308678}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\sop\memory">
+      <UniqueIdentifier>{90073e96-e862-442d-a699-0554b88fa457}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="sop\system\module.h">
@@ -66,6 +96,21 @@
     <ClInclude Include="sop\logger\console_logger.h">
       <Filter>Header Files\sop\logger</Filter>
     </ClInclude>
+    <ClInclude Include="sop\users\module.h">
+      <Filter>Header Files\sop\users</Filter>
+    </ClInclude>
+    <ClInclude Include="sop\processes\module.h">
+      <Filter>Header Files\sop\processes</Filter>
+    </ClInclude>
+    <ClInclude Include="sop\processor\module.h">
+      <Filter>Header Files\sop\processor</Filter>
+    </ClInclude>
+    <ClInclude Include="sop\memory\module.h">
+      <Filter>Header Files\sop\memory</Filter>
+    </ClInclude>
+    <ClInclude Include="sop\files\module.h">
+      <Filter>Header Files\sop\files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="sop\system\system.cpp">
@@ -92,11 +137,26 @@
     <ClCompile Include="sop\system\exceptions\module_exceptions.cpp">
       <Filter>Source Files\sop\system\exceptions</Filter>
     </ClCompile>
-    <ClCompile Include="sop\system\exceptions\main.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="sop\logger\console_logger.cpp">
       <Filter>Source Files\sop\logger</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="sop\users\module.cpp">
+      <Filter>Source Files\sop\users</Filter>
+    </ClCompile>
+    <ClCompile Include="sop\processes\module.cpp">
+      <Filter>Source Files\sop\processes</Filter>
+    </ClCompile>
+    <ClCompile Include="sop\processor\module.cpp">
+      <Filter>Source Files\sop\processor</Filter>
+    </ClCompile>
+    <ClCompile Include="sop\memory\module.cpp">
+      <Filter>Source Files\sop\memory</Filter>
+    </ClCompile>
+    <ClCompile Include="sop\files\module.cpp">
+      <Filter>Source Files\sop\files</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

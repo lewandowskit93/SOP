@@ -12,26 +12,36 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="sop\exception.h" />
+    <ClInclude Include="sop\files\module.h" />
     <ClInclude Include="sop\logger\console_logger.h" />
     <ClInclude Include="sop\logger\logger.h" />
+    <ClInclude Include="sop\memory\module.h" />
     <ClInclude Include="sop\object.h" />
+    <ClInclude Include="sop\processes\module.h" />
+    <ClInclude Include="sop\processor\module.h" />
     <ClInclude Include="sop\system\exceptions\module_exceptions.h" />
     <ClInclude Include="sop\system\exceptions\system_exceptions.h" />
     <ClInclude Include="sop\system\module.h" />
     <ClInclude Include="sop\system\shell.h" />
     <ClInclude Include="sop\system\system.h" />
+    <ClInclude Include="sop\users\module.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="sop\exception.cpp" />
+    <ClCompile Include="sop\files\module.cpp" />
     <ClCompile Include="sop\logger\console_logger.cpp" />
     <ClCompile Include="sop\logger\logger.cpp" />
+    <ClCompile Include="sop\memory\module.cpp" />
     <ClCompile Include="sop\object.cpp" />
-    <ClCompile Include="sop\system\exceptions\main.cpp" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="sop\processes\module.cpp" />
+    <ClCompile Include="sop\processor\module.cpp" />
     <ClCompile Include="sop\system\exceptions\module_exceptions.cpp" />
     <ClCompile Include="sop\system\exceptions\system_exceptions.cpp" />
     <ClCompile Include="sop\system\module.cpp" />
     <ClCompile Include="sop\system\shell.cpp" />
     <ClCompile Include="sop\system\system.cpp" />
+    <ClCompile Include="sop\users\module.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{A7530614-D6A8-4614-BDCA-4ADCEF9E4DDD}</ProjectGuid>
@@ -67,6 +77,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>$(ProjectDir);$(BOOST_ROOT);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <ObjectFileName>$(IntDir)%(RelativeDir)</ObjectFileName>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -80,6 +91,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <AdditionalIncludeDirectories>.;$(BOOST_ROOT);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <ObjectFileName>$(IntDir)%(RelativeDir)</ObjectFileName>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
