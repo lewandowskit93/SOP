@@ -3,14 +3,17 @@
 
 sop::system::Module::Module(sop::system::System *system):
   sop::Object(),
-  _system(system){
+  _system(system)
+{
 
 }
 
-sop::system::Module::~Module(){
+sop::system::Module::~Module()
+{
 
 }
 
-std::string sop::system::Module::getClassName(){
+std::string sop::system::Module::getClassName() const
+{
   return "sop::system::Module";
 }

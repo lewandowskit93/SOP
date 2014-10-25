@@ -4,20 +4,24 @@
 #include <string>
 #include ".\sop\exception.h"
 
-namespace sop{
-  namespace system{
-    namespace exceptions{
+namespace sop
+{
+  namespace system
+  {
+    namespace exceptions
+    {
 
       /*
         Exception for module exceptions.
         Every module exception should inherit from it.
       */
-      class ModuleException : public sop::Exception{
+      class ModuleException : public sop::Exception
+      {
         public:
           ModuleException();
-          ModuleException(const std::string & value);
+          explicit ModuleException(const std::string & value);
           virtual ~ModuleException();
-          virtual std::string getClassName();
+          virtual std::string getClassName() const;
 
         protected:
 
@@ -28,12 +32,13 @@ namespace sop{
       /*
         Exception thrown when module initialization fails.
       */
-      class ModuleInitializationException : public sop::system::exceptions::ModuleException{
+      class ModuleInitializationException : public ModuleException
+      {
         public:
           ModuleInitializationException();
           ModuleInitializationException(const std::string & value);
           virtual ~ModuleInitializationException();
-          virtual std::string getClassName();
+          virtual std::string getClassName() const;
 
         protected:
 

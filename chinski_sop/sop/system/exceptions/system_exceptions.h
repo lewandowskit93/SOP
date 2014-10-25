@@ -4,20 +4,24 @@
 #include <string>
 #include ".\sop\exception.h"
 
-namespace sop{
-  namespace system{
-    namespace exceptions{
+namespace sop
+{
+  namespace system
+  {
+    namespace exceptions
+    {
 
       /*
         Exception for system exceptions.
         Every system exception should inherit from it.
       */
-      class SystemException : public sop::Exception{
+      class SystemException : public sop::Exception
+      {
         public:
           SystemException();
-          SystemException(const std::string & value);
+          explicit SystemException(const std::string & value);
           virtual ~SystemException();
-          virtual std::string getClassName();
+          virtual std::string getClassName() const;
 
         protected:
 

@@ -12,6 +12,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="sop\exception.h" />
+    <ClInclude Include="sop\logger\console_logger.h" />
     <ClInclude Include="sop\logger\logger.h" />
     <ClInclude Include="sop\object.h" />
     <ClInclude Include="sop\system\exceptions\module_exceptions.h" />
@@ -22,6 +23,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="sop\exception.cpp" />
+    <ClCompile Include="sop\logger\console_logger.cpp" />
     <ClCompile Include="sop\logger\logger.cpp" />
     <ClCompile Include="sop\object.cpp" />
     <ClCompile Include="sop\system\exceptions\main.cpp" />

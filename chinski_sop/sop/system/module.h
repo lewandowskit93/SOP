@@ -4,8 +4,10 @@
 #include <string>
 #include ".\sop\object.h"
 
-namespace sop{
-  namespace system{
+namespace sop
+{
+  namespace system
+  {
 
     class System;
 
@@ -14,7 +16,8 @@ namespace sop{
       Every module should inherit from it.
       Module is component of the system.
     */
-    class Module : public sop::Object{
+    class Module : public sop::Object
+    {
       public:
         /*
           Constructor for Module element.
@@ -26,7 +29,7 @@ namespace sop{
 
         virtual ~Module();
 
-        virtual std::string getClassName();
+        virtual std::string getClassName() const;
 
         /*
           Should initialize everything that module needs to work.

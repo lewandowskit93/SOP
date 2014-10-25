@@ -4,16 +4,19 @@
 #include <string>
 #include ".\sop\object.h"
 
-namespace sop{
-  namespace system{
+namespace sop
+{
+  namespace system
+  {
     /*
       Shell is used to manage shell commands.
     */
-    class Shell : public sop::Object{
+    class Shell : public sop::Object
+    {
       public:
         Shell();
         virtual ~Shell();
-        virtual std::string getClassName();
+        virtual std::string getClassName() const;
 
       protected:
 

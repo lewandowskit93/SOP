@@ -63,6 +63,9 @@
     <ClInclude Include="sop\system\exceptions\system_exceptions.h">
       <Filter>Header Files\sop\system\exceptions</Filter>
     </ClInclude>
+    <ClInclude Include="sop\logger\console_logger.h">
+      <Filter>Header Files\sop\logger</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="sop\system\system.cpp">
@@ -91,6 +94,9 @@
     </ClCompile>
     <ClCompile Include="sop\system\exceptions\main.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="sop\logger\console_logger.cpp">
+      <Filter>Source Files\sop\logger</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
