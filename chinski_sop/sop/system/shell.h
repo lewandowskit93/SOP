@@ -10,7 +10,7 @@ namespace sop
 {
   namespace system
   {
-    class System;
+    class Kernel;
 
     /*
       Shell is used to manage shell commands.
@@ -18,11 +18,11 @@ namespace sop
     class Shell : public sop::Object
     {
       public:
-        explicit Shell(sop::system::System * system);
+        explicit Shell(sop::system::Kernel * kernel);
         virtual ~Shell();
         virtual std::string getClassName() const;
-        sop::system::System * getSystem();
-        const sop::system::System * getSystem() const;
+        sop::system::Kernel * getKernel();
+        const sop::system::Kernel * getKernel() const;
 
         /*
           Invokes next shell step.
@@ -35,9 +35,9 @@ namespace sop
 
       private:
         /*
-          System, that shell is runned on.
+          Kernel, that shell is runned on.
         */
-        sop::system::System * _system;
+        sop::system::Kernel * _kernel;
 
         std::string _last_input_line;
     };

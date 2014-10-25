@@ -25,7 +25,7 @@ namespace sop
             static const uint16_t PROCESSES_CHANNEL = 3;
             static const uint16_t MEMORY_CHANNEL = 4;
             static const uint16_t PROCESSOR_CHANNEL = 5;
-            static const uint16_t SYSTEM_CHANNEL = 6;
+            static const uint16_t KERNEL_CHANNEL = 6;
             static const uint16_t SHELL_CHANNEL = 7;
 
             /*
@@ -105,9 +105,9 @@ namespace sop
         void logProcessor(uint16_t level, const std::string & message);
 
         /*
-          Logs a message with given level on SYSTEM_CHANNEL.
+          Logs a message with given level on KERNEL_CHANNEL.
         */
-        void logSystem(uint16_t level, const std::string & message);
+        void logKernel(uint16_t level, const std::string & message);
 
         /*
           Logs a message with given level on SHELL_CHANNEL.

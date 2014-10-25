@@ -105,9 +105,6 @@
     <ClInclude Include="sop\system\shell.h">
       <Filter>Header Files\sop\system</Filter>
     </ClInclude>
-    <ClInclude Include="sop\system\system.h">
-      <Filter>Header Files\sop\system</Filter>
-    </ClInclude>
     <ClInclude Include="sop\logger\logger.h">
       <Filter>Header Files\sop\logger</Filter>
     </ClInclude>
@@ -115,9 +112,6 @@
       <Filter>Header Files\sop</Filter>
     </ClInclude>
     <ClInclude Include="sop\system\exceptions\module_exceptions.h">
-      <Filter>Header Files\sop\system\exceptions</Filter>
-    </ClInclude>
-    <ClInclude Include="sop\system\exceptions\system_exceptions.h">
       <Filter>Header Files\sop\system\exceptions</Filter>
     </ClInclude>
     <ClInclude Include="sop\logger\console_logger.h">
@@ -156,11 +150,14 @@
     <ClInclude Include="sop\users\exceptions\module_exception.h">
       <Filter>Header Files\sop\users\exceptions</Filter>
     </ClInclude>
+    <ClInclude Include="sop\system\kernel.h">
+      <Filter>Header Files\sop\system</Filter>
+    </ClInclude>
+    <ClInclude Include="sop\system\exceptions\kernel_exceptions.h">
+      <Filter>Header Files\sop\system\exceptions</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="sop\system\system.cpp">
-      <Filter>Source Files\sop\system</Filter>
-    </ClCompile>
     <ClCompile Include="sop\system\shell.cpp">
       <Filter>Source Files\sop\system</Filter>
     </ClCompile>
@@ -175,9 +172,6 @@
     </ClCompile>
     <ClCompile Include="sop\exception.cpp">
       <Filter>Source Files\sop</Filter>
-    </ClCompile>
-    <ClCompile Include="sop\system\exceptions\system_exceptions.cpp">
-      <Filter>Source Files\sop\system\exceptions</Filter>
     </ClCompile>
     <ClCompile Include="sop\system\exceptions\module_exceptions.cpp">
       <Filter>Source Files\sop\system\exceptions</Filter>
@@ -217,6 +211,12 @@
     </ClCompile>
     <ClCompile Include="sop\users\exceptions\module_exception.cpp">
       <Filter>Source Files\sop\users\exceptions</Filter>
+    </ClCompile>
+    <ClCompile Include="sop\system\kernel.cpp">
+      <Filter>Source Files\sop\system</Filter>
+    </ClCompile>
+    <ClCompile Include="sop\system\exceptions\kernel_exceptions.cpp">
+      <Filter>Source Files\sop\system\exceptions</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

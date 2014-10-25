@@ -24,10 +24,10 @@
     <ClInclude Include="sop\processor\exceptions\module_exception.h" />
     <ClInclude Include="sop\processor\module.h" />
     <ClInclude Include="sop\system\exceptions\module_exceptions.h" />
-    <ClInclude Include="sop\system\exceptions\system_exceptions.h" />
+    <ClInclude Include="sop\system\exceptions\kernel_exceptions.h" />
     <ClInclude Include="sop\system\module.h" />
     <ClInclude Include="sop\system\shell.h" />
-    <ClInclude Include="sop\system\system.h" />
+    <ClInclude Include="sop\system\kernel.h" />
     <ClInclude Include="sop\users\exceptions\module_exception.h" />
     <ClInclude Include="sop\users\module.h" />
   </ItemGroup>
@@ -46,10 +46,10 @@
     <ClCompile Include="sop\processor\exceptions\module_exception.cpp" />
     <ClCompile Include="sop\processor\module.cpp" />
     <ClCompile Include="sop\system\exceptions\module_exceptions.cpp" />
-    <ClCompile Include="sop\system\exceptions\system_exceptions.cpp" />
+    <ClCompile Include="sop\system\exceptions\kernel_exceptions.cpp" />
     <ClCompile Include="sop\system\module.cpp" />
     <ClCompile Include="sop\system\shell.cpp" />
-    <ClCompile Include="sop\system\system.cpp" />
+    <ClCompile Include="sop\system\kernel.cpp" />
     <ClCompile Include="sop\users\exceptions\module_exception.cpp" />
     <ClCompile Include="sop\users\module.cpp" />
   </ItemGroup>

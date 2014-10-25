@@ -14,7 +14,7 @@ namespace sop
     class Module : public sop::system::Module
     {
       public:
-        explicit Module(sop::system::System *system);
+        explicit Module(sop::system::Kernel *kernel);
         virtual ~Module();
         virtual std::string getClassName() const;
         virtual void initializeModule();

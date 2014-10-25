@@ -19,8 +19,8 @@ std::string sop::logger::Logger::Channel::getChannelName(uint16_t channel)
       return "MEMORY";
     case PROCESSOR_CHANNEL:
       return "PROCESSOR";
-    case SYSTEM_CHANNEL:
-      return "SYSTEM_CHANNEL";
+    case KERNEL_CHANNEL:
+      return "KERNEL_CHANNEL";
     case SHELL_CHANNEL:
       return "SHELL_CHANNEL";
     default:
@@ -117,9 +117,9 @@ void sop::logger::Logger::logProcessor(uint16_t level, const std::string & messa
   log(Channel::PROCESSOR_CHANNEL,level,message);
 }
 
-void sop::logger::Logger::logSystem(uint16_t level, const std::string & message)
+void sop::logger::Logger::logKernel(uint16_t level, const std::string & message)
 {
-  log(Channel::SYSTEM_CHANNEL,level,message);
+  log(Channel::KERNEL_CHANNEL,level,message);
 }
 
 void sop::logger::Logger::logShell(uint16_t level, const std::string & message)

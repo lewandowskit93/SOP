@@ -1,7 +1,7 @@
 #include ".\sop\processor\module.h"
 
-sop::processor::Module::Module(sop::system::System *system):
-  sop::system::Module(system)
+sop::processor::Module::Module(sop::system::Kernel *kernel):
+  sop::system::Module(kernel)
 {
 
 }

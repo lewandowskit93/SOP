@@ -1,5 +1,5 @@
-#ifndef _SOP_SYSTEM_SYSTEM_H_
-#define _SOP_SYSTEM_SYSTEM_H_
+#ifndef _SOP_SYSTEM_KERNEL_H_
+#define _SOP_SYSTEM_KERNEL_H_
 
 #include <string>
 #include <vector>
@@ -19,11 +19,11 @@ namespace sop
   {
     
     /*
-      System class.
+      Kernel class.
       Consists of different modules (e.g. processor, memory).
       Manages and initializes modules, shell and logger.
     */
-    class System : public sop::Object
+    class Kernel : public sop::Object
     {
       public:
         enum State{
@@ -35,43 +35,43 @@ namespace sop
         };
 
         /*
-          Creates system with default logging level.
+          Creates kernel with default logging level.
         */
-        System();
+        Kernel();
         /*
-          Creates system with given logging level.
+          Creates kernel with given logging level.
         */
-        explicit System(uint16_t logging_level);
-        virtual ~System();
+        explicit Kernel(uint16_t logging_level);
+        virtual ~Kernel();
         virtual std::string getClassName() const;
 
         /*
-          Initializes system and its modules.
+          Initializes kernel and its modules.
         */
-        void initializeSystem();
+        void initialize();
 
         /*
-          Runs system's loop
+          Runs kernel's loop
         */
         void run();
 
         /*
-          Returns pointer to const system's logger.
+          Returns pointer to const kernel's logger.
         */
         const sop::logger::Logger * getLogger() const;
 
         /*
-          Returns pointer to system's logger.
+          Returns pointer to kernel's logger.
         */
         sop::logger::Logger * getLogger();
 
         /*
-          Returns pointer to system's shell.
+          Returns pointer to kernel's shell.
         */
         const sop::system::Shell * getShell() const;
         
         /*
-          Returns pointer to system's shell.
+          Returns pointer to kernel's shell.
         */
         sop::system::Shell * getShell();
 
@@ -94,14 +94,14 @@ namespace sop
         std::vector<const sop::system::Module*> getModules() const;
 
         /*
-          Sets system state to shutting down.
+          Sets kernel's state to shutting down.
         */
         void shutdown() const;
 
-        State getSystemState() const;
+        State getKernelState() const;
 
         /*
-          Returns true if server is shutting down.
+          Returns true if kernel is shutting down.
           Returns false otherwise.
         */
         bool isShuttingDown() const;
@@ -109,7 +109,7 @@ namespace sop
       protected:
         
       private:
-        mutable State _system_state;
+        mutable State _kernel_state;
         boost::shared_ptr<sop::logger::Logger> _logger;
         sop::system::Shell _shell;
         sop::users::Module _users_module;

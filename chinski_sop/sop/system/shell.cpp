@@ -1,10 +1,10 @@
 #include <iostream>
 #include ".\sop\system\shell.h"
-#include ".\sop\system\system.h"
+#include ".\sop\system\kernel.h"
 
-sop::system::Shell::Shell(sop::system::System * system):
+sop::system::Shell::Shell(sop::system::Kernel * kernel):
   sop::Object(),
-  _system(system)
+  _kernel(kernel)
 {
 }
 
@@ -17,26 +17,26 @@ std::string sop::system::Shell::getClassName() const
   return "sop::system::Shell";
 }
 
-sop::system::System * sop::system::Shell::getSystem()
+sop::system::Kernel * sop::system::Shell::getKernel()
 {
-  return _system;
+  return _kernel;
 }
 
-const sop::system::System * sop::system::Shell::getSystem() const
+const sop::system::Kernel * sop::system::Shell::getKernel() const
 {
-  return _system;
+  return _kernel;
 }
 
 void sop::system::Shell::step()
 {
-  _system->getLogger()->logShell(sop::logger::Logger::Level::INFO, "Executing next shell step.");
+  _kernel->getLogger()->logShell(sop::logger::Logger::Level::INFO, "Executing next shell step.");
   if(!std::cin.good())
   {
-    _system->getLogger()->logShell(sop::logger::Logger::Level::INFO, "End of standard intput. Shutting down the system.");
-    _system->shutdown();
+    _kernel->getLogger()->logShell(sop::logger::Logger::Level::INFO, "End of standard intput. Shutting down the kernel.");
+    _kernel->shutdown();
     return;
   }
   std::getline(std::cin,_last_input_line);
-  _system->getLogger()->logShell(sop::logger::Logger::Level::INFO, "Shell command readed.");
-  _system->getLogger()->logShell(sop::logger::Logger::Level::FINEST,"Readed line: "+_last_input_line);
+  _kernel->getLogger()->logShell(sop::logger::Logger::Level::INFO, "Shell command readed.");
+  _kernel->getLogger()->logShell(sop::logger::Logger::Level::FINEST,"Readed line: "+_last_input_line);
 }

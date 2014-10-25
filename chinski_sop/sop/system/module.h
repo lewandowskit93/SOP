@@ -9,12 +9,12 @@ namespace sop
   namespace system
   {
 
-    class System;
+    class Kernel;
 
     /*
       Module abstract class.
       Every module should inherit from it.
-      Module is component of the system.
+      Module is component of the kernel.
     */
     class Module : public sop::Object
     {
@@ -22,10 +22,10 @@ namespace sop
         /*
           Constructor for Module element.
           Params:
-              system - pointer to system that module is creating for.
+              kernel - pointer to kernel that module is created for.
               Pointer should be valid for whole module lifetime.
         */
-        explicit Module(sop::system::System *system);
+        explicit Module(sop::system::Kernel *kernel);
 
         virtual ~Module();
 
@@ -38,11 +38,14 @@ namespace sop
           Throws sop::system::exceptions::ModuleInitializationException on failure.
         */
         virtual void initializeModule() = 0;
+
+        sop::system::Kernel * getKernel();
+        const sop::system::Kernel * getKernel() const;
       protected:
         /*
-          Pointer to system, that module is contained in.
+          Pointer to kernel, that module is contained in.
         */
-        sop::system::System *_system;
+        sop::system::Kernel *_kernel;
 
       private:
 
