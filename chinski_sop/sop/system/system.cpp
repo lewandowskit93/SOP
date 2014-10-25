@@ -1,6 +1,7 @@
 #include ".\sop\system\system.h"
 #include ".\sop\logger\console_logger.h"
 #include ".\sop\system\exceptions\module_exceptions.h"
+#include ".\sop\system\exceptions\system_exceptions.h"
 
 sop::system::System::System():
   sop::Object(),
@@ -62,10 +63,10 @@ void sop::system::System::initializeSystem()
       {
         _modules[i]->initializeModule();
       }
-      catch(sop::system::exceptions::ModuleInitializationException & exception)
+      catch(const sop::system::exceptions::ModuleInitializationException & exception)
       {
         _logger->logSystem(sop::logger::Logger::Level::SEVERE, "Module: "+_modules[i]->getClassName()+" initialization has failed.");
-        // ToDo: throw exception
+        throw sop::system::exceptions::SystemInitializationException("Module: "+_modules[i]->getClassName()+" initialization has failed.");
       }
       _logger->logSystem(sop::logger::Logger::Level::INFO, "Module: "+_modules[i]->getClassName() + " initialized.");
     }
@@ -75,11 +76,11 @@ void sop::system::System::initializeSystem()
   else
   {
     _logger->logSystem(sop::logger::Logger::Level::SEVERE, "Invalid system state.");
-    // ToDo: throw exception
+    throw sop::system::exceptions::SystemInitializationException("Invalid system state.");
   }
 }
 
-void sop::system::System::runSystem()
+void sop::system::System::run()
 {
   _logger->logSystem(sop::logger::Logger::Level::INFO, "Starting system.");
   if(_system_state==State::INITIALIZED)
@@ -89,14 +90,14 @@ void sop::system::System::runSystem()
     while(!isShuttingDown())
     {
       _logger->logSystem(sop::logger::Logger::Level::INFO, "Executing next shell step.");
-      _shell.shellStep();
+      _shell.step();
     }
     _logger->logSystem(sop::logger::Logger::Level::INFO, "Shutting down the system.");
   }
   else
   {
     _logger->logSystem(sop::logger::Logger::Level::SEVERE, "Invalid system state.");
-    // ToDo: throw exception
+    throw sop::system::exceptions::SystemRunException("Invalid system state.");
   }
 }
 
@@ -185,7 +186,7 @@ std::vector<const sop::system::Module*> sop::system::System::getModules() const
   return modules;
 }
 
-void sop::system::System::shutDown() const
+void sop::system::System::shutdown() const
 {
   _logger->logSystem(sop::logger::Logger::Level::INFO, "Initializing shutdown procedure.");
   if(_system_state==State::RUNNING)
@@ -196,7 +197,7 @@ void sop::system::System::shutDown() const
   else if(_system_state!=State::SHUTTING_DOWN)
   {
     _logger->logSystem(sop::logger::Logger::Level::SEVERE, "Invalid system state.");
-    // ToDo: throw exception
+    throw sop::system::exceptions::SystemShutdownException("Invalid system state.");
   }
   else{
     _logger->logSystem(sop::logger::Logger::Level::INFO, "System is already shutting down.");

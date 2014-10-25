@@ -27,13 +27,13 @@ const sop::system::System * sop::system::Shell::getSystem() const
   return _system;
 }
 
-void sop::system::Shell::shellStep()
+void sop::system::Shell::step()
 {
   _system->getLogger()->logShell(sop::logger::Logger::Level::INFO, "Executing next shell step.");
   if(!std::cin.good())
   {
     _system->getLogger()->logShell(sop::logger::Logger::Level::INFO, "End of standard intput. Shutting down the system.");
-    _system->shutDown();
+    _system->shutdown();
     return;
   }
   std::getline(std::cin,_last_input_line);

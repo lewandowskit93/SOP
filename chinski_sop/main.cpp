@@ -6,7 +6,7 @@ int main()
 {
   sop::system::System system(sop::logger::Logger::Level::FINEST);
   system.initializeSystem();
-  system.runSystem();
+  system.run();
   int x;
   std::cin>>x;
 }

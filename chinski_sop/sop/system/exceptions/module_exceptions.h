@@ -36,7 +36,7 @@ namespace sop
       {
         public:
           ModuleInitializationException();
-          ModuleInitializationException(const std::string & value);
+          explicit ModuleInitializationException(const std::string & value);
           virtual ~ModuleInitializationException();
           virtual std::string getClassName() const;
 

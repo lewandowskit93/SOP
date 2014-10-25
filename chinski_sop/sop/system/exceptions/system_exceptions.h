@@ -28,6 +28,57 @@ namespace sop
         private:
 
       };
+
+      /*
+        Exception thrown when system initialization fails.
+      */
+      class SystemInitializationException : public SystemException
+      {
+        public:
+          SystemInitializationException();
+          explicit SystemInitializationException(const std::string & value);
+          virtual ~SystemInitializationException();
+          virtual std::string getClassName() const;
+
+        protected:
+
+        private:
+
+      };
+
+     /*
+        Exception thrown when system run fails.
+      */
+      class SystemRunException : public SystemException
+      {
+        public:
+          SystemRunException();
+          explicit SystemRunException(const std::string & value);
+          virtual ~SystemRunException();
+          virtual std::string getClassName() const;
+
+        protected:
+
+        private:
+
+      };
+
+      /*
+        Exception thrown when system shutdown fails.
+      */
+      class SystemShutdownException : public SystemException
+      {
+        public:
+          SystemShutdownException();
+          explicit SystemShutdownException(const std::string & value);
+          virtual ~SystemShutdownException();
+          virtual std::string getClassName() const;
+
+        protected:
+
+        private:
+
+      };
     }
   }
 }

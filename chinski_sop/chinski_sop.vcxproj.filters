@@ -67,6 +67,36 @@
     <Filter Include="Header Files\sop\memory">
       <UniqueIdentifier>{90073e96-e862-442d-a699-0554b88fa457}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\sop\files\exceptions">
+      <UniqueIdentifier>{5afcbca9-93eb-48af-8561-e0d0a0abacbf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\sop\files\exceptions">
+      <UniqueIdentifier>{a217eb08-5835-41a8-9a06-b8bf2c323345}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\sop\memory\exceptions">
+      <UniqueIdentifier>{847a3c9c-7a6f-4fad-81b8-21f6ccc98419}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\sop\memory\exceptions">
+      <UniqueIdentifier>{e9effe74-845a-4c1c-b069-78f2d7364f4d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\sop\processes\exceptions">
+      <UniqueIdentifier>{85bc345a-6713-4551-88a5-7eb1efab2574}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\sop\processes\exceptions">
+      <UniqueIdentifier>{129b1185-16ea-4478-9623-5c6584400876}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\sop\processor\exceptions">
+      <UniqueIdentifier>{5544a9a1-2079-40ef-ab88-395241dbc2a4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\sop\processor\exceptions">
+      <UniqueIdentifier>{5202c9ba-550c-4cf9-9f6a-d6d12bcfaac4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\sop\users\exceptions">
+      <UniqueIdentifier>{b638dbeb-eb1b-49c2-9e5c-09433aa2e9fc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\sop\users\exceptions">
+      <UniqueIdentifier>{c3c56568-69fd-4644-a6d4-f006e95f114e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="sop\system\module.h">
@@ -82,9 +112,6 @@
       <Filter>Header Files\sop\logger</Filter>
     </ClInclude>
     <ClInclude Include="sop\object.h">
-      <Filter>Header Files\sop</Filter>
-    </ClInclude>
-    <ClInclude Include="sop\exception.h">
       <Filter>Header Files\sop</Filter>
     </ClInclude>
     <ClInclude Include="sop\system\exceptions\module_exceptions.h">
@@ -110,6 +137,24 @@
     </ClInclude>
     <ClInclude Include="sop\files\module.h">
       <Filter>Header Files\sop\files</Filter>
+    </ClInclude>
+    <ClInclude Include="sop\exception.h">
+      <Filter>Header Files\sop</Filter>
+    </ClInclude>
+    <ClInclude Include="sop\files\exceptions\module_exception.h">
+      <Filter>Header Files\sop\files\exceptions</Filter>
+    </ClInclude>
+    <ClInclude Include="sop\memory\exceptions\module_exception.h">
+      <Filter>Header Files\sop\memory\exceptions</Filter>
+    </ClInclude>
+    <ClInclude Include="sop\processes\exceptions\module_exception.h">
+      <Filter>Header Files\sop\processes\exceptions</Filter>
+    </ClInclude>
+    <ClInclude Include="sop\processor\exceptions\module_exception.h">
+      <Filter>Header Files\sop\processor\exceptions</Filter>
+    </ClInclude>
+    <ClInclude Include="sop\users\exceptions\module_exception.h">
+      <Filter>Header Files\sop\users\exceptions</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -157,6 +202,21 @@
     </ClCompile>
     <ClCompile Include="sop\files\module.cpp">
       <Filter>Source Files\sop\files</Filter>
+    </ClCompile>
+    <ClCompile Include="sop\files\exceptions\module_exception.cpp">
+      <Filter>Source Files\sop\files\exceptions</Filter>
+    </ClCompile>
+    <ClCompile Include="sop\memory\exceptions\module_exception.cpp">
+      <Filter>Source Files\sop\memory\exceptions</Filter>
+    </ClCompile>
+    <ClCompile Include="sop\processes\exceptions\module_exception.cpp">
+      <Filter>Source Files\sop\processes\exceptions</Filter>
+    </ClCompile>
+    <ClCompile Include="sop\processor\exceptions\module_exception.cpp">
+      <Filter>Source Files\sop\processor\exceptions</Filter>
+    </ClCompile>
+    <ClCompile Include="sop\users\exceptions\module_exception.cpp">
+      <Filter>Source Files\sop\users\exceptions</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

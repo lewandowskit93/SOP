@@ -29,7 +29,7 @@ namespace sop
           Shell step reads one line from command line,
           parses it and executes proper shell command.
         */
-        void shellStep();
+        void step();
 
       protected:
 

@@ -53,7 +53,7 @@ namespace sop
         /*
           Runs system's loop
         */
-        void runSystem();
+        void run();
 
         /*
           Returns pointer to const system's logger.
@@ -96,7 +96,7 @@ namespace sop
         /*
           Sets system state to shutting down.
         */
-        void shutDown() const;
+        void shutdown() const;
 
         State getSystemState() const;
 
