@@ -3,6 +3,7 @@
 
 #include <string>
 #include ".\sop\object.h"
+#include ".\sop\initializable.h"
 
 namespace sop
 {
@@ -16,7 +17,9 @@ namespace sop
       Every module should inherit from it.
       Module is component of the kernel.
     */
-    class Module : public sop::Object
+    class Module : 
+      public sop::Object,
+      public sop::Initializable
     {
       public:
         /*
@@ -37,7 +40,7 @@ namespace sop
 
           Throws sop::system::exceptions::ModuleInitializationException on failure.
         */
-        virtual void initializeModule() = 0;
+        virtual void initialize() = 0;
 
         sop::system::Kernel * getKernel();
         const sop::system::Kernel * getKernel() const;

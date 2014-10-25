@@ -16,6 +16,6 @@ std::string sop::users::Module::getClassName() const
   return "sop::users::Module";
 }
 
-void sop::users::Module::initializeModule()
+void sop::users::Module::initialize()
 {
 }

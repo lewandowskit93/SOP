@@ -16,6 +16,6 @@ std::string sop::memory::Module::getClassName() const
   return "sop::memory::Module";
 }
 
-void sop::memory::Module::initializeModule()
+void sop::memory::Module::initialize()
 {
 }

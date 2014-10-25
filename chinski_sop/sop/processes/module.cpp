@@ -16,6 +16,6 @@ std::string sop::processes::Module::getClassName() const
   return "sop::processes::Module";
 }
 
-void sop::processes::Module::initializeModule()
+void sop::processes::Module::initialize()
 {
 }

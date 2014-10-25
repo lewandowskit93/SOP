@@ -12,6 +12,7 @@
 #include ".\sop\processes\module.h"
 #include ".\sop\memory\module.h"
 #include ".\sop\processor\module.h"
+#include ".\sop\initializable.h"
 
 namespace sop
 {
@@ -23,7 +24,9 @@ namespace sop
       Consists of different modules (e.g. processor, memory).
       Manages and initializes modules, shell and logger.
     */
-    class Kernel : public sop::Object
+    class Kernel :
+      public sop::Object,
+      public sop::Initializable
     {
       public:
         enum State{
@@ -48,7 +51,7 @@ namespace sop
         /*
           Initializes kernel and its modules.
         */
-        void initialize();
+        virtual void initialize();
 
         /*
           Runs kernel's loop

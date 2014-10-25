@@ -17,7 +17,7 @@ namespace sop
         explicit Module(sop::system::Kernel *kernel);
         virtual ~Module();
         virtual std::string getClassName() const;
-        virtual void initializeModule();
+        virtual void initialize();
 
       protected:
 

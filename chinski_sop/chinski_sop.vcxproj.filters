@@ -156,6 +156,9 @@
     <ClInclude Include="sop\system\exceptions\kernel_exceptions.h">
       <Filter>Header Files\sop\system\exceptions</Filter>
     </ClInclude>
+    <ClInclude Include="sop\initializable.h">
+      <Filter>Header Files\sop</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="sop\system\shell.cpp">
@@ -217,6 +220,9 @@
     </ClCompile>
     <ClCompile Include="sop\system\exceptions\kernel_exceptions.cpp">
       <Filter>Source Files\sop\system\exceptions</Filter>
+    </ClCompile>
+    <ClCompile Include="sop\initializable.cpp">
+      <Filter>Source Files\sop</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

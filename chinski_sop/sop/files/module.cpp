@@ -16,6 +16,6 @@ std::string sop::files::Module::getClassName() const
   return "sop::files::Module";
 }
 
-void sop::files::Module::initializeModule()
+void sop::files::Module::initialize()
 {
 }

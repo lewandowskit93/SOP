@@ -61,7 +61,7 @@ void sop::system::Kernel::initialize()
       _logger->logKernel(sop::logger::Logger::Level::INFO, "Initializing module: "+_modules[i]->getClassName());
       try
       {
-        _modules[i]->initializeModule();
+        _modules[i]->initialize();
       }
       catch(const sop::system::exceptions::ModuleInitializationException & exception)
       {
