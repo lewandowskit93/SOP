@@ -110,8 +110,11 @@ namespace sop
         bool isShuttingDown() const;
 
       protected:
-        
+
       private:
+        void helpHandler(const std::vector<const std::string> & params);
+        void shutdownHandler(const std::vector<const std::string> & params);
+
         mutable State _kernel_state;
         boost::shared_ptr<sop::logger::Logger> _logger;
         sop::system::Shell _shell;

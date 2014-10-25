@@ -1,3 +1,4 @@
+#include <iostream>
 #include ".\sop\system\kernel.h"
 #include ".\sop\logger\console_logger.h"
 #include ".\sop\system\exceptions\module_exceptions.h"
@@ -55,6 +56,8 @@ void sop::system::Kernel::initialize()
   _logger->logKernel(sop::logger::Logger::Level::INFO, "Initializing kernel.");
   if(_kernel_state==State::PRE_INIT)
   {
+    _shell.registerCommand("help",&Kernel::helpHandler,this);
+    _shell.registerCommand("shutdown",&Kernel::shutdownHandler,this);
     _logger->logKernel(sop::logger::Logger::Level::INFO, "Initializing modules.");
     for(std::vector<sop::system::Module>::size_type i=0; i<_modules.size(); ++i)
     {
@@ -207,4 +210,36 @@ void sop::system::Kernel::shutdown() const
 bool sop::system::Kernel::isShuttingDown() const
 {
   return _kernel_state==State::SHUTTING_DOWN;
+}
+
+void sop::system::Kernel::helpHandler(const std::vector<const std::string> & params)
+{
+  if(params.size()>1)
+  {
+    std::cout<<"help [-h]"<<std::endl;
+    std::cout<<"Displays all available commands."<<std::endl;
+  }
+  else
+  {
+    std::cout<<"Available commands:"<<std::endl;
+    std::vector<std::string> commands = _shell.getRegisteredCommands();
+    for(std::vector<std::string>::size_type i=0; i<commands.size(); ++i)
+    {
+      std::cout<<commands[i]<<std::endl;
+    }
+  }
+}
+
+void sop::system::Kernel::shutdownHandler(const std::vector<const std::string> & params)
+{
+  if(params.size()>1)
+  {
+    std::cout<<"shutdown [-h]"<<std::endl;
+    std::cout<<"Closes the system."<<std::endl;
+  }
+  else
+  {
+    std::cout<<"Shutting down the system."<<std::endl;
+    shutdown();
+  }
 }
