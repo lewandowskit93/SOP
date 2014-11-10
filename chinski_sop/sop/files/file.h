@@ -8,7 +8,7 @@ namespace sop
   namespace files
   {
     // Temporary just to maintain compability
-    typedef uint32_t pid;
+    typedef uint16_t pid;
 
     /*
       File class
@@ -37,8 +37,9 @@ namespace sop
     */
     struct Perm
     {
-      bool readPermission;
-      bool writePermission;
+      uint8_t urwx;
+      uint8_t grwx;
+      uint8_t rrwx;
     };
   }
 }
