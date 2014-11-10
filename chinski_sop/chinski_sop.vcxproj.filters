@@ -159,6 +159,15 @@
     <ClInclude Include="sop\initializable.h">
       <Filter>Header Files\sop</Filter>
     </ClInclude>
+    <ClInclude Include="sop\files\inode.h">
+      <Filter>Header Files\sop\files</Filter>
+    </ClInclude>
+    <ClInclude Include="sop\files\filesystem.h">
+      <Filter>Header Files\sop\files</Filter>
+    </ClInclude>
+    <ClInclude Include="sop\files\file.h">
+      <Filter>Header Files\sop\files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="sop\system\shell.cpp">
@@ -223,6 +232,15 @@
     </ClCompile>
     <ClCompile Include="sop\initializable.cpp">
       <Filter>Source Files\sop</Filter>
+    </ClCompile>
+    <ClCompile Include="sop\files\filesystem.cpp">
+      <Filter>Source Files\sop\files</Filter>
+    </ClCompile>
+    <ClCompile Include="sop\files\inode.cpp">
+      <Filter>Source Files\sop\files</Filter>
+    </ClCompile>
+    <ClCompile Include="sop\files\file.cpp">
+      <Filter>Source Files\sop\files</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

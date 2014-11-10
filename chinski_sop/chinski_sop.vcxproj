@@ -11,6 +11,9 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="sop\files\file.h" />
+    <ClInclude Include="sop\files\filesystem.h" />
+    <ClInclude Include="sop\files\inode.h" />
     <ClInclude Include="sop\initializable.h" />
     <ClInclude Include="sop\exception.h" />
     <ClInclude Include="sop\files\exceptions\module_exception.h" />
@@ -33,6 +36,9 @@
     <ClInclude Include="sop\users\module.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="sop\files\file.cpp" />
+    <ClCompile Include="sop\files\filesystem.cpp" />
+    <ClCompile Include="sop\files\inode.cpp" />
     <ClCompile Include="sop\initializable.cpp" />
     <ClCompile Include="sop\exception.cpp" />
     <ClCompile Include="sop\files\exceptions\module_exception.cpp" />
