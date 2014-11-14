@@ -2,6 +2,7 @@
 #define _SOP_FILES_INODE_H_
 
 #include <string>
+#include "block.h"
 
 namespace sop
 {
@@ -11,14 +12,14 @@ namespace sop
       Inode class
       Don't touch, it's not interesting for you!
     */
-    class Inode
+    class Inode : public Block
     {
     public:
 
     protected:
 
     private:
-      // Remember bout the lock flag!!!
+      // Remember 'bout the lock flag!!!
     };
   }
 }

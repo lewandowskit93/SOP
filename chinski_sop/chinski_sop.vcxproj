@@ -11,8 +11,10 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="sop\files\block.h" />
     <ClInclude Include="sop\files\file.h" />
     <ClInclude Include="sop\files\filesystem.h" />
+    <ClInclude Include="sop\files\freeSpace.h" />
     <ClInclude Include="sop\files\inode.h" />
     <ClInclude Include="sop\initializable.h" />
     <ClInclude Include="sop\exception.h" />

@@ -2,13 +2,18 @@
 #define _SOP_FILES_FILE_H_
 
 #include <string>
+#include "block.h"
 
 namespace sop
 {
   namespace files
   {
     // Temporary just to maintain compability
-    typedef uint16_t pid;
+    typedef int pid_t;
+    typedef int uid_t;
+    typedef int gid_t;
+    typedef bool lock_t;
+    typedef int addr_t;
 
     /*
       File class
@@ -19,27 +24,21 @@ namespace sop
     public:
 
     protected:
-      pid* PIDHolder;
+      pid_t* PIDHolder;
     private:
-      Perm* permissions;
-    };
+      std::string* data;
+      bool isDataLoaded;
+      //permissions
 
-    /*
-      Attributes container
-    */
-    struct Attr
-    {
+      // Attributes
+      std::string fileName;
+      uid_t UID;
+      gid_t GID;
+      lock_t lock;
 
-    };
-
-    /*
-      Permission container
-    */
-    struct Perm
-    {
-      uint8_t urwx;
-      uint8_t grwx;
-      uint8_t rrwx;
+      // Data block addresses
+      addr_t directAddr[3];
+      addr_t* indirectAddr;
     };
   }
 }
