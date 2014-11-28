@@ -4,47 +4,47 @@
 #include <string>
 #include <cstdint>
 #include <vector>
-#include "block.h"
+#include <array>
 #include "inode.h"
+#include "constev.h"
 
 namespace sop
 {
   namespace files
   {
-    // Temporary just to maintain compability
-    typedef int pid_t;
-    typedef int uid_t;
-    typedef int gid_t;
-    typedef bool lock_t;
-    typedef int addr_t;
-
-    /*
+    class Filesystem;
+     /*
       File class
       Integrative containter which have the access to whole data of one file.
     */
     class File
     {
     public:
+      File();
+      ~File();
+
+      uint32_t getBlockAddr();
+      std::vector<std::array<char, sop::files::ConstEV::blockSize>> getData(std::array<Block*, sop::files::ConstEV::numOfBlocks>* disk);
+      char getMode();
+      std::string getFileName();
+      uid_t getUID();
+      gid_t getGID();
 
     protected:
       pid_t* PIDHolder;
 
     private:
-      uint32_t inodeBlockAddress;
-      Inode* inodePointer;
-      std::vector<std::string> data;
+      uint32_t blockAddress;
+      std::vector<std::array<char, sop::files::ConstEV::blockSize>> data;
       bool isDataLoaded;
       char openMode; // Actual mode in which the file is opened (rwx)
+      void loadData(std::array<Block*, sop::files::ConstEV::numOfBlocks>* drive);
 
       // Attributes
       std::string fileName;
       uid_t UID;
       gid_t GID;
       lock_t lock;
-
-      // Data block addresses
-      addr_t directAddr[3];
-      addr_t* indirectAddr;
     };
   }
 }

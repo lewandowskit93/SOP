@@ -38,6 +38,10 @@ namespace sop
     public:
       Inode();
       ~Inode();
+      uid_t getUID();
+      gid_t getGID();
+      std::vector<std::array<char, sop::files::ConstEV::blockSize>> getData_i(std::array<Block*, sop::files::ConstEV::numOfBlocks>* disk);
+      //std::array<char, sop::files::ConstEV::blockSize> getData_d(){ return auto(0);}
 
     protected:
 

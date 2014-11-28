@@ -7,6 +7,13 @@ namespace sop
 {
   namespace files
   {
+    // Temporary just to maintain compability
+    typedef int pid_t;
+    typedef int uid_t;
+    typedef int gid_t;
+    typedef bool lock_t;
+    typedef int addr_t;
+
     class ConstEV
     {
     public:

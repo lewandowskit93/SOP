@@ -171,9 +171,6 @@
     <ClInclude Include="sop\files\block.h">
       <Filter>Header Files\sop\files</Filter>
     </ClInclude>
-    <ClInclude Include="sop\files\ext.h">
-      <Filter>Header Files\sop\files</Filter>
-    </ClInclude>
     <ClInclude Include="sop\files\data.h">
       <Filter>Header Files\sop\files</Filter>
     </ClInclude>
@@ -254,14 +251,14 @@
     <ClCompile Include="sop\files\file.cpp">
       <Filter>Source Files\sop\files</Filter>
     </ClCompile>
-    <ClCompile Include="sop\files\ext.cpp">
-      <Filter>Source Files\sop\files</Filter>
-    </ClCompile>
     <ClCompile Include="sop\files\data.cpp">
       <Filter>Source Files\sop\files</Filter>
     </ClCompile>
     <ClCompile Include="sop\files\block.cpp">
       <Filter>Source Files\sop\files</Filter>
     </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ClassDiagram.cd" />
   </ItemGroup>
 </Project>

@@ -8,13 +8,14 @@
 #include <list>
 #include <map>
 #include "file.h"
-#include "inode.h"
+#include "block.h"
 
 namespace sop
 {
   namespace files
   {
-
+    class File;
+    class Ext;
     /*
       Current opened directory containter
     */
@@ -38,11 +39,11 @@ namespace sop
       // Files
       File* openFile(pid_t* PID, std::string fileName, std::string openMode ,std::string subdirectory = "");
       std::string readFile(File* fileHandler);
-      std::string* createFile(pid_t* PID, std::string fileName);
+      void createFile(pid_t* PID, std::string fileName);
       uint16_t saveFile(File* fileHandler);
       uint16_t closeFile(File* fileHandler);
       uint16_t removeFile(pid_t* PID, std::string fileName);
-      uint16_t renameFile(pid_t* PID, std::string fileName, std::string newFileName);
+      //uint16_t renameFile(pid_t* PID, std::string fileName, std::string newFileName);
       uint16_t moveFile(pid_t* PID, std::string fileName, std::string newDirectory);
       uint16_t appendToFile(File* fileHandler, std::string data);
       File* seekForFile(pid_t* PID, std::string fileName);
@@ -50,11 +51,14 @@ namespace sop
       // uint16_t setAttributes(File* fileHandler, Attr& setData);
 
       // Directories
-      std::string getcurrentDir();
-      uint16_t changeDirectory(pid_t* PID, std::string directoryName);
-      uint16_t createDirectory(pid_t* PID, std::string newDirectoryName);
-      uint16_t removeDirectory(pid_t* PID, std::string directoryName); // remember to delete all files and return them to freeSpaceVector
-      uint16_t renameDirectory(pid_t* PID, std::string directoryName, std::string newDirectoryName);
+      std::string getCurrentDir();
+      std::string getCurrentPath();
+      void changeDirectory(pid_t* PID, std::string directoryName);
+      void changeDirectoryUp();
+      void createDirectory(pid_t* PID, std::string newDirectoryName);
+      void removeDirectory(pid_t* PID, std::string directoryName); // remember to delete all files and return them to freeSpaceVector
+      File* seekForDirectory(pid_t* PID, std::string fileName);
+      //uint16_t renameDirectory(pid_t* PID, std::string directoryName, std::string newDirectoryName);
 
       // Overall
       std::vector<std::map<std::string, std::string>> list(); // map<drwx - name>
@@ -65,9 +69,9 @@ namespace sop
 
     private:
       CurrentDirectory currentDir;
-      Inode rootDirectory;
-      std::vector<uint8_t> freeSpaceVector;
-      std::list<File> openedFilesList;
+      std::list<File*> openedFilesList;
+      std::vector<uint32_t> freeSpace;
+      std::array<Block*, sop::files::ConstEV::numOfBlocks> dataBlocks;
     };
   }
 }
