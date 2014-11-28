@@ -12,9 +12,11 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="sop\files\block.h" />
+    <ClInclude Include="sop\files\data.h" />
+    <ClInclude Include="sop\files\constev.h" />
+    <ClInclude Include="sop\files\ext.h" />
     <ClInclude Include="sop\files\file.h" />
     <ClInclude Include="sop\files\filesystem.h" />
-    <ClInclude Include="sop\files\freeSpace.h" />
     <ClInclude Include="sop\files\inode.h" />
     <ClInclude Include="sop\initializable.h" />
     <ClInclude Include="sop\exception.h" />
@@ -38,6 +40,9 @@
     <ClInclude Include="sop\users\module.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="sop\files\block.cpp" />
+    <ClCompile Include="sop\files\data.cpp" />
+    <ClCompile Include="sop\files\ext.cpp" />
     <ClCompile Include="sop\files\file.cpp" />
     <ClCompile Include="sop\files\filesystem.cpp" />
     <ClCompile Include="sop\files\inode.cpp" />

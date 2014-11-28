@@ -6,13 +6,18 @@ namespace sop
   namespace files
   {
     /*
-      Block class is used to store all data on physical drive
+      Block class-interface is used to store all data on physical drive
     */
     class Block
     {
     public:
+      Block();
+      virtual ~Block();
+
     protected:
+
     private:
+
     };
   }
 }

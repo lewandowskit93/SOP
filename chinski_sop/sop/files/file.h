@@ -2,7 +2,10 @@
 #define _SOP_FILES_FILE_H_
 
 #include <string>
+#include <cstdint>
+#include <vector>
 #include "block.h"
+#include "inode.h"
 
 namespace sop
 {
@@ -25,10 +28,13 @@ namespace sop
 
     protected:
       pid_t* PIDHolder;
+
     private:
-      std::string* data;
+      uint32_t inodeBlockAddress;
+      Inode* inodePointer;
+      std::vector<std::string> data;
       bool isDataLoaded;
-      //permissions
+      char openMode; // Actual mode in which the file is opened (rwx)
 
       // Attributes
       std::string fileName;
