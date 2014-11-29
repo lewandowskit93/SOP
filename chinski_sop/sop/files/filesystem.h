@@ -34,19 +34,20 @@ namespace sop
     {
     public:
       Filesystem();
+      Filesystem(std::string diskFileName);
       ~Filesystem();
 
       // Files
-      File* openFile(pid_t* PID, std::string fileName, std::string openMode ,std::string subdirectory = "");
+      File* openFile(pid_t* PID, std::string fileName, char openMode, std::vector<std::string>* subdir = NULL);
       std::string readFile(File* fileHandler);
-      void createFile(pid_t* PID, std::string fileName);
-      uint16_t saveFile(File* fileHandler);
-      uint16_t closeFile(File* fileHandler);
-      uint16_t removeFile(pid_t* PID, std::string fileName);
+      void createFile(pid_t* PID, std::string fileName, std::vector<std::string>* subdir = NULL);
+      void saveFile(File* fileHandler);
+      void closeFile(File* fileHandler);
+      void removeFile(pid_t* PID, std::string fileName);
       //uint16_t renameFile(pid_t* PID, std::string fileName, std::string newFileName);
-      uint16_t moveFile(pid_t* PID, std::string fileName, std::string newDirectory);
-      uint16_t appendToFile(File* fileHandler, std::string data);
-      File* seekForFile(pid_t* PID, std::string fileName);
+      void moveFile(pid_t* PID, std::string fileName, std::string newDirectory);
+      void appendToFile(File* fileHandler, std::string data);
+      File* seekForFile(pid_t* PID, std::string fileName, std::vector<std::string>* subdir = NULL);
       // Attr* getAttributes(File* fileHandler);
       // uint16_t setAttributes(File* fileHandler, Attr& setData);
 
@@ -61,10 +62,19 @@ namespace sop
       //uint16_t renameDirectory(pid_t* PID, std::string directoryName, std::string newDirectoryName);
 
       // Overall
-      std::vector<std::map<std::string, std::string>> list(); // map<drwx - name>
+      std::vector<std::string> list();
 
       // Handlers
       void changeDirectoryHandler(const std::vector<const std::string> & params);
+      void moveHandler(const std::vector<const std::string> & params);
+      void removeFileHandler(const std::vector<const std::string> & params);
+      void nanoHandler(const std::vector<const std::string> & params);
+      void createFileHandler(const std::vector<const std::string> & params);
+      void createDirectoryHandler(const std::vector<const std::string> & params);
+      void removeDirectoryHandler(const std::vector<const std::string> & params);
+      //void seekHandler(const std::vector<const std::string> & params);
+      void catHandler(const std::vector<const std::string> & params);
+      void listHandler(const std::vector<const std::string> & params);
     protected:
 
     private:

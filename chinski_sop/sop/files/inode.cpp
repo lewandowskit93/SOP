@@ -4,9 +4,13 @@
 #include ".\sop\files\data.h"
 
 #include <vector>
+#include <string>
 #include <array>
 
-sop::files::Inode::Inode()
+sop::files::Inode::Inode(bool isDirectory, uid_t UID, gid_t GID) :
+  isDirectory(isDirectory),
+  uid(UID),
+  gid(GID)
 {
 }
 
@@ -36,4 +40,26 @@ std::vector<std::array<char, sop::files::ConstEV::blockSize>> sop::files::Inode:
     out.push_back(disk->at(dataInside)->getData_d());
   }
   return out;
+}
+
+std::vector<std::string> sop::files::Inode::listDir()
+{
+  std::vector<std::string> output;
+  if(this->directory.inodesInside.size())
+  {
+    for(auto x : this->directory.inodesInside)
+    {
+      output.push_back(x.first);
+    }
+  }
+  else
+  {
+    output.push_back("0");
+  }
+  return output;
+}
+
+void sop::files::Inode::addInDir(std::string fileName, uint32_t blockAddr)
+{
+  this->directory.inodesInside[fileName] = blockAddr;
 }

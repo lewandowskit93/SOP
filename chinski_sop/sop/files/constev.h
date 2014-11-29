@@ -17,7 +17,7 @@ namespace sop
     class ConstEV
     {
     public:
-      static const uint32_t directBlockAddresses = 3;
+      static const uint32_t directAddrBlock = 3;
       static const uint32_t blockSize = 32;
       static const uint32_t numOfBlocks = 64;
 

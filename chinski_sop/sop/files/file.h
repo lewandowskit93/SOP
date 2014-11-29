@@ -20,7 +20,7 @@ namespace sop
     class File
     {
     public:
-      File();
+      File(pid_t PID, uint32_t parentCatalog, uint32_t blockAddress);
       ~File();
 
       uint32_t getBlockAddr();
@@ -31,9 +31,10 @@ namespace sop
       gid_t getGID();
 
     protected:
-      pid_t* PIDHolder;
+      pid_t PIDHolder;
 
     private:
+      uint32_t parentCatalogAddress;
       uint32_t blockAddress;
       std::vector<std::array<char, sop::files::ConstEV::blockSize>> data;
       bool isDataLoaded;
@@ -44,7 +45,6 @@ namespace sop
       std::string fileName;
       uid_t UID;
       gid_t GID;
-      lock_t lock;
     };
   }
 }

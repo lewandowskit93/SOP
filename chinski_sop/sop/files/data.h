@@ -10,18 +10,21 @@ namespace sop
 {
   namespace files
   {
-    //class Block;
-
+    /*
+      Data class stores file data blocks
+    */
     class Data : public Block
     {
     public:
       Data();
       ~Data();
       std::array<char, sop::files::ConstEV::blockSize> getData_d();
-      //std::vector<std::array<char, sop::files::ConstEV::blockSize>> getData_i(){}
-      uid_t getUID(){ return 0; }
-      gid_t getGID(){ return 0; }
+      std::vector<std::array<char, sop::files::ConstEV::blockSize>> getData_i(){std::vector<std::array<char, sop::files::ConstEV::blockSize>> x; return x;}
+      uid_t getUID(){ return -1; }
+      gid_t getGID(){ return -1; }
       void setData(std::array<char, sop::files::ConstEV::blockSize> data);
+      std::vector<std::string> listDir(){ throw -1; }
+      void addInDir(std::string fileName, uint32_t blockAddress){ throw -1; }
 
     protected:
 

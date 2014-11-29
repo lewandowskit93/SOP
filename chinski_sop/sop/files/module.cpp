@@ -24,11 +24,13 @@ void sop::files::Module::initialize()
   sop::system::Shell* shell = this->_kernel->getShell();
   sop::logger::Logger* logger = this->_kernel->getLogger();
   shell->registerCommand("cd",&Filesystem::changeDirectoryHandler,&fs);
-  //shell->registerCommand("mv",&Filesystem::moveHandler,&fs);
-  //shell->registerCommand("rm",&Filesystem::removeFileHandler,&fs);
-  //shell->registerCommand("nano",&Filesystem::nanoHandler,&fs);
-  //shell->registerCommand("touch",&Filesystem::createFileHandler,&fs);
-  //shell->registerCommand("mkdir",&Filesystem::createDirectoryHandler,&fs);
-  //shell->registerCommand("rmdir",&Filesystem::removeDirectoryHandler,&fs);
-  //shell->registerCommand("find",&Filesystem::seekHandler,&fs);
+  shell->registerCommand("mv",&Filesystem::moveHandler,&fs);
+  shell->registerCommand("rm",&Filesystem::removeFileHandler,&fs);
+  shell->registerCommand("nano",&Filesystem::nanoHandler,&fs);
+  shell->registerCommand("cat",&Filesystem::catHandler,&fs);
+  shell->registerCommand("touch",&Filesystem::createFileHandler,&fs);
+  shell->registerCommand("mkdir",&Filesystem::createDirectoryHandler,&fs);
+  shell->registerCommand("rmdir",&Filesystem::removeDirectoryHandler,&fs);
+  shell->registerCommand("ll",&Filesystem::listHandler,&fs);
+  //shell->registerCommand("find",&Filesystem::seekHandler,fs);
 }

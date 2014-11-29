@@ -4,8 +4,19 @@
 #include <boost\make_shared.hpp>
 #include ".\sop\files\filesystem.h"
 #include ".\sop\files\file.h"
+#include ".\sop\files\inode.h"
 
 sop::files::Filesystem::Filesystem()
+{
+  for(uint32_t i=1; i < sop::files::ConstEV::numOfBlocks; i++)
+  {
+    this->freeSpace.insert(this->freeSpace.end(),i);
+  }
+  std::cout<<this->freeSpace.size()<<std::endl;
+  this->dataBlocks[0] = new sop::files::Inode(true, 0,0);
+}
+
+sop::files::Filesystem::Filesystem(std::string diskFileName)
 {
 }
 
@@ -14,7 +25,7 @@ sop::files::Filesystem::~Filesystem()
 }
 
 // Files
-sop::files::File* sop::files::Filesystem::openFile(pid_t* PID, std::string fileName, std::string openMode,std::string subdirectory)
+sop::files::File* sop::files::Filesystem::openFile(pid_t* PID, std::string fileName, char openMode, std::vector<std::string>* subdir)
 {
   return 0;
 }
@@ -24,54 +35,72 @@ std::string sop::files::Filesystem::readFile(File* fileHandler)
   return 0;
 }
 
-void sop::files::Filesystem::createFile(pid_t* PID, std::string fileName)
+void sop::files::Filesystem::createFile(pid_t* PID, std::string fileName, std::vector<std::string>* subdir)
 {
-  if(fileName.length() > 3)
+  uint32_t iterator = 0;
+  if(this->currentDir.blockRoute.size())
   {
-    uid_t uid = this->dataBlocks[this->currentDir.blockRoute.back()]->getUID();
-    gid_t gid = this->dataBlocks[this->currentDir.blockRoute.back()]->getGID();
-    bool writePermission = 1; // sop::user::ask for write permission
-    if(writePermission)
+    iterator = this->currentDir.blockRoute.back();
+  }
+  //uid_t uid = this->dataBlocks[iterator]->getUID();
+  //gid_t gid = this->dataBlocks[iterator]->getGID();
+  bool writePermission = 1; // sop::user::ask for write permission
+  if(writePermission)
+  {
+    std::cout<<this->freeSpace.size()<<std::endl;
+    uint32_t inodeAddr = 0;//this->freeSpace;
+    //this->freeSpace.erase(this->freeSpace.begin());
+    if(subdir)
     {
-
+      Block* root = this->dataBlocks[0];
+      for(auto subs : *subdir)
+      {
+      }
     }
     else
     {
-      throw -2; //no permission to write
+      this->dataBlocks[inodeAddr] = new Inode(false, 0,0);
+      if(this->currentDir.blockRoute.size())
+      {
+        this->dataBlocks[this->currentDir.blockRoute.back()]->addInDir(fileName,inodeAddr);
+      }
+      else
+      {
+        this->dataBlocks[0]->addInDir(fileName,inodeAddr);
+      }
     }
   }
   else
   {
-    throw -1; //name too long error
+    throw -1; //no permission to write
   }
 }
 
-uint16_t sop::files::Filesystem::saveFile(File* fileHandler)
+void sop::files::Filesystem::saveFile(File* fileHandler)
 {
-  return 0;
+
 }
 
-uint16_t sop::files::Filesystem::closeFile(File* fileHandler)
+void sop::files::Filesystem::closeFile(File* fileHandler)
 {
-  return 0;
+  
 }
 
-uint16_t sop::files::Filesystem::removeFile(pid_t* PID, std::string fileName)
+void sop::files::Filesystem::removeFile(pid_t* PID, std::string fileName)
 {
-  return 0;
 }
 
-uint16_t sop::files::Filesystem::moveFile(pid_t* PID, std::string fileName, std::string newDirectory)
+void sop::files::Filesystem::moveFile(pid_t* PID, std::string fileName, std::string newDirectory)
 {
-  return 0;
+
 }
 
-uint16_t sop::files::Filesystem::appendToFile(File* fileHandler, std::string data)
+void sop::files::Filesystem::appendToFile(File* fileHandler, std::string data)
 {
-  return 0;
+
 }
 
-sop::files::File* sop::files::Filesystem::seekForFile(pid_t* PID, std::string fileName)
+sop::files::File* sop::files::Filesystem::seekForFile(pid_t* PID, std::string fileName, std::vector<std::string>* subdir)
 {
   return 0;
 }
@@ -114,17 +143,29 @@ void sop::files::Filesystem::removeDirectory(pid_t* PID, std::string directoryNa
 
 sop::files::File* sop::files::Filesystem::seekForDirectory(pid_t* PID, std::string fileName)
 {
-  return new sop::files::File();
+  return new sop::files::File(-1, -1, -1);
 }
 
-// Overall
-std::vector<std::map<std::string, std::string>> sop::files::Filesystem::list()
+/*
+  Overall
+*/
+std::vector<std::string> sop::files::Filesystem::list()
 {
-  return std::vector<std::map<std::string, std::string>> ();
+  if(this->currentDir.blockRoute.size())
+  {
+    return this->dataBlocks[this->currentDir.blockRoute.back()]->listDir();
+  }
+  else
+  {
+    std::vector<std::string> out;
+    out.push_back("Total: 0");
+    return out;
+  }
 }
-// map<drwx - name> 
 
-// Handlers
+/*
+  Handlers
+*/
 void sop::files::Filesystem::changeDirectoryHandler(const std::vector<const std::string> & params)
 {
   if(params.size()>1)
@@ -149,5 +190,57 @@ void sop::files::Filesystem::changeDirectoryHandler(const std::vector<const std:
         std::cout<<"Directory not found"<<std::endl;
       }
     }
+  }
+}
+
+void sop::files::Filesystem::moveHandler(const std::vector<const std::string> & params)
+{
+}
+
+void sop::files::Filesystem::removeFileHandler(const std::vector<const std::string> & params)
+{
+}
+
+void sop::files::Filesystem::nanoHandler(const std::vector<const std::string> & params)
+{
+  std::cout<<"Loading nano..."<<std::endl;
+}
+
+void sop::files::Filesystem::createFileHandler(const std::vector<const std::string> & params)
+{
+  if(params.size() > 1)
+  {
+    for(int i=1; i<params.size(); i++)
+    {
+      if(params[i].find("/") == std::string::npos)
+      {
+        this->createFile(0, params[i]);
+      }
+      else
+      {
+        std::cout<<"Not supported"<<std::endl;
+      }
+    }
+  }
+}
+
+void sop::files::Filesystem::createDirectoryHandler(const std::vector<const std::string> & params)
+{
+}
+
+void sop::files::Filesystem::removeDirectoryHandler(const std::vector<const std::string> & params)
+{
+}
+
+void sop::files::Filesystem::catHandler(const std::vector<const std::string> & params)
+{
+}
+
+void sop::files::Filesystem::listHandler(const std::vector<const std::string> & params)
+{
+  std::vector<std::string> x = this->list();
+  for(auto data : x)
+  {
+    std::cout<<data<<std::endl;
   }
 }

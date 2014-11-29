@@ -4,6 +4,7 @@
 #include <string>
 #include <cstdint>
 #include <vector>
+#include <array>
 #include <map>
 #include "block.h"
 #include "constev.h"
@@ -17,7 +18,7 @@ namespace sop
     */
     struct dir_u
     {
-      std::vector<std::map<char[3],uint32_t>> inodesInside;
+      std::map<std::string,uint32_t> inodesInside;
     };
 
     /*
@@ -25,7 +26,7 @@ namespace sop
     */
     struct file_u
     {
-      std::vector<uint32_t> directBlockAddr; //ConstEV.directBlockAddressess
+      std::array<uint32_t, sop::files::ConstEV::directAddrBlock> directBlockAddr;
       std::vector<uint32_t> indirectBlockAddr;
     };
 
@@ -36,12 +37,14 @@ namespace sop
     class Inode : public Block
     {
     public:
-      Inode();
+      Inode(bool isDirectory, uid_t UID, gid_t GID);
       ~Inode();
       uid_t getUID();
       gid_t getGID();
       std::vector<std::array<char, sop::files::ConstEV::blockSize>> getData_i(std::array<Block*, sop::files::ConstEV::numOfBlocks>* disk);
-      //std::array<char, sop::files::ConstEV::blockSize> getData_d(){ return auto(0);}
+      std::array<char, sop::files::ConstEV::blockSize> getData_d(){ throw -1; }
+      std::vector<std::string> listDir();
+      void addInDir(std::string fileName, uint32_t blockAddress);
 
     protected:
 
@@ -49,7 +52,6 @@ namespace sop
       bool isDirectory;
       uint32_t uid;
       uint32_t gid;
-      bool lock;
       dir_u directory;
       file_u file;
     };

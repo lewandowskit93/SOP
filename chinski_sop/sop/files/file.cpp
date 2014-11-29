@@ -1,15 +1,15 @@
 #include ".\sop\files\file.h"
 #include ".\sop\files\filesystem.h"
 
-sop::files::File::File() : 
-  PIDHolder(0),
-  blockAddress(0),
+sop::files::File::File(pid_t PID, uint32_t parentCatalog, uint32_t blockAddress) : 
+  PIDHolder(PID),
+  parentCatalogAddress(parentCatalog),
+  blockAddress(blockAddress),
   isDataLoaded(0),
   openMode(0),
   fileName(0),
   UID(0),
-  GID(0),
-  lock(0)
+  GID(0)
 {
 }
 
