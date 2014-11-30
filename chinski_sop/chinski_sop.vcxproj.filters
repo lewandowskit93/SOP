@@ -159,6 +159,15 @@
     <ClInclude Include="sop\initializable.h">
       <Filter>Header Files\sop</Filter>
     </ClInclude>
+    <ClInclude Include="sop\processor\scheduler.h">
+      <Filter>Header Files\sop\processor</Filter>
+    </ClInclude>
+    <ClInclude Include="sop\processor\processor.h">
+      <Filter>Header Files\sop\processor</Filter>
+    </ClInclude>
+    <ClInclude Include="sop\processor\interpreter.h">
+      <Filter>Header Files\sop\processor</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="sop\system\shell.cpp">
@@ -223,6 +232,15 @@
     </ClCompile>
     <ClCompile Include="sop\initializable.cpp">
       <Filter>Source Files\sop</Filter>
+    </ClCompile>
+    <ClCompile Include="sop\processor\scheduler.cpp">
+      <Filter>Source Files\sop\processor</Filter>
+    </ClCompile>
+    <ClCompile Include="sop\processor\processor.cpp">
+      <Filter>Source Files\sop\processor</Filter>
+    </ClCompile>
+    <ClCompile Include="sop\processor\interpreter.cpp">
+      <Filter>Source Files\sop\processor</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
