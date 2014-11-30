@@ -38,16 +38,16 @@ namespace sop
       ~Filesystem();
 
       // Files
-      File* openFile(pid_t* PID, std::string fileName, char openMode, std::vector<std::string>* subdir = NULL);
+      File* openFile(pid_t* PID, std::vector<std::string> path, char openMode);
       std::string readFile(File* fileHandler);
-      void createFile(pid_t* PID, std::string fileName, std::vector<std::string>* subdir = NULL);
+      void createFile(pid_t* PID, std::vector<std::string> path);
       void saveFile(File* fileHandler);
       void closeFile(File* fileHandler);
-      void removeFile(pid_t* PID, std::string fileName);
+      void removeFile(pid_t* PID, std::vector<std::string> path);
       //uint16_t renameFile(pid_t* PID, std::string fileName, std::string newFileName);
       void moveFile(pid_t* PID, std::string fileName, std::string newDirectory);
       void writeToFile(File* fileHandler, std::string data);
-      File* seekForFile(pid_t* PID, std::string fileName, std::vector<std::string>* subdir = NULL);
+      File* seek(pid_t PID, std::vector<std::string> path);
       // Attr* getAttributes(File* fileHandler);
       // uint16_t setAttributes(File* fileHandler, Attr& setData);
 
@@ -58,7 +58,6 @@ namespace sop
       void changeDirectoryUp();
       void createDirectory(pid_t* PID, std::string newDirectoryName);
       void removeDirectory(pid_t* PID, std::string directoryName); // remember to delete all files and return them to freeSpaceVector
-      File* seekForDirectory(pid_t* PID, std::string fileName);
       //uint16_t renameDirectory(pid_t* PID, std::string directoryName, std::string newDirectoryName);
 
       // Overall
@@ -77,6 +76,7 @@ namespace sop
       //void seekHandler(const std::vector<const std::string> & params);
       void catHandler(const std::vector<const std::string> & params);
       void listHandler(const std::vector<const std::string> & params);
+      void echoHandler(const std::vector<const std::string> & params);
     protected:
 
     private:

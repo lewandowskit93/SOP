@@ -29,6 +29,9 @@ namespace sop
       std::string getFileName();
       uid_t getUID();
       gid_t getGID();
+      void writeToFile(std::string, std::vector<uint32_t>* freeSpace);
+      void sop::files::File::removeFile(std::vector<uint32_t>* freeSpace);
+      void setMode(char mode);
 
     protected:
       pid_t PIDHolder;

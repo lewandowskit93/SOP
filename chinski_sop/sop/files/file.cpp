@@ -60,3 +60,21 @@ void sop::files::File::loadData()
   this->data = filenode->getData_i(this->drive);
   this->isDataLoaded = 1;
 }
+
+void sop::files::File::writeToFile(std::string text, std::vector<uint32_t>* freeSpace)
+{
+  this->drive->at(this->blockAddress)->writeToFile(text, freeSpace, this->drive);
+}
+
+void sop::files::File::removeFile(std::vector<uint32_t>* freeSpace)
+{
+  this->drive->at(this->blockAddress)->removeFile(freeSpace, this->drive);
+  this->drive->at(this->blockAddress) = 0;
+  freeSpace->push_back(this->blockAddress);
+}
+
+void sop::files::File::setMode(char mode)
+{
+  // TEST if permissions are valid
+  this->openMode = mode;
+}

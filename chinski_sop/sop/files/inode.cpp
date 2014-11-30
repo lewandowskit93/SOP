@@ -72,10 +72,6 @@ void sop::files::Inode::addInDir(std::string fileName, uint32_t blockAddr)
   {
     this->directory.inodesInside[fileName] = blockAddr;
   }
-  else
-  {
-    //throw not a dir error
-  }
 }
 
 bool sop::files::Inode::getIsDirectory()
@@ -86,7 +82,7 @@ bool sop::files::Inode::getIsDirectory()
 void sop::files::Inode::toggleLock()
 {
   int32_t tmp = this->lock;
-  this->lock = (tmp+1)%2;
+  this->lock = static_cast<bool>((tmp+1)%2);
 }
 
 void sop::files::Inode::writeToFile(std::string input, std::vector<uint32_t>* freeSpace, std::array<Block*, sop::files::ConstEV::numOfBlocks>* drive)
@@ -132,4 +128,35 @@ uint32_t sop::files::Inode::getAddress(std::string name)
     return this->directory.inodesInside.find(name)->second;
   }
   return 0;
+}
+
+void sop::files::Inode::removeFile(std::vector<uint32_t>* freeSpace, std::array<Block*, sop::files::ConstEV::numOfBlocks>* drive)
+{
+  if(!this->isDirectory)
+  {
+    for(uint32_t iterator=0; iterator < sop::files::ConstEV::directAddrBlock; iterator++)
+    {
+      if(drive->at(this->file.directBlockAddr[iterator]))
+      {
+        delete drive->at(this->file.directBlockAddr[iterator]);
+        freeSpace->push_back(this->file.directBlockAddr[iterator]);
+        this->file.directBlockAddr[iterator] = 0;
+      }
+      else
+      {
+        return;
+      }
+    }
+    for(auto data : this->file.indirectBlockAddr)
+    {
+      delete drive->at(data);
+      freeSpace->push_back(data);
+    }
+    this->file.indirectBlockAddr.clear();
+  }
+}
+
+void sop::files::Inode::removeDir(std::vector<uint32_t>* freeSpace, std::array<Block*, sop::files::ConstEV::numOfBlocks>* drive)
+{
+
 }

@@ -30,6 +30,8 @@ namespace sop
       virtual void toggleLock() = 0;
       virtual void writeToFile(std::string, std::vector<uint32_t>* freeSpace, std::array<Block*, sop::files::ConstEV::numOfBlocks>* drive) = 0;
       virtual uint32_t getAddress(std::string name) = 0;
+      virtual void removeFile(std::vector<uint32_t>* freeSpace, std::array<Block*, sop::files::ConstEV::numOfBlocks>* drive) = 0;
+      virtual void removeDir(std::vector<uint32_t>* freeSpace, std::array<Block*, sop::files::ConstEV::numOfBlocks>* drive) = 0;
 
     protected:
 
