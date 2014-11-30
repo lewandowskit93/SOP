@@ -5,7 +5,7 @@
 sop::files::Module::Module(sop::system::Kernel *kernel):
   sop::system::Module(kernel)
 {
-
+  this->fsxxxx = new Filesystem();
 }
 
 sop::files::Module::~Module()
@@ -20,17 +20,17 @@ std::string sop::files::Module::getClassName() const
 
 void sop::files::Module::initialize()
 {
-  Filesystem fs;
   sop::system::Shell* shell = this->_kernel->getShell();
   sop::logger::Logger* logger = this->_kernel->getLogger();
-  shell->registerCommand("cd",&Filesystem::changeDirectoryHandler,&fs);
-  shell->registerCommand("mv",&Filesystem::moveHandler,&fs);
-  shell->registerCommand("rm",&Filesystem::removeFileHandler,&fs);
-  shell->registerCommand("nano",&Filesystem::nanoHandler,&fs);
-  shell->registerCommand("cat",&Filesystem::catHandler,&fs);
-  shell->registerCommand("touch",&Filesystem::createFileHandler,&fs);
-  shell->registerCommand("mkdir",&Filesystem::createDirectoryHandler,&fs);
-  shell->registerCommand("rmdir",&Filesystem::removeDirectoryHandler,&fs);
-  shell->registerCommand("ll",&Filesystem::listHandler,&fs);
-  //shell->registerCommand("find",&Filesystem::seekHandler,fs);
+  shell->registerCommand("cd",&Filesystem::changeDirectoryHandler,(this->fsxxxx));
+  shell->registerCommand("mv",&Filesystem::moveHandler,this->fsxxxx);
+  shell->registerCommand("rm",&Filesystem::removeFileHandler,this->fsxxxx);
+  shell->registerCommand("nano",&Filesystem::nanoHandler,this->fsxxxx);
+  shell->registerCommand("cat",&Filesystem::catHandler,this->fsxxxx);
+  shell->registerCommand("touch",&Filesystem::createFileHandler,this->fsxxxx);
+  shell->registerCommand("mkdir",&Filesystem::createDirectoryHandler,this->fsxxxx);
+  shell->registerCommand("rmdir",&Filesystem::removeDirectoryHandler,this->fsxxxx);
+  shell->registerCommand("ll",&Filesystem::listHandler,this->fsxxxx);
+  //shell->registerCommand("find",&Filesystem::seekHandler,this->fsxxxx);
+  //shell->registerCommand("echo",&Filesystem::echoHandler,this->fsxxxx);
 }

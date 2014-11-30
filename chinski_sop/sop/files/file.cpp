@@ -1,7 +1,7 @@
 #include ".\sop\files\file.h"
 #include ".\sop\files\filesystem.h"
 
-sop::files::File::File(pid_t PID, uint32_t parentCatalog, uint32_t blockAddress) : 
+sop::files::File::File(pid_t PID, uint32_t parentCatalog, uint32_t blockAddress, std::array<sop::files::Block*, sop::files::ConstEV::numOfBlocks>* disk) : 
   PIDHolder(PID),
   parentCatalogAddress(parentCatalog),
   blockAddress(blockAddress),
@@ -9,12 +9,15 @@ sop::files::File::File(pid_t PID, uint32_t parentCatalog, uint32_t blockAddress)
   openMode(0),
   fileName(0),
   UID(0),
-  GID(0)
+  GID(0),
+  drive(disk)
 {
+  disk->at(blockAddress)->toggleLock();
 }
 
 sop::files::File::~File()
 {
+  this->drive->at(this->blockAddress)->toggleLock();
 }
 
 uint32_t sop::files::File::getBlockAddr()
@@ -22,11 +25,11 @@ uint32_t sop::files::File::getBlockAddr()
   return this->blockAddress;
 }
 
-std::vector<std::array<char, sop::files::ConstEV::blockSize>> sop::files::File::getData(std::array<sop::files::Block*, sop::files::ConstEV::numOfBlocks>* drive)
+std::vector<std::array<char, sop::files::ConstEV::blockSize>> sop::files::File::getData()
 {
   if(!this->isDataLoaded)
   {
-    this->loadData(drive);
+    this->loadData();
   }
   return this->data;
 }
@@ -51,9 +54,9 @@ sop::files::gid_t sop::files::File::getGID()
   return this->GID;
 }
 
-void sop::files::File::loadData(std::array<sop::files::Block*, sop::files::ConstEV::numOfBlocks>* drive)
+void sop::files::File::loadData()
 {
-  sop::files::Block* filenode = drive->at(this->blockAddress);
-  this->data = filenode->getData_i(drive);
+  sop::files::Block* filenode = this->drive->at(this->blockAddress);
+  this->data = filenode->getData_i(this->drive);
   this->isDataLoaded = 1;
 }

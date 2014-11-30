@@ -46,7 +46,7 @@ namespace sop
       void removeFile(pid_t* PID, std::string fileName);
       //uint16_t renameFile(pid_t* PID, std::string fileName, std::string newFileName);
       void moveFile(pid_t* PID, std::string fileName, std::string newDirectory);
-      void appendToFile(File* fileHandler, std::string data);
+      void writeToFile(File* fileHandler, std::string data);
       File* seekForFile(pid_t* PID, std::string fileName, std::vector<std::string>* subdir = NULL);
       // Attr* getAttributes(File* fileHandler);
       // uint16_t setAttributes(File* fileHandler, Attr& setData);
@@ -63,6 +63,8 @@ namespace sop
 
       // Overall
       std::vector<std::string> list();
+      void printStats();
+      void printDisk(uint32_t parts);
 
       // Handlers
       void changeDirectoryHandler(const std::vector<const std::string> & params);

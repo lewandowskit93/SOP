@@ -45,6 +45,10 @@ namespace sop
       std::array<char, sop::files::ConstEV::blockSize> getData_d(){ throw -1; }
       std::vector<std::string> listDir();
       void addInDir(std::string fileName, uint32_t blockAddress);
+      bool getIsDirectory();
+      void toggleLock();
+      void writeToFile(std::string, std::vector<uint32_t>* freeSpace, std::array<Block*, sop::files::ConstEV::numOfBlocks>* drive);
+      uint32_t getAddress(std::string name);
 
     protected:
 
@@ -54,6 +58,7 @@ namespace sop
       uint32_t gid;
       dir_u directory;
       file_u file;
+      bool lock;
     };
   }
 }

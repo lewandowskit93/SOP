@@ -3,6 +3,7 @@
 
 #include <string>
 #include ".\sop\system\module.h"
+#include ".\sop\files\filesystem.h"
 
 namespace sop
 {
@@ -18,11 +19,12 @@ namespace sop
         virtual ~Module();
         virtual std::string getClassName() const;
         virtual void initialize();
+        Filesystem* fsxxxx;
 
       protected:
 
       private:
-
+  
     };
   }
 }

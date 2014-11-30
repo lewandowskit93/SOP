@@ -17,14 +17,19 @@ namespace sop
     {
     public:
       Data();
+      Data(std::string);
       ~Data();
       std::array<char, sop::files::ConstEV::blockSize> getData_d();
-      std::vector<std::array<char, sop::files::ConstEV::blockSize>> getData_i(){std::vector<std::array<char, sop::files::ConstEV::blockSize>> x; return x;}
+      std::vector<std::array<char, sop::files::ConstEV::blockSize>> getData_i(std::array<Block*, sop::files::ConstEV::numOfBlocks>* disk){std::vector<std::array<char, sop::files::ConstEV::blockSize>> x; return x;}
       uid_t getUID(){ return -1; }
       gid_t getGID(){ return -1; }
       void setData(std::array<char, sop::files::ConstEV::blockSize> data);
       std::vector<std::string> listDir(){ throw -1; }
       void addInDir(std::string fileName, uint32_t blockAddress){ throw -1; }
+      bool getIsDirectory(){ return 0; }
+      void toggleLock(){}
+      void writeToFile(std::string, std::vector<uint32_t>* freeSpace, std::array<Block*, sop::files::ConstEV::numOfBlocks>* drive){}
+      uint32_t getAddress(std::string name){ return 0; }
 
     protected:
 

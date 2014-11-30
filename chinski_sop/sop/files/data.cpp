@@ -7,6 +7,15 @@ sop::files::Data::Data()
 {
 }
 
+sop::files::Data::Data(std::string data)
+{
+  if(data.size() > sop::files::ConstEV::blockSize) data = data.substr(0, sop::files::ConstEV::blockSize);
+  for(uint32_t i=0; i<data.size(); i++)
+  {
+    this->containter[i] = data[i];
+  }
+}
+
 sop::files::Data::~Data()
 {
 }

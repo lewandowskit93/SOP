@@ -26,6 +26,10 @@ namespace sop
       virtual std::array<char, sop::files::ConstEV::blockSize> getData_d() = 0;
       virtual std::vector<std::string> listDir() = 0;
       virtual void addInDir(std::string fileName, uint32_t blockAddress) = 0;
+      virtual bool getIsDirectory() = 0;
+      virtual void toggleLock() = 0;
+      virtual void writeToFile(std::string, std::vector<uint32_t>* freeSpace, std::array<Block*, sop::files::ConstEV::numOfBlocks>* drive) = 0;
+      virtual uint32_t getAddress(std::string name) = 0;
 
     protected:
 

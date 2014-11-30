@@ -20,11 +20,11 @@ namespace sop
     class File
     {
     public:
-      File(pid_t PID, uint32_t parentCatalog, uint32_t blockAddress);
+      File(pid_t PID, uint32_t parentCatalog, uint32_t blockAddress, std::array<Block*, sop::files::ConstEV::numOfBlocks>* disk);
       ~File();
 
       uint32_t getBlockAddr();
-      std::vector<std::array<char, sop::files::ConstEV::blockSize>> getData(std::array<Block*, sop::files::ConstEV::numOfBlocks>* disk);
+      std::vector<std::array<char, sop::files::ConstEV::blockSize>> getData();
       char getMode();
       std::string getFileName();
       uid_t getUID();
@@ -39,7 +39,8 @@ namespace sop
       std::vector<std::array<char, sop::files::ConstEV::blockSize>> data;
       bool isDataLoaded;
       char openMode; // Actual mode in which the file is opened (rwx)
-      void loadData(std::array<Block*, sop::files::ConstEV::numOfBlocks>* drive);
+      void loadData();
+      std::array<Block*, sop::files::ConstEV::numOfBlocks>* drive;
 
       // Attributes
       std::string fileName;
