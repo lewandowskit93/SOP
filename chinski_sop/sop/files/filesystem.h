@@ -56,14 +56,15 @@ namespace sop
       std::string getCurrentPath();
       void changeDirectory(pid_t* PID, std::string directoryName);
       void changeDirectoryUp();
-      void createDirectory(pid_t* PID, std::string newDirectoryName);
-      void removeDirectory(pid_t* PID, std::string directoryName); // remember to delete all files and return them to freeSpaceVector
+      void createDirectory(pid_t* PID, std::vector<std::string> path);
+      void removeDirectory(pid_t* PID, std::vector<std::string> path);
       //uint16_t renameDirectory(pid_t* PID, std::string directoryName, std::string newDirectoryName);
 
       // Overall
       std::vector<std::string> list();
       void printStats();
       void printDisk(uint32_t parts);
+      void printDiskTree(uint32_t depth);
 
       // Handlers
       void changeDirectoryHandler(const std::vector<const std::string> & params);

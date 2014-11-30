@@ -7,7 +7,7 @@ sop::files::File::File(pid_t PID, uint32_t parentCatalog, uint32_t blockAddress,
   blockAddress(blockAddress),
   isDataLoaded(0),
   openMode(0),
-  fileName(0),
+  fileName(""),
   UID(0),
   GID(0),
   drive(disk)

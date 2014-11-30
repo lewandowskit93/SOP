@@ -4,6 +4,7 @@
 #include ".\sop\files\data.h"
 
 #include <vector>
+#include <iostream>
 #include <string>
 #include <array>
 #include <map>
@@ -58,10 +59,6 @@ std::vector<std::string> sop::files::Inode::listDir()
     {
       output.push_back(x.first);
     }
-  }
-  else
-  {
-    output.push_back("Total: 0");
   }
   return output;
 }
@@ -158,5 +155,44 @@ void sop::files::Inode::removeFile(std::vector<uint32_t>* freeSpace, std::array<
 
 void sop::files::Inode::removeDir(std::vector<uint32_t>* freeSpace, std::array<Block*, sop::files::ConstEV::numOfBlocks>* drive)
 {
-
+  if(this->isDirectory)
+  {
+    uint32_t thisBlockNumber = 0;
+    if(this->directory.inodesInside.size() != 0)
+    {
+      std::string toster;
+      std::cout<<"The directory is not empty! Do you fancy removing all files and directories inside? (Y/n)";
+      std::cin>>toster;
+      if(toster == "Y" || toster == "y")
+      {
+        for(auto data : this->directory.inodesInside)
+        {
+          std::cout<<"Removing: "<<data.first;
+          if(drive->at(data.second)->getIsDirectory())
+          {
+            drive->at(data.second)->removeDir(freeSpace, drive);
+          }
+          else
+          {
+            drive->at(data.second)->removeFile(freeSpace, drive);
+          }
+        }
+      }
+      else
+      {
+        std::cout<<"The files are staying as well as a directory. Think what you gonna delete before hitting enter!"<<std::endl;
+      }
+    }
+    for(uint32_t i=0; i<sop::files::ConstEV::numOfBlocks; i++)
+    {
+      if(drive->at(i) == this)
+      {
+        thisBlockNumber = i;
+        break;
+      }
+    }
+    freeSpace->push_back(thisBlockNumber);
+    drive->at(thisBlockNumber) = 0;
+    delete this;
+  }
 }

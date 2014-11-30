@@ -19,6 +19,11 @@ std::vector<std::string> getPathFromParam(std::string path)
     outPath.push_back(path);
     return outPath;
   }
+  if(path.size() == 1 && path == "/")
+  {
+    outPath.push_back("");
+    return outPath;
+  }
   while((init = path.find(delimiter)) != std::string::npos)
   {
     if(init)
@@ -59,10 +64,10 @@ sop::files::Filesystem::~Filesystem()
 // Files
 sop::files::File* sop::files::Filesystem::openFile(pid_t* PID, std::vector<std::string> path, char openMode)
 {
-  File* out = this->seek(*PID, path);
-  out->setMode(openMode);
+  File* out = this->seek(0, path);
   if(out != 0)
   {
+    out->setMode(openMode);
     this->openedFilesList.push_back(out);
     return out;
   }
@@ -95,7 +100,7 @@ void sop::files::Filesystem::createFile(pid_t* PID, std::vector<std::string> pat
   if(path.size() > 1)
   {
     std::vector<std::string> tmp(path.begin(), path.end()-1);
-    returned = seek(*PID, tmp);
+    returned = seek(0, tmp);
     if(returned == 0)
     {
       std::cout<<"Directory not found! Create the directory first!"<<std::endl;
@@ -130,7 +135,7 @@ void sop::files::Filesystem::closeFile(File* fileHandler)
 
 void sop::files::Filesystem::removeFile(pid_t* PID, std::vector<std::string> path)
 {
-  sop::files::File* fh = seek(*PID, path);
+  sop::files::File* fh = seek(0, path);
   fh->removeFile(&this->freeSpace);
 }
 
@@ -156,7 +161,7 @@ sop::files::File* sop::files::Filesystem::seek(pid_t PID, std::vector<std::strin
   std::vector<uint32_t> blockPath;
   uint32_t currentDir = 0;
   std::string filename = path[0];
-  if((path.size() > 1 && path[0] == "/") || !this->currentDir.blockRoute.size())
+  if((path.size() > 1 && path[0] == "/"))
   {
     blockPath.push_back(0);
     std::cout<<"TEST: Discovered root tree"<<std::endl;
@@ -164,7 +169,10 @@ sop::files::File* sop::files::Filesystem::seek(pid_t PID, std::vector<std::strin
   }
   else
   {
-    currentDir = this->currentDir.blockRoute.back();
+    if(this->currentDir.blockRoute.size())
+    {
+      currentDir = this->currentDir.blockRoute.back();
+    }
   }
   while(path.size() > 1)
   {
@@ -232,16 +240,83 @@ void sop::files::Filesystem::changeDirectoryUp()
   this->printDisk(16);
 }
 
-void sop::files::Filesystem::createDirectory(pid_t* PID, std::string newDirectoryName)
+void sop::files::Filesystem::createDirectory(pid_t* PID, std::vector<std::string> path)
 {
-  
+  uint32_t iterator = 0;
+  File* returned = seek(0, path);
+  if(returned != 0)
+  {
+    std::cout<<path.at(path.size()-1)<<" already exist!"<<std::endl;
+    return;
+  }
+  if(path.size() > 1)
+  {
+    std::vector<std::string> tmp(path.begin(), path.end()-1);
+    returned = seek(0, tmp);
+    if(returned == 0)
+    {
+      std::cout<<"Directory not found! Create the directory first!"<<std::endl;
+      return;
+    }
+    iterator = returned->getBlockAddr();
+  }
+  uid_t uid = this->dataBlocks[iterator]->getUID();
+  gid_t gid = this->dataBlocks[iterator]->getGID();
+  bool writePermission = 1; // sop::user::ask for write permission
+  if(writePermission)
+  {
+    uint32_t reserveAddress = this->freeSpace.at(0);
+    this->freeSpace.erase(this->freeSpace.begin());
+    this->dataBlocks[reserveAddress] = new Inode(true, uid, gid);
+    this->dataBlocks[iterator]->addInDir(path.at(path.size()-1), reserveAddress);
+  }
+  else
+  {
+    std::cout<<"mkdir: cannot create "<<path.at(path.size()-1)<<std::endl;
+    return;
+  }
+  std::cout<<"mkdir: "<<path.at(path.size()-1)<<" has been created!"<<std::endl;
 }
 
-void sop::files::Filesystem::removeDirectory(pid_t* PID, std::string directoryName)
+void sop::files::Filesystem::removeDirectory(pid_t* PID, std::vector<std::string> path)
 {
-  
+  uint32_t iterator = 0;
+  File* returned = seek(0, path);
+  if(returned == 0)
+  {
+    std::cout<<path.at(path.size()-1)<<" doesn't exist!"<<std::endl;
+    return;
+  }
+  if(path.size() > 1)
+  {
+    returned = seek(0, path);
+    if(returned == 0)
+    {
+      std::cout<<"Directory not found!"<<std::endl;
+      return;
+    }
+    iterator = returned->getBlockAddr();
+  }
+  bool writePermission = 1; // sop::user::ask for write permission
+  if(writePermission)
+  {
+    if(this->dataBlocks[iterator]->getIsDirectory())
+    {
+      iterator = this->dataBlocks[iterator]->getAddress(path.at(path.size()-1)); //TEST remove inside directories
+      this->dataBlocks[iterator]->removeDir(&this->freeSpace, &this->dataBlocks);
+    }
+    else
+    {
+      std::cout<<"Not a directory!"<<std::endl;
+    }
+  }
+  else
+  {
+    std::cout<<"rmdir: cannot remove "<<path.at(path.size()-1)<<"! No permission!"<<std::endl;
+    return;
+  }
+  std::cout<<"rmdir: "<<path.at(path.size()-1)<<" has been removed!"<<std::endl;
 }
-// remember to delete all files and return them to freeSpaceVector
 
 /*
   Overall
@@ -286,13 +361,17 @@ void sop::files::Filesystem::changeDirectoryHandler(const std::vector<const std:
   }
 }
 
+// WRITE
 void sop::files::Filesystem::moveHandler(const std::vector<const std::string> & params)
 {
 }
 
+// REWRITE!!!
 void sop::files::Filesystem::removeFileHandler(const std::vector<const std::string> & params)
 {
-  for(auto data : params)
+  auto param = params;
+  param.erase(param.begin());
+  for(auto data : param)
   {
     auto path = getPathFromParam(data);
     this->removeFile(0, path); //TEST get current pid
@@ -310,7 +389,7 @@ void sop::files::Filesystem::createFileHandler(const std::vector<const std::stri
   param.erase(param.begin());
   if(!param.size())
   {
-    std::cout<<"Touch - creates a file"<<std::endl;
+    std::cout<<"touch - creates a file"<<std::endl;
   }
   for(auto data : param)
   {
@@ -323,17 +402,35 @@ void sop::files::Filesystem::createFileHandler(const std::vector<const std::stri
 
 void sop::files::Filesystem::createDirectoryHandler(const std::vector<const std::string> & params)
 {
-  if(params.size() > 1)
+  auto param(params);
+  param.erase(param.begin());
+  if(!param.size())
   {
-    auto x = getPathFromParam(params[1]);
+    std::cout<<"mkdir - makes a directory"<<std::endl;
+  }
+  for(auto data : param)
+  {
+    auto path = getPathFromParam(data);
+    this->createDirectory(0, path);
+    this->printStats();
+    this->printDisk(16);
   }
 }
 
 void sop::files::Filesystem::removeDirectoryHandler(const std::vector<const std::string> & params)
 {
-  if(params.size() > 1)
+  auto param(params);
+  param.erase(param.begin());
+  if(!param.size())
   {
-    auto x = getPathFromParam(params[1]);
+    std::cout<<"rmdir - removes a directory"<<std::endl;
+  }
+  for(auto data : param)
+  {
+    auto path = getPathFromParam(data);
+    this->removeDirectory(0, path);
+    this->printStats();
+    this->printDisk(16);
   }
 }
 
@@ -361,7 +458,7 @@ void sop::files::Filesystem::catHandler(const std::vector<const std::string> & p
 void sop::files::Filesystem::listHandler(const std::vector<const std::string> & params)
 {
   std::vector<std::string> x = this->list();
-  if(x[0] != "Total: 0")
+  if(x.size())
   {
     std::cout<<"<rwx>\t<user>\t<size>\t<filename>"<<std::endl;
     for(auto data : x)
@@ -371,7 +468,7 @@ void sop::files::Filesystem::listHandler(const std::vector<const std::string> & 
   }
   else
   {
-    std::cout<<x[0]<<std::endl;
+    std::cout<<"Total: 0"<<std::endl;
   }
   this->printStats();
   this->printDisk(16);
@@ -419,6 +516,12 @@ void sop::files::Filesystem::printDisk(uint32_t parts)
     std::cout<<"-";
   }
   std::cout<<std::endl;
+}
+
+void sop::files::Filesystem::printDiskTree(uint32_t depth)
+{
+  std::cout<<"Loading DiskTree"<<std::endl;
+  std::cout<<"DiskTree: Not yet implemented"<<std::endl;
 }
 
 // REWRITE!!!
