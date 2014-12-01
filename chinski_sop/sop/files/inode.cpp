@@ -78,8 +78,7 @@ bool sop::files::Inode::getIsDirectory()
 
 void sop::files::Inode::toggleLock()
 {
-  int32_t tmp = this->lock;
-  this->lock = static_cast<bool>((tmp+1)%2);
+  this->lock = !this->lock;
 }
 
 void sop::files::Inode::writeToFile(std::string input, std::vector<uint32_t>* freeSpace, std::array<Block*, sop::files::ConstEV::numOfBlocks>* drive)

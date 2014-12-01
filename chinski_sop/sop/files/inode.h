@@ -42,9 +42,10 @@ namespace sop
       uid_t getUID();
       gid_t getGID();
       std::vector<std::array<char, sop::files::ConstEV::blockSize>> getData_i(std::array<Block*, sop::files::ConstEV::numOfBlocks>* disk);
-      std::array<char, sop::files::ConstEV::blockSize> getData_d(){ throw -1; }
+      std::array<char, sop::files::ConstEV::blockSize> getData_d(){ return *new std::array<char,sop::files::ConstEV::blockSize>; }
       std::vector<std::string> listDir();
       void addInDir(std::string fileName, uint32_t blockAddress);
+      void removeFromDir(std::string fileName);
       bool getIsDirectory();
       void toggleLock();
       void writeToFile(std::string, std::vector<uint32_t>* freeSpace, std::array<Block*, sop::files::ConstEV::numOfBlocks>* drive);

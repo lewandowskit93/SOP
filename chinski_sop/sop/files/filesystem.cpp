@@ -304,6 +304,7 @@ void sop::files::Filesystem::removeDirectory(pid_t* PID, std::vector<std::string
     {
       iterator = this->dataBlocks[iterator]->getAddress(path.at(path.size()-1)); //TEST remove inside directories
       this->dataBlocks[iterator]->removeDir(&this->freeSpace, &this->dataBlocks);
+
     }
     else
     {
