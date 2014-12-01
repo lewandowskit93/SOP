@@ -45,9 +45,10 @@ sop::files::Filesystem::Filesystem()
 {
   for(uint32_t i=1; i < sop::files::ConstEV::numOfBlocks; i++)
   {
-    this->freeSpace.insert(this->freeSpace.end(),i);
+    this->freeSpace.push_back(i);
     this->dataBlocks[i] = 0;
   }
+  std::sort(this->freeSpace.begin(), this->freeSpace.end());
   this->dataBlocks[0] = new sop::files::Inode(true, 0,0);
   this->printStats();
   this->printDisk(16);
@@ -136,7 +137,18 @@ void sop::files::Filesystem::closeFile(File* fileHandler)
 void sop::files::Filesystem::removeFile(pid_t* PID, std::vector<std::string> path)
 {
   sop::files::File* fh = seek(0, path);
+  std::vector<std::string> tmp(path);
+  tmp.pop_back();  
   fh->removeFile(&this->freeSpace);
+  if(tmp.size())
+  {
+    fh = seek(0, tmp);
+    this->dataBlocks[fh->getBlockAddr()]->removeFromDir(path.back());
+  }
+  else
+  {
+    this->dataBlocks[0]->removeFromDir(path.back());
+  }
 }
 
 void sop::files::Filesystem::moveFile(pid_t* PID, std::string fileName, std::string newDirectory)
@@ -158,6 +170,10 @@ void sop::files::Filesystem::writeToFile(File* fileHandler, std::string data)
 
 sop::files::File* sop::files::Filesystem::seek(pid_t PID, std::vector<std::string> path)
 {
+  if(!path.size())
+  {
+    return 0;
+  }
   std::vector<uint32_t> blockPath;
   uint32_t currentDir = 0;
   std::string filename = path[0];
@@ -224,7 +240,7 @@ std::string sop::files::Filesystem::getCurrentPath()
   return output;
 }
 
-void sop::files::Filesystem::changeDirectory(pid_t* PID, std::string directoryName)
+void sop::files::Filesystem::changeDirectory(pid_t* PID, std::vector<std::string> path)
 {
   
 }
@@ -302,9 +318,10 @@ void sop::files::Filesystem::removeDirectory(pid_t* PID, std::vector<std::string
   {
     if(this->dataBlocks[iterator]->getIsDirectory())
     {
-      iterator = this->dataBlocks[iterator]->getAddress(path.at(path.size()-1)); //TEST remove inside directories
+      uint32_t tmp = iterator;
+      iterator = this->dataBlocks[iterator]->getAddress(path.at(path.size()-1));
       this->dataBlocks[iterator]->removeDir(&this->freeSpace, &this->dataBlocks);
-
+      this->dataBlocks[tmp]->removeFromDir(path.at(path.size()-1));
     }
     else
     {
@@ -337,28 +354,20 @@ std::vector<std::string> sop::files::Filesystem::list()
 */
 void sop::files::Filesystem::changeDirectoryHandler(const std::vector<const std::string> & params)
 {
-  if(params.size()>1)
+  if(params.size() == 1)
   {
-    std::cout<<"cd handler test data: "<<params.at(1)<<std::endl;
     if(params.at(1) == "..")
     {
       this->changeDirectoryUp();
     }
     else
     {
-      //ask for pid (shell/user)
-      sop::files::pid_t PID = 0;
-      try
-      {
-        //sop::files::File* directory = this->seekForDirectory(&PID, params.at(1), &this->dataBlocks);
-        //this->currentDir.blockRoute.push_back(directory->getBlockAddr());
-        this->currentDir.path.push_back(params.at(1));
-      }
-      catch(...) // error not found create!!!
-      {
-        std::cout<<"Directory not found"<<std::endl;
-      }
+      this->changeDirectory(new pid_t(0), getPathFromParam(params[1])); 
     }
+  }
+  else
+  {
+    std::cout<<"cd - changes directory to another"<<std::endl;
   }
 }
 

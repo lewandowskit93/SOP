@@ -26,7 +26,7 @@ namespace sop
       void setData(std::array<char, sop::files::ConstEV::blockSize> data);
       std::vector<std::string> listDir(){ return *new std::vector<std::string>;}
       void addInDir(std::string fileName, uint32_t blockAddress){}
-      void removeFromDir(std::string fileName){};
+      void removeFromDir(std::string fileName){}
       bool getIsDirectory(){ return 0; }
       void toggleLock(){}
       void writeToFile(std::string, std::vector<uint32_t>* freeSpace, std::array<Block*, sop::files::ConstEV::numOfBlocks>* drive){}

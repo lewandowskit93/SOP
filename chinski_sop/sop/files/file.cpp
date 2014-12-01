@@ -1,5 +1,6 @@
 #include ".\sop\files\file.h"
 #include ".\sop\files\filesystem.h"
+#include <algorithm>
 
 sop::files::File::File(pid_t PID, uint32_t parentCatalog, uint32_t blockAddress, std::array<sop::files::Block*, sop::files::ConstEV::numOfBlocks>* disk) : 
   PIDHolder(PID),
@@ -71,6 +72,7 @@ void sop::files::File::removeFile(std::vector<uint32_t>* freeSpace)
   this->drive->at(this->blockAddress)->removeFile(freeSpace, this->drive);
   this->drive->at(this->blockAddress) = 0;
   freeSpace->push_back(this->blockAddress);
+  std::sort(freeSpace->begin(), freeSpace->end());
 }
 
 void sop::files::File::setMode(char mode)

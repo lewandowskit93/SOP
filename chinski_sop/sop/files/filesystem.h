@@ -54,7 +54,7 @@ namespace sop
       // Directories
       std::string getCurrentDir();
       std::string getCurrentPath();
-      void changeDirectory(pid_t* PID, std::string directoryName);
+      void changeDirectory(pid_t* PID, std::vector<std::string> path);
       void changeDirectoryUp();
       void createDirectory(pid_t* PID, std::vector<std::string> path);
       void removeDirectory(pid_t* PID, std::vector<std::string> path);
