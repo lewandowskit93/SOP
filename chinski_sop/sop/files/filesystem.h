@@ -79,6 +79,7 @@ namespace sop
       void listHandler(const std::vector<const std::string> & params);
       void echoHandler(const std::vector<const std::string> & params);
       void statHandler(const std::vector<const std::string> & params);
+      void test(const std::vector<const std::string> & params);
     protected:
 
     private:

@@ -637,3 +637,13 @@ void sop::files::Filesystem::echoHandler(const std::vector<const std::string> & 
   }
 }
 */
+
+void sop::files::Filesystem::test(const std::vector<const std::string> & params)
+{
+  std::vector<std::string> fileName;
+  fileName.push_back("abc");
+  this->createFile(new pid_t(0), fileName);
+
+  sop::files::File* fh = this->openFile(new pid_t(0), fileName, 'r');
+  this->closeFile(fh);
+}
