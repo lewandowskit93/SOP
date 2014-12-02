@@ -33,4 +33,5 @@ void sop::files::Module::initialize()
   shell->registerCommand("ll",&Filesystem::listHandler,this->fsxxxx);
   //shell->registerCommand("find",&Filesystem::seekHandler,this->fsxxxx);
   shell->registerCommand("echo",&Filesystem::echoHandler,this->fsxxxx);
+  shell->registerCommand("stat",&Filesystem::statHandler,this->fsxxxx);
 }

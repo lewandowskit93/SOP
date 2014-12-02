@@ -52,8 +52,6 @@ sop::files::Filesystem::Filesystem()
   }
   std::sort(this->freeSpace.begin(), this->freeSpace.end());
   this->dataBlocks[0] = new sop::files::Inode(true, 0,0);
-  this->printStats();
-  this->printDisk(16);
 }
 
 sop::files::Filesystem::Filesystem(std::string diskFileName)
@@ -99,6 +97,10 @@ void sop::files::Filesystem::createFile(pid_t* PID, std::vector<std::string> pat
   {
     std::cout<<path.at(path.size()-1)<<" already exist!"<<std::endl;
     return;
+  }
+  if(this->currentDir.blockRoute.size())
+  {
+    iterator = this->currentDir.blockRoute.back();
   }
   if(path.size() > 1)
   {
@@ -308,11 +310,9 @@ void sop::files::Filesystem::changeDirectoryUp()
     this->currentDir.blockRoute.pop_back();
     this->currentDir.path.pop_back();
   }
-  this->printStats();
-  this->printDisk(16);
 }
 
-void sop::files::Filesystem::createDirectory(pid_t* PID, std::vector<std::string> path)
+void sop::files::Filesystem::createDirectory(pid_t* PID, std::vector<std::string> path) // use temporary current Directory structure
 {
   uint32_t iterator = 0;
   File* returned = seek(0, path);
@@ -470,8 +470,6 @@ void sop::files::Filesystem::createFileHandler(const std::vector<const std::stri
   {
     auto path = getPathFromParam(data);
     this->createFile(0, path); // TEST check the pid of actually logged user
-    this->printStats();
-    this->printDisk(16);
   }
 }
 
@@ -488,8 +486,6 @@ void sop::files::Filesystem::createDirectoryHandler(const std::vector<const std:
     std::cout<<data<<std::endl;
     auto path = getPathFromParam(data);
     this->createDirectory(0, path);
-    this->printStats();
-    this->printDisk(16);
   }
 }
 
@@ -505,8 +501,6 @@ void sop::files::Filesystem::removeDirectoryHandler(const std::vector<const std:
   {
     auto path = getPathFromParam(data);
     this->removeDirectory(0, path);
-    this->printStats();
-    this->printDisk(16);
   }
 }
 
@@ -546,8 +540,6 @@ void sop::files::Filesystem::listHandler(const std::vector<const std::string> & 
   {
     std::cout<<"Total: 0"<<std::endl;
   }
-  this->printStats();
-  this->printDisk(16);
 }
 
 void sop::files::Filesystem::printStats()
@@ -598,6 +590,12 @@ void sop::files::Filesystem::printDiskTree(uint32_t depth)
 {
   std::cout<<"Loading DiskTree"<<std::endl;
   std::cout<<"DiskTree: Not yet implemented"<<std::endl;
+}
+
+void sop::files::Filesystem::statHandler(const std::vector<const std::string> & params)
+{
+  this->printStats();
+  this->printDisk(16);
 }
 
 // REWRITE!!!
