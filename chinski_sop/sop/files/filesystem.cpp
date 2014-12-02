@@ -242,15 +242,65 @@ std::string sop::files::Filesystem::getCurrentPath()
 
 void sop::files::Filesystem::changeDirectory(pid_t* PID, std::vector<std::string> path)
 {
-  
+  if(path.size() == 1)
+  {
+    if(path[0] == "/")
+    {
+      this->currentDir.blockRoute.clear();
+      this->currentDir.path.clear();
+    }
+    else
+    {
+      uint32_t temporary = this->dataBlocks[0]->getAddress(path[0]);
+      if(this->currentDir.blockRoute.size())
+      {
+        temporary = this->dataBlocks[this->currentDir.blockRoute.back()]->getAddress(path[0]);
+      }
+      if(this->dataBlocks[temporary]->getIsDirectory())
+      {
+        this->currentDir.blockRoute.push_back(temporary);
+        this->currentDir.path.push_back(path[0]);
+      }
+      else
+      {
+        std::cout<<"Not a directory!"<<std::endl;
+      }
+    }
+  }
+  else
+  {
+    uint32_t iter = 0;
+    if(path[0] == "/")
+    {
+      this->currentDir.blockRoute.clear();
+      this->currentDir.path.clear();
+      iter = 1;
+    }
+    sop::files::File* fh;
+    for(uint32_t i = iter; i<path.size()-1; i++)
+    {
+      std::vector<std::string> tmp(path.begin(), path.begin()+i);
+      fh = seek(0, tmp);
+      if(fh)
+      {
+        this->currentDir.blockRoute.push_back(fh->getBlockAddr());
+        this->currentDir.path.push_back(path[i]);
+      }
+      else
+      {
+        std::cout<<"Directory not found!"<<std::endl;
+        break;
+      }
+    }
+  }
 }
 
 void sop::files::Filesystem::changeDirectoryUp()
 {
   if(this->currentDir.blockRoute.size() > 0)
   {
-    this->currentDir.blockRoute.erase(this->currentDir.blockRoute.end());
-    this->currentDir.path.erase(this->currentDir.path.end());
+    this->currentDir.blockRoute.pop_back();
+    this->currentDir.path.pop_back();
   }
   this->printStats();
   this->printDisk(16);
@@ -354,7 +404,7 @@ std::vector<std::string> sop::files::Filesystem::list()
 */
 void sop::files::Filesystem::changeDirectoryHandler(const std::vector<const std::string> & params)
 {
-  if(params.size() == 1)
+  if(params.size() > 1)
   {
     if(params.at(1) == "..")
     {
@@ -376,7 +426,6 @@ void sop::files::Filesystem::moveHandler(const std::vector<const std::string> & 
 {
 }
 
-// REWRITE!!!
 void sop::files::Filesystem::removeFileHandler(const std::vector<const std::string> & params)
 {
   auto param = params;
