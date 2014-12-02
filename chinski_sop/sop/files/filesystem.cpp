@@ -24,7 +24,8 @@ std::vector<std::string> getPathFromParam(std::string path)
     outPath.push_back("");
     return outPath;
   }
-  while((init = path.find(delimiter)) != std::string::npos)
+  init = path.find(delimiter);
+  do
   {
     if(init)
     {
@@ -36,8 +37,9 @@ std::vector<std::string> getPathFromParam(std::string path)
     {
       outPath.push_back("/");
       std::cout<<"/"<<std::endl;
+      path.erase(0, init+delimiter.length());
     }
-  }
+  }while((init = path.find(delimiter)) != std::string::npos);
   return outPath;
 }
 
@@ -117,8 +119,8 @@ void sop::files::Filesystem::createFile(pid_t* PID, std::vector<std::string> pat
   {
     uint32_t reserveAddress = this->freeSpace.at(0);
     this->freeSpace.erase(this->freeSpace.begin());
-    this->dataBlocks[reserveAddress] = new Inode(false, uid, gid);
     this->dataBlocks[iterator]->addInDir(path.at(path.size()-1), reserveAddress);
+    this->dataBlocks[reserveAddress] = new Inode(false, uid, gid);
   }
   else
   {
@@ -177,7 +179,11 @@ sop::files::File* sop::files::Filesystem::seek(pid_t PID, std::vector<std::strin
   std::vector<uint32_t> blockPath;
   uint32_t currentDir = 0;
   std::string filename = path[0];
-  if((path.size() > 1 && path[0] == "/"))
+  if(path.size() == 1 && path[0] == "/")
+  {
+    return new sop::files::File(PID, currentDir, currentDir, &this->dataBlocks);
+  }
+  if(path.size() > 1 && path[0] == "/")
   {
     blockPath.push_back(0);
     std::cout<<"TEST: Discovered root tree"<<std::endl;
@@ -310,14 +316,18 @@ void sop::files::Filesystem::createDirectory(pid_t* PID, std::vector<std::string
 {
   uint32_t iterator = 0;
   File* returned = seek(0, path);
-  if(returned != 0)
+  if(returned != 0 && returned->getBlockAddr())
   {
     std::cout<<path.at(path.size()-1)<<" already exist!"<<std::endl;
     return;
   }
+  if(this->currentDir.blockRoute.size())
+  {
+    iterator = this->currentDir.blockRoute.back();
+  }
   if(path.size() > 1)
   {
-    std::vector<std::string> tmp(path.begin(), path.end()-1);
+    std::vector<std::string> tmp(&path[0], &path[path.size()-2]);
     returned = seek(0, tmp);
     if(returned == 0)
     {
@@ -333,8 +343,8 @@ void sop::files::Filesystem::createDirectory(pid_t* PID, std::vector<std::string
   {
     uint32_t reserveAddress = this->freeSpace.at(0);
     this->freeSpace.erase(this->freeSpace.begin());
-    this->dataBlocks[reserveAddress] = new Inode(true, uid, gid);
     this->dataBlocks[iterator]->addInDir(path.at(path.size()-1), reserveAddress);
+    this->dataBlocks[reserveAddress] = new Inode(true, uid, gid);
   }
   else
   {
@@ -410,6 +420,12 @@ void sop::files::Filesystem::changeDirectoryHandler(const std::vector<const std:
     {
       this->changeDirectoryUp();
     }
+    else if(params.at(1) == "/")
+    {
+      std::vector<std::string> root;
+      root.push_back("/");
+      this->changeDirectory(new pid_t(0),root); 
+    }
     else
     {
       this->changeDirectory(new pid_t(0), getPathFromParam(params[1])); 
@@ -467,8 +483,9 @@ void sop::files::Filesystem::createDirectoryHandler(const std::vector<const std:
   {
     std::cout<<"mkdir - makes a directory"<<std::endl;
   }
-  for(auto data : param)
+  for(std::string data : param)
   {
+    std::cout<<data<<std::endl;
     auto path = getPathFromParam(data);
     this->createDirectory(0, path);
     this->printStats();

@@ -78,6 +78,7 @@ namespace sop
       void catHandler(const std::vector<const std::string> & params);
       void listHandler(const std::vector<const std::string> & params);
       void echoHandler(const std::vector<const std::string> & params);
+      void statHandler(const std::vector<const std::string> & params);
     protected:
 
     private:
