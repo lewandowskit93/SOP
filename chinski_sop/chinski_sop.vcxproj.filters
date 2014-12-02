@@ -97,6 +97,12 @@
     <Filter Include="Source Files\sop\users\exceptions">
       <UniqueIdentifier>{c3c56568-69fd-4644-a6d4-f006e95f114e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\sop\files\serialization">
+      <UniqueIdentifier>{a31e82cb-1545-4695-af3b-02914c6111e1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\sop\files\serialization">
+      <UniqueIdentifier>{02acdbf4-7414-4f16-a306-a37c3609f72a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="sop\system\module.h">
@@ -177,6 +183,18 @@
     <ClInclude Include="sop\files\constev.h">
       <Filter>Header Files\sop\files</Filter>
     </ClInclude>
+    <ClInclude Include="sop\files\serialize.h">
+      <Filter>Header Files\sop\files\serialization</Filter>
+    </ClInclude>
+    <ClInclude Include="sop\files\filesystem_s.h">
+      <Filter>Header Files\sop\files\serialization</Filter>
+    </ClInclude>
+    <ClInclude Include="sop\files\data_s.h">
+      <Filter>Header Files\sop\files\serialization</Filter>
+    </ClInclude>
+    <ClInclude Include="sop\files\inode_s.h">
+      <Filter>Header Files\sop\files\serialization</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="sop\system\shell.cpp">
@@ -256,6 +274,18 @@
     </ClCompile>
     <ClCompile Include="sop\files\block.cpp">
       <Filter>Source Files\sop\files</Filter>
+    </ClCompile>
+    <ClCompile Include="sop\files\filesystem_s.cpp">
+      <Filter>Source Files\sop\files\serialization</Filter>
+    </ClCompile>
+    <ClCompile Include="sop\files\serialize.cpp">
+      <Filter>Source Files\sop\files\serialization</Filter>
+    </ClCompile>
+    <ClCompile Include="sop\files\data_s.cpp">
+      <Filter>Source Files\sop\files\serialization</Filter>
+    </ClCompile>
+    <ClCompile Include="sop\files\inode_s.cpp">
+      <Filter>Source Files\sop\files\serialization</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
