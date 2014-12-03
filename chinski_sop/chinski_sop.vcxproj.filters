@@ -224,5 +224,14 @@
     <ClCompile Include="sop\initializable.cpp">
       <Filter>Source Files\sop</Filter>
     </ClCompile>
+    <ClCompile Include="logical_memory.cpp">
+      <Filter>Source Files\sop\memory</Filter>
+    </ClCompile>
+    <ClCompile Include="physical_memory.cpp">
+      <Filter>Source Files\sop\memory</Filter>
+    </ClCompile>
+    <ClCompile Include="storage.cpp">
+      <Filter>Source Files\sop\memory</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
