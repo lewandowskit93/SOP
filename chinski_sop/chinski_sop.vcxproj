@@ -45,6 +45,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="sop\processes\exceptions\module_exception.cpp" />
     <ClCompile Include="sop\processes\module.cpp" />
+    <ClCompile Include="sop\processes\class_process.cpp" />
     <ClCompile Include="sop\processor\exceptions\module_exception.cpp" />
     <ClCompile Include="sop\processor\module.cpp" />
     <ClCompile Include="sop\system\exceptions\module_exceptions.cpp" />
