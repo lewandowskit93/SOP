@@ -3,20 +3,30 @@
 
 #include <iostream>
 #include <string>
+#include <vector>
+#include <boost/shared_ptr.hpp>
+#include "sop/files/data.h"
+#include "sop/files/block.h"
 
 namespace sop
 {
   namespace files
   {
-    namespace serialization
+    class Data;
+    class Data_s
     {
-      class Data_s
-      {
-      public:
-      protected:
-      private:
-      };
-    }
+    public:
+      Data_s(Data* ptr);
+      ~Data_s();
+      
+      sop::files::Block* readData(std::vector<char>);
+      std::vector<char> writeData();
+
+    protected:
+
+    private:
+      boost::shared_ptr<Data> data_p;
+    };
   }
 }
 

@@ -9,6 +9,7 @@
 #include <map>
 #include "file.h"
 #include "block.h"
+#include "filesystem_s.h"
 
 namespace sop
 {
@@ -80,6 +81,7 @@ namespace sop
       void echoHandler(const std::vector<const std::string> & params);
       void statHandler(const std::vector<const std::string> & params);
       void test(const std::vector<const std::string> & params);
+    
     protected:
 
     private:
@@ -87,6 +89,8 @@ namespace sop
       std::list<File*> openedFilesList;
       std::vector<uint32_t> freeSpace;
       std::array<Block*, sop::files::ConstEV::numOfBlocks> dataBlocks;
+
+      friend class Filesystem_s;
     };
   }
 }

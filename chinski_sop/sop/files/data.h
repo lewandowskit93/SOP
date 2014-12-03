@@ -5,6 +5,7 @@
 #include <array>
 #include <vector>
 #include "block.h"
+#include "data_s.h"
 
 namespace sop
 {
@@ -38,6 +39,8 @@ namespace sop
 
     private:
       std::array<char, sop::files::ConstEV::blockSize> containter;
+
+      friend class Data_s;
     };
   }
 }

@@ -645,5 +645,8 @@ void sop::files::Filesystem::test(const std::vector<const std::string> & params)
   this->createFile(new pid_t(0), fileName);
 
   sop::files::File* fh = this->openFile(new pid_t(0), fileName, 'r');
+  std::string temp;
+  std::cin>>temp;
+  fh->writeToFile(temp, &this->freeSpace);
   this->closeFile(fh);
 }

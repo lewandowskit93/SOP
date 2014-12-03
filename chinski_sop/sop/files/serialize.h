@@ -3,20 +3,28 @@
 
 #include <iostream>
 #include <string>
+#include <boost/shared_ptr.hpp>
+#include "sop/files/filesystem.h"
+#include "sop/files/filesystem_s.h"
 
 namespace sop
 {
   namespace files
   {
-    namespace serialization
+    class Serialize
     {
-      class Serialize
-      {
-      public:
-      protected:
-      private:
-      };
-    }
+    public:
+      Serialize(Filesystem* fsPtr, std::string filename);
+      ~Serialize();
+
+      void save();
+      void read();
+    protected:
+    private:
+      boost::shared_ptr<Filesystem> filesystem_p;
+      boost::shared_ptr<Filesystem_s> fsSerialize_p;
+      std::string filename;
+    };
   }
 }
 

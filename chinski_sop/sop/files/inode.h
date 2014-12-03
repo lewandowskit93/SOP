@@ -8,6 +8,7 @@
 #include <map>
 #include "block.h"
 #include "constev.h"
+#include "inode_s.h"
 
 namespace sop
 {
@@ -28,6 +29,7 @@ namespace sop
     {
       std::array<uint32_t, sop::files::ConstEV::directAddrBlock> directBlockAddr;
       std::vector<uint32_t> indirectBlockAddr;
+      uint32_t size; // WRITE DYNAMIC SIZE
     };
 
     /*
@@ -62,6 +64,8 @@ namespace sop
       dir_u directory;
       file_u file;
       bool lock;
+
+      friend class Inode_s;
     };
   }
 }

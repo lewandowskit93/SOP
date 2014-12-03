@@ -3,21 +3,34 @@
 
 #include <iostream>
 #include <string>
+#include <boost/shared_ptr.hpp>
+#include "sop/files/filesystem.h"
+#include "sop/files/inode_s.h"
+#include "sop/files/data_s.h"
 
 namespace sop
 {
   namespace files
   {
-    namespace serialization
+    class Filesystem_s
     {
-      class Filesystem_s
-      {
-      public:
-      protected:
-      private:
-      };
-    }
+    public:
+      Filesystem_s(Filesystem* fpPtr);
+      ~Filesystem_s();
+
+      void readData();
+      void writeData();
+
+    protected:
+
+    private:
+      boost::shared_ptr<Filesystem> filesystem_p;
+        
+      void readFreeSpace();
+      void writeFreeSpace();
+      void readDataBlocks();
+      void writeDataBlocks();
+    };
   }
 }
-
 #endif
