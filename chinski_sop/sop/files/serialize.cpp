@@ -3,9 +3,10 @@
 #include <iostream>
 #include <string>
 
-sop::files::Serialize::Serialize(Filesystem* fsPtr, std::string filename) :
+sop::files::Serialize::Serialize(Filesystem* fsPtr, std::string filename, sop::logger::Logger* logger) :
   filename(filename),
-  filesystem_p(fsPtr)
+  filesystem_p(fsPtr),
+  logger(logger)
 {
 }
 

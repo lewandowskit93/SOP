@@ -7,6 +7,7 @@
 #include <vector>
 #include <map>
 #include "sop/files/inode.h"
+#include "sop/logger/logger.h"
 
 namespace sop
 {
@@ -16,7 +17,7 @@ namespace sop
     class Inode_s
     {
     public:
-      Inode_s(Inode* ptr);
+      Inode_s(Inode* ptr, sop::logger::Logger* logger);
       ~Inode_s();
 
       void readBlock(std::string);
@@ -29,6 +30,7 @@ namespace sop
       bool isDirectory;
       uint32_t uid;
       uint32_t gid;
+      sop::logger::Logger* logger;
 
       // File
       std::array<uint32_t, sop::files::ConstEV::directAddrBlock> directBl;

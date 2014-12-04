@@ -6,6 +6,7 @@
 #include <boost/shared_ptr.hpp>
 #include "sop/files/filesystem.h"
 #include "sop/files/filesystem_s.h"
+#include "sop/logger/logger.h"
 
 namespace sop
 {
@@ -14,7 +15,7 @@ namespace sop
     class Serialize
     {
     public:
-      Serialize(Filesystem* fsPtr, std::string filename);
+      Serialize(Filesystem* fsPtr, std::string filename, sop::logger::Logger* logger);
       ~Serialize();
 
       void save();
@@ -24,6 +25,7 @@ namespace sop
       boost::shared_ptr<Filesystem> filesystem_p;
       boost::shared_ptr<Filesystem_s> fsSerialize_p;
       std::string filename;
+      sop::logger::Logger* logger;
     };
   }
 }

@@ -7,6 +7,7 @@
 #include <boost/shared_ptr.hpp>
 #include "sop/files/data.h"
 #include "sop/files/block.h"
+#include "sop/logger/logger.h"
 
 namespace sop
 {
@@ -16,7 +17,7 @@ namespace sop
     class Data_s
     {
     public:
-      Data_s(Data* ptr);
+      Data_s(Data* ptr, sop::logger::Logger* logger);
       ~Data_s();
       
       sop::files::Block* readData(std::vector<char>);
@@ -26,6 +27,7 @@ namespace sop
 
     private:
       boost::shared_ptr<Data> data_p;
+      sop::logger::Logger* logger;
     };
   }
 }

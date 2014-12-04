@@ -22,9 +22,11 @@ indirect=123,123,123,123,123
 size=4
 */
 
-sop::files::Inode_s::Inode_s(Inode* ptr) :
-  inode_p(ptr)
+sop::files::Inode_s::Inode_s(Inode* ptr, sop::logger::Logger* logger) :
+  inode_p(ptr),
+  logger(logger)
 {
+  this->logger->logFiles(3, "Inode serialization member");
 }
 
 sop::files::Inode_s::~Inode_s()
@@ -33,6 +35,7 @@ sop::files::Inode_s::~Inode_s()
 
 void sop::files::Inode_s::readDirectory(std::vector<std::string> partedData)
 {
+  this->logger->logFiles(3, "Reading directory");
   if(partedData.size() > 3)
   {
     for(uint32_t t=3; t<partedData.size(); t++)
@@ -44,6 +47,7 @@ void sop::files::Inode_s::readDirectory(std::vector<std::string> partedData)
 
 std::string sop::files::Inode_s::writeDirectory()
 {
+  this->logger->logFiles(3, "Writing directory");
   std::string output = "";
   for(auto data : this->dirMap)
   {
@@ -58,6 +62,7 @@ std::string sop::files::Inode_s::writeDirectory()
 
 void sop::files::Inode_s::readFile(std::vector<std::string> partedData)
 {
+  this->logger->logFiles(3, "Reading file");
   uint32_t iterator = 0;
   if(partedData.size() > 3)
   {
@@ -84,6 +89,7 @@ void sop::files::Inode_s::readFile(std::vector<std::string> partedData)
 
 std::string sop::files::Inode_s::writeFile()
 {
+  this->logger->logFiles(3, "Writing file");
   std::string output = "direct=";
   for(uint32_t i=0; i<sop::files::ConstEV::directAddrBlock; i++)
   {
@@ -100,6 +106,7 @@ std::string sop::files::Inode_s::writeFile()
 
 void sop::files::Inode_s::readBlock(std::string data)
 {
+  this->logger->logFiles(3, "Reading data block");
   this->itemize(data);
   this->inode_p->isDirectory = this->isDirectory;
   this->inode_p->uid = this->uid;
@@ -109,11 +116,13 @@ void sop::files::Inode_s::readBlock(std::string data)
 
 std::string sop::files::Inode_s::writeBlock()
 {
+  this->logger->logFiles(3, "Writing data block");
   return this->serialize();
 }
 
 void sop::files::Inode_s::assign()
 {
+  this->logger->logFiles(3, "Assigning data");
   if(this->isDirectory)
   {
     for(std::map<std::string,uint32_t>::iterator iter=this->dirMap.begin(); iter != this->dirMap.end(); iter++)
@@ -138,6 +147,7 @@ void sop::files::Inode_s::assign()
 
 void sop::files::Inode_s::itemize(std::string data)
 {
+  this->logger->logFiles(3, "Itemizing stream");
   if(data.find("dir") != std::string::npos && data.find("uid") != std::string::npos && data.find("gid") != std::string::npos)
   {
     std::vector<std::string> partedData;
@@ -166,6 +176,7 @@ void sop::files::Inode_s::itemize(std::string data)
 
 std::string sop::files::Inode_s::serialize()
 {
+  this->logger->logFiles(3, "Serializing stream");
   std::string output;
   output +="dir=" + std::to_string(this->isDirectory) + "\n";
   output +="uid=" + std::to_string(this->uid) + "\n";

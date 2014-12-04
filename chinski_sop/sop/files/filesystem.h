@@ -10,6 +10,7 @@
 #include "file.h"
 #include "block.h"
 #include "filesystem_s.h"
+#include "./sop/logger/logger.h"
 
 namespace sop
 {
@@ -34,9 +35,10 @@ namespace sop
     class Filesystem
     {
     public:
-      Filesystem();
-      Filesystem(std::string diskFileName);
+      Filesystem(sop::logger::Logger* logger);
+      Filesystem(sop::logger::Logger* logger, std::string diskFileName);
       ~Filesystem();
+      sop::logger::Logger* logger;
 
       // Files
       File* openFile(pid_t* PID, std::vector<std::string> path, char openMode);
