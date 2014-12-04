@@ -159,6 +159,15 @@
     <ClInclude Include="sop\initializable.h">
       <Filter>Header Files\sop</Filter>
     </ClInclude>
+    <ClInclude Include="logical_memory.h">
+      <Filter>Header Files\sop\memory</Filter>
+    </ClInclude>
+    <ClInclude Include="physical_memory.h">
+      <Filter>Header Files\sop\memory</Filter>
+    </ClInclude>
+    <ClInclude Include="storage.h">
+      <Filter>Header Files\sop\memory</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="sop\system\shell.cpp">

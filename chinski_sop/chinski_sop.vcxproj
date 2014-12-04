@@ -11,6 +11,8 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="logical_memory.h" />
+    <ClInclude Include="physical_memory.h" />
     <ClInclude Include="sop\initializable.h" />
     <ClInclude Include="sop\exception.h" />
     <ClInclude Include="sop\files\exceptions\module_exception.h" />
@@ -31,6 +33,7 @@
     <ClInclude Include="sop\system\kernel.h" />
     <ClInclude Include="sop\users\exceptions\module_exception.h" />
     <ClInclude Include="sop\users\module.h" />
+    <ClInclude Include="storage.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="logical_memory.cpp" />
