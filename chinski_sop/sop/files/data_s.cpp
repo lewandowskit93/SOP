@@ -6,6 +6,10 @@
 #include <string>
 #include <vector>
 
+/*
+32 ch
+*/
+
 sop::files::Data_s::Data_s(Data* ptr) :
   data_p(ptr)
 {
@@ -22,7 +26,7 @@ sop::files::Block* sop::files::Data_s::readData(std::vector<char> dataIn)
   {
     paste += dataIn[iter];
   }
-  return new Data(paste);
+  return new sop::files::Data(paste);
 }
 
 std::vector<char> sop::files::Data_s::writeData()

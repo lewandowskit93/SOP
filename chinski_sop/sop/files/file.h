@@ -20,7 +20,7 @@ namespace sop
     class File
     {
     public:
-      File(pid_t PID, uint32_t parentCatalog, uint32_t blockAddress, std::array<Block*, sop::files::ConstEV::numOfBlocks>* disk);
+      File(pid_t* PID, uint32_t parentCatalog, uint32_t blockAddress, std::array<Block*, sop::files::ConstEV::numOfBlocks>* disk);
       ~File();
 
       uint32_t getBlockAddr();
@@ -34,7 +34,7 @@ namespace sop
       void setMode(char mode);
 
     protected:
-      pid_t PIDHolder;
+      pid_t* PIDHolder;
 
     private:
       uint32_t parentCatalogAddress;

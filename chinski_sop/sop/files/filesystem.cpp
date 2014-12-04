@@ -151,7 +151,7 @@ void sop::files::Filesystem::removeFile(pid_t* PID, std::vector<std::string> pat
   }
   else
   {
-    this->dataBlocks[0]->removeFromDir(path.back());
+    this->dataBlocks[this->getCurrentPathIterator()]->removeFromDir(path.at(0));
   }
 }
 
@@ -172,7 +172,7 @@ void sop::files::Filesystem::writeToFile(File* fileHandler, std::string data)
   }
 }
 
-sop::files::File* sop::files::Filesystem::seek(pid_t PID, std::vector<std::string> path)
+sop::files::File* sop::files::Filesystem::seek(pid_t* PID, std::vector<std::string> path)
 {
   if(!path.size())
   {
@@ -469,7 +469,8 @@ void sop::files::Filesystem::createFileHandler(const std::vector<const std::stri
   for(auto data : param)
   {
     auto path = getPathFromParam(data);
-    this->createFile(0, path); // TEST check the pid of actually logged user
+    pid_t* PID = 0;
+    this->createFile(PID, path); // TEST check the pid of actually logged user
   }
 }
 
@@ -501,27 +502,6 @@ void sop::files::Filesystem::removeDirectoryHandler(const std::vector<const std:
   {
     auto path = getPathFromParam(data);
     this->removeDirectory(0, path);
-  }
-}
-
-void sop::files::Filesystem::catHandler(const std::vector<const std::string> & params)
-{
-  if(params.size() > 1)
-  {
-    auto path = getPathFromParam(params[1]);
-    if(path[0] == " ")
-    {
-      std::cout<<"Not yet supported"<<std::endl;
-    }
-    else
-    {
-      uint32_t iterator = 0;
-      if(this->currentDir.blockRoute.size())
-      {
-        iterator = this->currentDir.blockRoute.back();
-      }
-      std::vector<std::string> list = this->dataBlocks[iterator]->listDir();
-    }
   }
 }
 
@@ -566,7 +546,7 @@ void sop::files::Filesystem::printDisk(uint32_t parts)
       }
       else if(this->dataBlocks[iterator*parts + tmp]->getGID() == -1)
       {
-        std::cout<<"R|"; // raw data
+        std::cout<<"^|"; // raw data
       }
       else if(this->dataBlocks[iterator*parts + tmp]->getIsDirectory())
       {
@@ -642,11 +622,21 @@ void sop::files::Filesystem::test(const std::vector<const std::string> & params)
 {
   std::vector<std::string> fileName;
   fileName.push_back("abc");
-  this->createFile(new pid_t(0), fileName);
+  pid_t* PID = 0;
+  this->createFile(PID, fileName);
 
-  sop::files::File* fh = this->openFile(new pid_t(0), fileName, 'r');
+  sop::files::File* fh = this->openFile(PID, fileName, 'r');
   std::string temp;
   std::cin>>temp;
   fh->writeToFile(temp, &this->freeSpace);
   this->closeFile(fh);
+}
+
+uint32_t sop::files::Filesystem::getCurrentPathIterator()
+{
+  if(this->currentDir.blockRoute.size() > 0)
+  {
+    return this->currentDir.blockRoute.back();
+  }
+  return 0;
 }

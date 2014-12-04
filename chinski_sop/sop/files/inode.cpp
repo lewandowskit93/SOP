@@ -104,12 +104,12 @@ void sop::files::Inode::writeToFile(std::string input, std::vector<uint32_t>* fr
     if(input.size() > sop::files::ConstEV::blockSize)
     {
       insider.push_back(input.substr(0,sop::files::ConstEV::blockSize));
-      input = input.substr(sop::files::ConstEV::blockSize, input.size() - sop::files::ConstEV::blockSize);
+      input = input.substr(sop::files::ConstEV::blockSize, input.size()-1);
     }
     else
     {
-      if(insider.size() == 0) insider.push_back(input);
-      break;
+      insider.push_back(input);
+      input.clear();
     }
   }
   std::vector<uint32_t> spaces;
@@ -152,6 +152,7 @@ void sop::files::Inode::removeFile(std::vector<uint32_t>* freeSpace, std::array<
         delete drive->at(this->file.directBlockAddr[iterator]);
         freeSpace->push_back(this->file.directBlockAddr[iterator]);
         this->file.directBlockAddr[iterator] = 0;
+        drive->at(iterator) = 0;
       }
       else
       {
@@ -162,6 +163,7 @@ void sop::files::Inode::removeFile(std::vector<uint32_t>* freeSpace, std::array<
     {
       delete drive->at(data);
       freeSpace->push_back(data);
+      drive->at(data) = 0;
     }
     this->file.indirectBlockAddr.clear();
   }

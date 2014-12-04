@@ -48,7 +48,7 @@ namespace sop
       //uint16_t renameFile(pid_t* PID, std::string fileName, std::string newFileName);
       void moveFile(pid_t* PID, std::string fileName, std::string newDirectory);
       void writeToFile(File* fileHandler, std::string data);
-      File* seek(pid_t PID, std::vector<std::string> path);
+      File* seek(pid_t* PID, std::vector<std::string> path);
       // Attr* getAttributes(File* fileHandler);
       // uint16_t setAttributes(File* fileHandler, Attr& setData);
 
@@ -89,6 +89,7 @@ namespace sop
       std::list<File*> openedFilesList;
       std::vector<uint32_t> freeSpace;
       std::array<Block*, sop::files::ConstEV::numOfBlocks> dataBlocks;
+      uint32_t getCurrentPathIterator();
 
       friend class Filesystem_s;
     };

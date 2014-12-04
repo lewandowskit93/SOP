@@ -2,7 +2,7 @@
 #include ".\sop\files\filesystem.h"
 #include <algorithm>
 
-sop::files::File::File(pid_t PID, uint32_t parentCatalog, uint32_t blockAddress, std::array<sop::files::Block*, sop::files::ConstEV::numOfBlocks>* disk) : 
+sop::files::File::File(pid_t* PID, uint32_t parentCatalog, uint32_t blockAddress, std::array<sop::files::Block*, sop::files::ConstEV::numOfBlocks>* disk) : 
   PIDHolder(PID),
   parentCatalogAddress(parentCatalog),
   blockAddress(blockAddress),

@@ -26,13 +26,12 @@ void sop::files::Module::initialize()
   shell->registerCommand("mv",&Filesystem::moveHandler,this->fsxxxx);
   shell->registerCommand("rm",&Filesystem::removeFileHandler,this->fsxxxx);
   shell->registerCommand("nano",&Filesystem::nanoHandler,this->fsxxxx);
-  shell->registerCommand("cat",&Filesystem::catHandler,this->fsxxxx);
   shell->registerCommand("touch",&Filesystem::createFileHandler,this->fsxxxx);
   shell->registerCommand("mkdir",&Filesystem::createDirectoryHandler,this->fsxxxx);
   shell->registerCommand("rmdir",&Filesystem::removeDirectoryHandler,this->fsxxxx);
   shell->registerCommand("ll",&Filesystem::listHandler,this->fsxxxx);
   //shell->registerCommand("find",&Filesystem::seekHandler,this->fsxxxx);
   shell->registerCommand("echo",&Filesystem::echoHandler,this->fsxxxx);
-  shell->registerCommand("stat",&Filesystem::statHandler,this->fsxxxx);
+  shell->registerCommand("diskstat",&Filesystem::statHandler,this->fsxxxx);
   shell->registerCommand("test",&Filesystem::test,this->fsxxxx);
 }
