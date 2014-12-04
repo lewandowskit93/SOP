@@ -11,6 +11,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="executive_unit.h" />
     <ClInclude Include="sop\initializable.h" />
     <ClInclude Include="sop\exception.h" />
     <ClInclude Include="sop\files\exceptions\module_exception.h" />
@@ -36,6 +37,7 @@
     <ClInclude Include="sop\users\module.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="executive_unit.cpp" />
     <ClCompile Include="sop\initializable.cpp" />
     <ClCompile Include="sop\exception.cpp" />
     <ClCompile Include="sop\files\exceptions\module_exception.cpp" />

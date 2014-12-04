@@ -2,6 +2,7 @@
 #define _SOP_PROCESSOR_PROCESSOR_H_
 #include <stdint.h>
 #include <stack>
+#include <string.h>
 
 namespace sop
 {
@@ -53,6 +54,7 @@ namespace sop
       //Instruction pointer functions
       static void incrementInstructionPointer(processor *proc); // instruction pointer ++
       static void setInstructionPointer(processor *proc, short value); // setting instruction pointer
+      static void increasInstructionPointerBy(processor *proc, short value); // increasing instruction pointer by value
 
       //Code segment
       static void loadWhereCodeSegmentStarts(/* process *p */ processor *proc); // loads where code begins in memory

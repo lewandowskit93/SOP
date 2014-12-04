@@ -168,6 +168,9 @@
     <ClInclude Include="sop\processor\interpreter.h">
       <Filter>Header Files\sop\processor</Filter>
     </ClInclude>
+    <ClInclude Include="executive_unit.h">
+      <Filter>Header Files\sop\processor</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="sop\system\shell.cpp">
@@ -240,6 +243,9 @@
       <Filter>Source Files\sop\processor</Filter>
     </ClCompile>
     <ClCompile Include="sop\processor\interpreter.cpp">
+      <Filter>Source Files\sop\processor</Filter>
+    </ClCompile>
+    <ClCompile Include="executive_unit.cpp">
       <Filter>Source Files\sop\processor</Filter>
     </ClCompile>
   </ItemGroup>

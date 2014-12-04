@@ -1,6 +1,7 @@
 #ifndef _SOP_PROCESSOR_SCHEDULER_H_
 #define _SOP_PROCESSOR_SCHEDULER_H_
 #include "./sop/processor/processor.h"
+#include "./sop/processor/interpreter.h"
 namespace sop
 {
 

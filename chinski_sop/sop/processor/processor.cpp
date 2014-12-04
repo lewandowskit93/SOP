@@ -32,7 +32,7 @@ uint16_t* sop::processor::ProcessorHandler::charRegisterHandler(sop::processor::
   {
     return &proc->d;
   }
- 
+  else throw "Bad register";
 }
 void sop::processor::ProcessorHandler::registerIncrement(sop::processor::processor *proc, char processor_register)
 {
@@ -93,6 +93,11 @@ void sop::processor::ProcessorHandler::incrementInstructionPointer(sop::processo
 void sop::processor::ProcessorHandler::setInstructionPointer(sop::processor::processor *proc, short value)
 {
   proc->ip = value;
+}
+
+void sop::processor::ProcessorHandler::increasInstructionPointerBy(sop::processor::processor *proc, short value)
+{
+  proc->ip += value;
 }
 
 void sop::processor::ProcessorHandler::loadWhereCodeSegmentStarts(/* process *p */ sop::processor::processor *proc)
