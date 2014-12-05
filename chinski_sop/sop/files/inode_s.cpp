@@ -84,7 +84,7 @@ void sop::files::Inode_s::readFile(std::vector<std::string> partedData)
       partedData[3] = partedData[3].substr(0, partedData[3].find(","));
     }
   }
-  size = atoi(partedData[3].substr(partedData[3].find("="), partedData[3].size()).c_str());
+  this->size = atoi(partedData[3].substr(partedData[3].find("="), partedData[3].size()).c_str());
 }
 
 std::string sop::files::Inode_s::writeFile()

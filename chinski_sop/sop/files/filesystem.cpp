@@ -8,39 +8,24 @@
 #include ".\sop\files\file.h"
 #include ".\sop\files\inode.h"
 #include ".\sop\logger\logger.h"
-#include <iostream>
 
 std::vector<std::string> getPathFromParam(std::string path)
 {
   std::string delimiter = "/";
   std::vector<std::string> outPath;
   size_t init = 0;
-  if(path.find(delimiter) == std::string::npos)
+  if(path.length() <= delimiter.length() && path == delimiter)
   {
-    outPath.push_back(path);
+    outPath.push_back(delimiter);
     return outPath;
   }
-  if(path.size() == 1 && path == "/")
+  while((init = path.find(delimiter)) != std::string::npos)
   {
-    outPath.push_back("");
-    return outPath;
+    outPath.push_back(path.substr(0,init));
+    std::cout<<path.substr(0,init)<<std::endl;
+    path.erase(0, init+delimiter.length());
   }
-  init = path.find(delimiter);
-  do
-  {
-    if(init)
-    {
-      outPath.push_back(path.substr(0,init));
-      std::cout<<path.substr(0,init)<<std::endl;
-      path.erase(0, init+delimiter.length());
-    }
-    else
-    {
-      outPath.push_back("/");
-      std::cout<<"/"<<std::endl;
-      path.erase(0, init+delimiter.length());
-    }
-  }while((init = path.find(delimiter)) != std::string::npos);
+  outPath.push_back(path);
   return outPath;
 }
 
@@ -55,13 +40,14 @@ sop::files::Filesystem::Filesystem(sop::logger::Logger* logger) :
     this->dataBlocks[i] = 0;
   }
   std::sort(this->freeSpace.begin(), this->freeSpace.end());
-  this->dataBlocks[0] = new sop::files::Inode(true, 0,0);
-  this->logger->logFiles(6, "Initialization successful");
+  this->dataBlocks[0] = new sop::files::Inode(true, 0,0, this->logger);
+  this->logger->logFiles(6, "Filesystem initialization successful");
 }
 
 sop::files::Filesystem::Filesystem(sop::logger::Logger* logger, std::string diskFileName) :
   logger(logger)
 {
+  this->logger->logFiles(6, "Restore filesystem initilized");
 }
 
 sop::files::Filesystem::~Filesystem()
@@ -70,12 +56,12 @@ sop::files::Filesystem::~Filesystem()
 }
 
 // Files
-sop::files::File* sop::files::Filesystem::openFile(pid_t* PID, std::vector<std::string> path, char openMode)
+sop::files::File* sop::files::Filesystem::openFile(pid_t* PID, std::vector<std::string> path, std::string openMode)
 {
   File* out = this->seek(0, path);
   if(out != 0)
   {
-    out->setMode(openMode);
+    out->setMode(*openMode.substr(0,0).c_str());
     this->openedFilesList.push_back(out);
     return out;
   }
@@ -132,7 +118,7 @@ void sop::files::Filesystem::createFile(pid_t* PID, std::vector<std::string> pat
     uint32_t reserveAddress = this->freeSpace.at(0);
     this->freeSpace.erase(this->freeSpace.begin());
     this->dataBlocks[iterator]->addInDir(path.at(path.size()-1), reserveAddress);
-    this->dataBlocks[reserveAddress] = new Inode(false, uid, gid);
+    this->dataBlocks[reserveAddress] = new Inode(false, uid, gid, this->logger);
   }
   else
   {
@@ -148,7 +134,7 @@ void sop::files::Filesystem::closeFile(File* fileHandler)
 {
   this->logger->logFiles(3, "Closing file "+fileHandler->getFileName());
   this->openedFilesList.remove(fileHandler);
-  delete fileHandler;
+  //delete fileHandler;
   this->logger->logFiles(6, "File closed");
 }
 
@@ -206,7 +192,7 @@ sop::files::File* sop::files::Filesystem::seek(pid_t* PID, std::vector<std::stri
   if(path.size() == 1 && path[0] == "/")
   {
     this->logger->logFiles(3, "Seek: root tree discovered");
-    return new sop::files::File(PID, currentDir, currentDir, &this->dataBlocks);
+    return new sop::files::File(PID, currentDir, currentDir, &this->dataBlocks, this->logger);
   }
   if(path.size() > 1 && path[0] == "/")
   {
@@ -241,7 +227,7 @@ sop::files::File* sop::files::Filesystem::seek(pid_t* PID, std::vector<std::stri
   {
     this->logger->logFiles(3, "Seek: was found");
     this->logger->logFiles(3, "Search successful");
-    return new sop::files::File(PID, currentDir, this->dataBlocks.at(currentDir)->getAddress(filename), &this->dataBlocks);
+    return new sop::files::File(PID, currentDir, this->dataBlocks.at(currentDir)->getAddress(filename), &this->dataBlocks, this->logger);
   }
   else
   {
@@ -383,7 +369,7 @@ void sop::files::Filesystem::createDirectory(pid_t* PID, std::vector<std::string
     uint32_t reserveAddress = this->freeSpace.at(0);
     this->freeSpace.erase(this->freeSpace.begin());
     this->dataBlocks[iterator]->addInDir(path.at(path.size()-1), reserveAddress);
-    this->dataBlocks[reserveAddress] = new Inode(true, uid, gid);
+    this->dataBlocks[reserveAddress] = new Inode(true, uid, gid, this->logger);
   }
   else
   {
@@ -391,7 +377,7 @@ void sop::files::Filesystem::createDirectory(pid_t* PID, std::vector<std::string
     std::cout<<"mkdir: cannot create "<<path.at(path.size()-1)<<std::endl;
     return;
   }
-  this->logger->logFiles(4, "Creating directory successful");
+  this->logger->logFiles(6, "Creating directory successful");
   std::cout<<"mkdir: "<<path.at(path.size()-1)<<" has been created!"<<std::endl;
 }
 
@@ -444,7 +430,7 @@ void sop::files::Filesystem::removeDirectory(pid_t* PID, std::vector<std::string
 /*
   Overall
 */
-std::vector<std::string> sop::files::Filesystem::list()
+std::vector<sop::files::dirList> sop::files::Filesystem::list()
 {
   this->logger->logFiles(3, "Initilizing listing");
   uint32_t iterator = 0;
@@ -453,7 +439,7 @@ std::vector<std::string> sop::files::Filesystem::list()
     iterator = this->currentDir.blockRoute.back();
   }
   this->logger->logFiles(6, "Listing successful");
-  return this->dataBlocks[iterator]->listDir();
+  return this->dataBlocks[iterator]->listDir(&this->dataBlocks);
 }
 
 /*
@@ -500,7 +486,14 @@ void sop::files::Filesystem::removeFileHandler(const std::vector<const std::stri
   for(auto data : param)
   {
     auto path = getPathFromParam(data);
-    this->removeFile(0, path); //TEST get current pid
+    if(path.size()>1)
+    {
+      std::cout<<"Not yet implemented. Try to use one one level path"<<std::endl;
+    }
+    else
+    {
+      this->removeFile(0, path); //TEST get current pid
+    }
   }
 }
 
@@ -522,8 +515,15 @@ void sop::files::Filesystem::createFileHandler(const std::vector<const std::stri
   for(auto data : param)
   {
     auto path = getPathFromParam(data);
-    pid_t* PID = 0;
-    this->createFile(PID, path); // TEST check the pid of actually logged user
+    if(path.size() == 1)
+    {
+      pid_t* PID = 0;
+      this->createFile(PID, path); // TEST check the pid of actually logged user
+    }
+    else
+    {
+      std::cout<<"Not yet implemented. Try to use one one level path"<<std::endl;
+    }
   }
 }
 
@@ -538,9 +538,15 @@ void sop::files::Filesystem::createDirectoryHandler(const std::vector<const std:
   }
   for(std::string data : param)
   {
-    std::cout<<data<<std::endl;
     auto path = getPathFromParam(data);
-    this->createDirectory(0, path);
+    if(path.size()>1)
+    {
+      std::cout<<"Not yet implemented. Try to use one one level path"<<std::endl;
+    }
+    else
+    {
+      this->createDirectory(0, path);
+    }
   }
 }
 
@@ -556,26 +562,33 @@ void sop::files::Filesystem::removeDirectoryHandler(const std::vector<const std:
   for(auto data : param)
   {
     auto path = getPathFromParam(data);
-    this->removeDirectory(0, path);
+    if(path.size()>1)
+    {
+      std::cout<<"Not yet implemented. Try to use one one level path"<<std::endl;
+    }
+    else
+    {
+      this->removeDirectory(0, path);
+    }
   }
 }
 
 void sop::files::Filesystem::listHandler(const std::vector<const std::string> & params)
 {
   this->logger->logFiles(3, "List handler initalization");
-  std::vector<std::string> x = this->list();
+  std::vector<sop::files::dirList> x = this->list();
+  uint32_t size = x.size();
   if(x.size())
   {
-    std::cout<<"<   drwx   >\t<  user  >\t<size>\t< filename >"<<std::endl;
+    std::cout<<"<   drwx   >\t<size>\t< filename >"<<std::endl;
     for(auto data : x)
     {
-      std::cout<<"\t\t\t"<<data<<std::endl;
+      std::cout<<" "<<data.drwx<<"\t"<<"  "<<data.size<<"\t"<<"  "<<data.name<<std::endl;
     }
+    
   }
-  else
-  {
-    std::cout<<"Total: 0"<<std::endl;
-  }
+  std::cout<<"_________"<<std::endl;
+  std::cout<<"Total: "<<std::to_string(size)<<std::endl;
 }
 
 void sop::files::Filesystem::printStats()
@@ -683,11 +696,13 @@ void sop::files::Filesystem::test(const std::vector<const std::string> & params)
   pid_t* PID = 0;
   this->createFile(PID, fileName);
 
-  sop::files::File* fh = this->openFile(PID, fileName, 'r');
+  sop::files::File* fh = this->openFile(PID, fileName, "w");
   std::string temp;
+  std::cout<<"Write something:"<<std::endl;
   std::cin>>temp;
   fh->writeToFile(temp, &this->freeSpace);
   this->closeFile(fh);
+  delete fh;
 }
 
 uint32_t sop::files::Filesystem::getCurrentPathIterator()

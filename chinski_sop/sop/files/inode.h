@@ -15,6 +15,10 @@ namespace sop
   namespace files
   {
     /*
+      Directory list output format
+    */
+    struct dirList;
+    /*
       Directory helper structure
     */
     struct dir_u
@@ -39,17 +43,18 @@ namespace sop
     class Inode : public Block
     {
     public:
-      Inode(bool isDirectory, uid_t UID, gid_t GID);
+      Inode(bool isDirectory, uid_t UID, gid_t GID, sop::logger::Logger* logger);
       ~Inode();
       uid_t getUID();
       gid_t getGID();
       std::vector<std::array<char, sop::files::ConstEV::blockSize>> getData_i(std::array<Block*, sop::files::ConstEV::numOfBlocks>* disk);
       std::array<char, sop::files::ConstEV::blockSize> getData_d(){ return *new std::array<char,sop::files::ConstEV::blockSize>; }
-      std::vector<std::string> listDir();
+      std::vector<dirList> listDir(std::array<Block*, sop::files::ConstEV::numOfBlocks>* disk);
       void addInDir(std::string fileName, uint32_t blockAddress);
       void removeFromDir(std::string fileName);
       bool getIsDirectory();
       void toggleLock();
+      uint32_t getSize();
       void writeToFile(std::string, std::vector<uint32_t>* freeSpace, std::array<Block*, sop::files::ConstEV::numOfBlocks>* drive);
       void removeFile(std::vector<uint32_t>* freeSpace, std::array<Block*, sop::files::ConstEV::numOfBlocks>* drive);
       void removeDir(std::vector<uint32_t>* freeSpace, std::array<Block*, sop::files::ConstEV::numOfBlocks>* drive);
@@ -64,6 +69,7 @@ namespace sop
       dir_u directory;
       file_u file;
       bool lock;
+      sop::logger::Logger* logger;
 
       friend class Inode_s;
     };

@@ -14,6 +14,16 @@ namespace sop
     typedef bool lock_t;
     typedef int addr_t;
 
+    /*
+      Directory list output format
+    */
+    struct dirList
+    {
+      std::string drwx;
+      std::string size;
+      std::string name;
+    };
+
     class ConstEV
     {
     public:

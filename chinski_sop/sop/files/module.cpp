@@ -29,6 +29,7 @@ void sop::files::Module::initialize()
   shell->registerCommand("touch",&Filesystem::createFileHandler,this->fsxxxx);
   shell->registerCommand("mkdir",&Filesystem::createDirectoryHandler,this->fsxxxx);
   shell->registerCommand("rmdir",&Filesystem::removeDirectoryHandler,this->fsxxxx);
+  shell->registerCommand("l",&Filesystem::listHandler,this->fsxxxx);
   shell->registerCommand("ll",&Filesystem::listHandler,this->fsxxxx);
   //shell->registerCommand("find",&Filesystem::seekHandler,this->fsxxxx);
   shell->registerCommand("echo",&Filesystem::echoHandler,this->fsxxxx);

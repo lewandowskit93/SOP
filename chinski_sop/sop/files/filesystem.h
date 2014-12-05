@@ -41,7 +41,7 @@ namespace sop
       sop::logger::Logger* logger;
 
       // Files
-      File* openFile(pid_t* PID, std::vector<std::string> path, char openMode);
+      File* openFile(pid_t* PID, std::vector<std::string> path, std::string openMode);
       std::string readFile(File* fileHandler);
       void createFile(pid_t* PID, std::vector<std::string> path);
       void saveFile(File* fileHandler);
@@ -64,7 +64,7 @@ namespace sop
       //uint16_t renameDirectory(pid_t* PID, std::string directoryName, std::string newDirectoryName);
 
       // Overall
-      std::vector<std::string> list();
+      std::vector<dirList> list();
       void printStats();
       void printDisk(uint32_t parts);
       void printDiskTree(uint32_t depth);

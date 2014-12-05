@@ -20,7 +20,7 @@ namespace sop
     class File
     {
     public:
-      File(pid_t* PID, uint32_t parentCatalog, uint32_t blockAddress, std::array<Block*, sop::files::ConstEV::numOfBlocks>* disk);
+      File(pid_t* PID, uint32_t parentCatalog, uint32_t blockAddress, std::array<Block*, sop::files::ConstEV::numOfBlocks>* disk, sop::logger::Logger* logger);
       ~File();
 
       uint32_t getBlockAddr();
@@ -49,6 +49,8 @@ namespace sop
       std::string fileName;
       uid_t UID;
       gid_t GID;
+
+      sop::logger::Logger* logger;
     };
   }
 }

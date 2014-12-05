@@ -12,6 +12,11 @@ namespace sop
   namespace files
   {
     /*
+      Directory list output format
+    */
+    struct dirList;
+
+    /*
       Data class stores file data blocks
     */
     class Data : public Block
@@ -25,11 +30,12 @@ namespace sop
       uid_t getUID(){ return -1; }
       gid_t getGID(){ return -1; }
       void setData(std::array<char, sop::files::ConstEV::blockSize> data);
-      std::vector<std::string> listDir(){ return *new std::vector<std::string>;}
+      std::vector<sop::files::dirList> listDir(std::array<Block*, sop::files::ConstEV::numOfBlocks>* disk){ std::vector<sop::files::dirList> x; return x;}
       void addInDir(std::string fileName, uint32_t blockAddress){}
       void removeFromDir(std::string fileName){}
       bool getIsDirectory(){ return 0; }
       void toggleLock(){}
+      uint32_t getSize(){ return 0; }
       void writeToFile(std::string, std::vector<uint32_t>* freeSpace, std::array<Block*, sop::files::ConstEV::numOfBlocks>* drive){}
       uint32_t getAddress(std::string name){ return 0; }
       void removeFile(std::vector<uint32_t>* freeSpace, std::array<Block*, sop::files::ConstEV::numOfBlocks>* drive){}
