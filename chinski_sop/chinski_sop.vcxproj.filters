@@ -159,13 +159,13 @@
     <ClInclude Include="sop\initializable.h">
       <Filter>Header Files\sop</Filter>
     </ClInclude>
-    <ClInclude Include="logical_memory.h">
+    <ClInclude Include="sop\memory\logical_memory.h">
       <Filter>Header Files\sop\memory</Filter>
     </ClInclude>
-    <ClInclude Include="physical_memory.h">
+    <ClInclude Include="sop\memory\physical_memory.h">
       <Filter>Header Files\sop\memory</Filter>
     </ClInclude>
-    <ClInclude Include="storage.h">
+    <ClInclude Include="sop\memory\storage.h">
       <Filter>Header Files\sop\memory</Filter>
     </ClInclude>
   </ItemGroup>
@@ -233,13 +233,13 @@
     <ClCompile Include="sop\initializable.cpp">
       <Filter>Source Files\sop</Filter>
     </ClCompile>
-    <ClCompile Include="logical_memory.cpp">
+    <ClCompile Include="sop\memory\physical_memory.cpp">
       <Filter>Source Files\sop\memory</Filter>
     </ClCompile>
-    <ClCompile Include="physical_memory.cpp">
+    <ClCompile Include="sop\memory\logical_memory.cpp">
       <Filter>Source Files\sop\memory</Filter>
     </ClCompile>
-    <ClCompile Include="storage.cpp">
+    <ClCompile Include="sop\memory\storage.cpp">
       <Filter>Source Files\sop\memory</Filter>
     </ClCompile>
   </ItemGroup>
