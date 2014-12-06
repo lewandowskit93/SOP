@@ -30,7 +30,11 @@
     <ClInclude Include="sop\system\shell.h" />
     <ClInclude Include="sop\system\kernel.h" />
     <ClInclude Include="sop\users\exceptions\module_exception.h" />
+    <ClInclude Include="sop\users\group.h" />
+    <ClInclude Include="sop\users\id_definitions.h" />
     <ClInclude Include="sop\users\module.h" />
+    <ClInclude Include="sop\users\user.h" />
+    <ClInclude Include="sop\users\users_manager.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="sop\initializable.cpp" />
@@ -53,7 +57,11 @@
     <ClCompile Include="sop\system\shell.cpp" />
     <ClCompile Include="sop\system\kernel.cpp" />
     <ClCompile Include="sop\users\exceptions\module_exception.cpp" />
+    <ClCompile Include="sop\users\group.cpp" />
+    <ClCompile Include="sop\users\id_definitions.cpp" />
     <ClCompile Include="sop\users\module.cpp" />
+    <ClCompile Include="sop\users\user.cpp" />
+    <ClCompile Include="sop\users\users_manager.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{A7530614-D6A8-4614-BDCA-4ADCEF9E4DDD}</ProjectGuid>

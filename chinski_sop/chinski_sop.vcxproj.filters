@@ -159,6 +159,18 @@
     <ClInclude Include="sop\initializable.h">
       <Filter>Header Files\sop</Filter>
     </ClInclude>
+    <ClInclude Include="sop\users\user.h">
+      <Filter>Header Files\sop\users</Filter>
+    </ClInclude>
+    <ClInclude Include="sop\users\group.h">
+      <Filter>Header Files\sop\users</Filter>
+    </ClInclude>
+    <ClInclude Include="sop\users\users_manager.h">
+      <Filter>Header Files\sop\users</Filter>
+    </ClInclude>
+    <ClInclude Include="sop\users\id_definitions.h">
+      <Filter>Header Files\sop\users</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="sop\system\shell.cpp">
@@ -223,6 +235,18 @@
     </ClCompile>
     <ClCompile Include="sop\initializable.cpp">
       <Filter>Source Files\sop</Filter>
+    </ClCompile>
+    <ClCompile Include="sop\users\user.cpp">
+      <Filter>Source Files\sop\users</Filter>
+    </ClCompile>
+    <ClCompile Include="sop\users\group.cpp">
+      <Filter>Source Files\sop\users</Filter>
+    </ClCompile>
+    <ClCompile Include="sop\users\users_manager.cpp">
+      <Filter>Source Files\sop\users</Filter>
+    </ClCompile>
+    <ClCompile Include="sop\users\id_definitions.cpp">
+      <Filter>Source Files\sop\users</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
