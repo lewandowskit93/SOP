@@ -171,6 +171,9 @@
     <ClInclude Include="sop\users\id_definitions.h">
       <Filter>Header Files\sop\users</Filter>
     </ClInclude>
+    <ClInclude Include="sop\string_converter.h">
+      <Filter>Header Files\sop</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="sop\system\shell.cpp">
@@ -247,6 +250,9 @@
     </ClCompile>
     <ClCompile Include="sop\users\id_definitions.cpp">
       <Filter>Source Files\sop\users</Filter>
+    </ClCompile>
+    <ClCompile Include="sop\string_converter.cpp">
+      <Filter>Source Files\sop</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
