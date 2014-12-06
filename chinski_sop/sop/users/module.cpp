@@ -8,7 +8,8 @@
 
 sop::users::Module::Module(sop::system::Kernel *kernel):
   sop::system::Module(kernel),
-  _users_manager(this)
+  _users_manager(this),
+  _groups_manager(this)
 {
 
 }
@@ -25,15 +26,31 @@ std::string sop::users::Module::getClassName() const
 
 void sop::users::Module::initialize()
 {
+  // ToDo: load users from list (if there is no list, then create root)
+  boost::shared_ptr<User> root_usr(new User(0,0,"root","","Superuser","home\\root"));
+  boost::shared_ptr<Group> root_group(new Group(0,"root"));
+  root_group->users_list.push_back(root_usr);
+  _users_manager.addUser(root_usr);
+  _groups_manager.addGroup(root_group);
   getKernel()->getShell()->registerCommand("useradd",&Module::cH_useradd,this);
   getKernel()->getShell()->registerCommand("userslist",&Module::cH_userslist,this);
   getKernel()->getShell()->registerCommand("userdel",&Module::cH_userdel,this);
   getKernel()->getShell()->registerCommand("userfind",&Module::cH_userfind,this);
+  getKernel()->getShell()->registerCommand("groupadd",&Module::cH_groupadd,this);
+  getKernel()->getShell()->registerCommand("groupdel",&Module::cH_groupdel,this);
+  getKernel()->getShell()->registerCommand("groupfind",&Module::cH_groupfind,this);
+  getKernel()->getShell()->registerCommand("groupmembers",&Module::cH_groupmembers,this);
+  getKernel()->getShell()->registerCommand("groupslist",&Module::cH_groupslist,this);
 }
 
 sop::users::UsersManager* sop::users::Module::getUsersManager()
 {
   return &_users_manager;
+}
+
+sop::users::GroupsManager* sop::users::Module::getGroupsManager()
+{
+  return &_groups_manager;
 }
 
 void sop::users::Module::cH_useradd(const std::vector<const std::string> & params)
@@ -58,14 +75,19 @@ void sop::users::Module::cH_useradd(const std::vector<const std::string> & param
 
     if(sop::system::Shell::hasParam(params,"-g"))
     {
-      // ToDo: group must exist already...
       user.gid = sop::StringConverter::convertStringTo<uid_t>(sop::system::Shell::getParamValue(params,"-g"));
+      boost::shared_ptr<Group> group = _groups_manager.findGroup(user.gid);
+      if(!group)return;
+      else if(group->group_name=="nogroup")return;
+      else if(group->group_name=="root") return; // ToDo: only root can add to this group
     }
     else
     {
-      // ToDo: check if gid=uid available if yes - ok, if no, take next free...
-      // and also - check if group name is availble if not, there is no possibility to create the user
-      user.gid=user.uid;
+      if(!_groups_manager.isGroupNameFree(user.username))return;
+      if(_groups_manager.isGIDFree(user.uid))user.gid=user.uid;
+      else{
+        user.gid=_groups_manager.getNextFreeGID();
+      }
     }
 
     if(sop::system::Shell::hasParam(params, "-p"))
@@ -93,7 +115,22 @@ void sop::users::Module::cH_useradd(const std::vector<const std::string> & param
 
     if(_users_manager.addUser(user))
     {
-      // ToDo: create user dir if not exist, add user entry to file, and also group entry if it is new group (if new, create one)
+      if(!sop::system::Shell::hasParam(params,"-g"))
+      {
+        Group group(user.gid,user.username);
+        group.users_list.push_back(_users_manager.findUser(user.uid));
+        if(!_groups_manager.addGroup(group))
+        {
+          _users_manager.deleteUser(user.username);
+          return;
+        }
+      }
+      else
+      {
+        boost::shared_ptr<Group> group = _groups_manager.findGroup(user.gid);
+        group->users_list.push_back(_users_manager.findUser(user.uid));
+      }
+      // ToDo: create user dir if not exist, save users and groups files
     }
   }
 }
@@ -136,11 +173,19 @@ void sop::users::Module::cH_userdel(const std::vector<const std::string> & param
   }
   else
   {
-    // ToDo: delete also group if the user was the last user in this group (and gid==uid)
-    // delete home dir of that user if he is only owner
+    // ToDo:
     // user cannot be logged in
     // save the file
-    _users_manager.deleteUser(params[params.size()-1]);
+    boost::shared_ptr<User> user = _users_manager.findUser(params[params.size()-1]);
+    if(user)
+    {
+      boost::shared_ptr<Group> group = _groups_manager.findGroup(user->gid);
+      if(group && _users_manager.deleteUser(user->username))
+      {
+        group->users_list.remove(user);
+        //if(group->users_list.size()==0)_groups_manager.deleteGroup(group->group_name); // do not delete group to allow empty groups to exist
+      }
+    }
   }
 }
 
@@ -159,5 +204,120 @@ void sop::users::Module::cH_userslist(const std::vector<const std::string> & par
   for(it=users_list.begin();it!=users_list.end();++it)
   {
     std::cout<<(*it)->uid<<"\t|"<<(*it)->username<<"\t|"<<(*it)->gid<<"\t|"<<(*it)->info<<"\t|"<<(*it)->home_dir<<"\t|"<<((*it)->password==""? "N":"Y")<<std::endl;
+  }
+}
+
+void sop::users::Module::cH_groupadd(const std::vector<const std::string> & params)
+{
+  if(sop::system::Shell::hasParam(params, "-h") || params.size()==1)
+  {
+    std::cout<<"groupadd [-h] [-g gid] group_name"<<std::endl;
+    std::cout<<"Creates group specified by group_name."<<std::endl;
+  }
+  else
+  {
+    Group group;
+    group.group_name=params[params.size()-1];
+    if(sop::system::Shell::hasParam(params, "-g"))
+    {
+      group.gid=sop::StringConverter::convertStringTo<gid_t>(sop::system::Shell::getParamValue(params,"-g"));
+    }
+    else
+    {
+      group.gid=_groups_manager.getNextFreeGID();
+    }
+
+    _groups_manager.addGroup(group);
+    // ToDo: save file
+  }
+}
+
+void sop::users::Module::cH_groupfind(const std::vector<const std::string> & params)
+{
+  boost::shared_ptr<Group> group;
+  if(sop::system::Shell::hasParam(params,"-g"))
+  {
+    group = _groups_manager.findGroup(sop::StringConverter::convertStringTo<gid_t>(sop::system::Shell::getParamValue(params,"-g")));
+  }
+  else if(sop::system::Shell::hasParam(params,"-n"))
+  {
+    group = _groups_manager.findGroup(sop::system::Shell::getParamValue(params,"-n"));
+  }
+  else
+  {
+    std::cout<<"userfind [-h] [-n username] [-g gid]"<<std::endl;
+    std::cout<<"Finds group specified by gid or group name and prints info about it."<<std::endl;
+    return;
+  }
+
+  if(group)
+  {
+    std::cout<<"GID\t|GROUP NAME\t|NR OF USERS"<<std::endl;
+    std::cout<<group->gid<<"\t|"<<group->group_name<<"\t|"<<group->users_list.size()<<std::endl;
+  }
+  else
+  {
+    std::cout<<"Group not found"<<std::endl;
+  }
+}
+
+void sop::users::Module::cH_groupdel(const std::vector<const std::string> & params)
+{
+  if(sop::system::Shell::hasParam(params, "-h") || params.size()==1)
+  {
+    std::cout<<"groupdel [-h] group_name"<<std::endl;
+    std::cout<<"Group specified by the given group_name (if it is empty)"<<std::endl;
+  }
+  else
+  {
+    _groups_manager.deleteGroup(params[params.size()-1]);
+    // ToDo: save the file
+  }
+}
+
+void sop::users::Module::cH_groupslist(const std::vector<const std::string> & params)
+{
+  if(params.size()>1)
+  {
+    std::cout<<"groupslist [-h]"<<std::endl;
+    std::cout<<"Lists all groups in the system"<<std::endl;
+    return;
+  }
+  
+  std::list<boost::shared_ptr<Group>> groups_list = _groups_manager.getGroupsList();
+  std::list<boost::shared_ptr<Group>>::iterator it;
+  std::cout<<"GID\t|GROUP NAME\t|NR OF USERS"<<std::endl;
+  for(it=groups_list.begin();it!=groups_list.end();++it)
+  {
+    std::cout<<(*it)->gid<<"\t|"<<(*it)->group_name<<"\t|"<<(*it)->users_list.size()<<std::endl;
+  }
+}
+
+void sop::users::Module::cH_groupmembers(const std::vector<const std::string> & params)
+{
+  if(sop::system::Shell::hasParam(params,"-h") || params.size()==1)
+  {
+    std::cout<<"groupmembers [-u] [-h] group_name"<<std::endl;
+    std::cout<<"Lists all members of the given group"<<std::endl;
+    return;
+  }
+  else
+  {
+    bool uids = sop::system::Shell::hasParam(params,"-u");
+    boost::shared_ptr<Group> group = _groups_manager.findGroup(params[params.size()-1]);
+    if(!group)
+    {
+      std::cout<<"Group not found"<<std::endl;
+    }
+    else
+    {
+      std::cout<<"Members of group: "<<params[params.size()-1]<<std::endl;
+      std::list<boost::shared_ptr<User>>::iterator it = group->users_list.begin();
+      for(;it!=group->users_list.end();++it)
+      {
+        if(uids)std::cout<<(*it)->uid<<std::endl;
+        else std::cout<<(*it)->username<<std::endl;       
+      }
+    }
   }
 }

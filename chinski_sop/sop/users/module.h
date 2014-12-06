@@ -6,6 +6,7 @@
 #include <sstream>
 #include ".\sop\system\module.h"
 #include ".\sop\users\users_manager.h"
+#include ".\sop\users\groups_manager.h"
 
 namespace sop
 {
@@ -24,17 +25,25 @@ namespace sop
         virtual void initialize();
 
         UsersManager* getUsersManager();
+        GroupsManager* getGroupsManager();
 
         void cH_useradd(const std::vector<const std::string> & params);
         void cH_userfind(const std::vector<const std::string> & params);
         void cH_userdel(const std::vector<const std::string> & params);
         void cH_userslist(const std::vector<const std::string> & params);
+
+        void cH_groupadd(const std::vector<const std::string> & params);
+        void cH_groupfind(const std::vector<const std::string> & params);
+        void cH_groupdel(const std::vector<const std::string> & params);
+        void cH_groupslist(const std::vector<const std::string> & params);
+        void cH_groupmembers(const std::vector<const std::string> & params);
         
 
       protected:
 
       private:
         UsersManager _users_manager;
+        GroupsManager _groups_manager;
     };
   }
 }
