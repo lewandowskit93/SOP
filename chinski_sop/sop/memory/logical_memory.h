@@ -18,7 +18,7 @@ class LogicalMemory
 public:	
   explicit LogicalMemory(int8_t number_of_page);//konstruktor tworz¹cy tablicê stron o podanej liczbie stron
   void setPageTableSize(int8_t size);//ustawia liczbê stron
-  int8_t getPageTableSize();//zwraca liczbê stron
+  uint8_t getPageTableSize();//zwraca liczbê stron
   page* getPage(int8_t page_nr);//zwraca wskazan¹ stronê
   void setPage(int8_t frame_nr,char val_inv,int8_t page_nr);//ustawia poszczególnej strony i jej parametrów
   

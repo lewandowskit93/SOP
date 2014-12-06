@@ -2,7 +2,7 @@
 #include <math.h>
 
 sop::memory::Module::Module(sop::system::Kernel *kernel):
-  sop::system::Module(kernel),storage(4096,32)
+  sop::system::Module(kernel),memory_store(4096,32)
 {
 
 }
@@ -21,13 +21,19 @@ void sop::memory::Module::initialize()
 {
   
 }
-int8_t sop::memory::Module::calculatePages(int8_t program_size)
+uint8_t sop::memory::Module::calculatePages(uint16_t program_size)
 {
-  float number_of_pages=(float)storage.getFrameSize();
+  float number_of_pages=(float)memory_store.getFrameSize();
   number_of_pages=ceil(number_of_pages/program_size);
   
-  return (int8_t)number_of_pages;
+  return (uint8_t)number_of_pages;
 }
-
+sop::memory::LogicalMemory* sop::memory::Module::allocate(uint16_t program_size,uint16_t pid)
+{
+  LogicalMemory table_of_pages(calculatePages(program_size));//tworzenie tabeli stron dla procesu, o okreœlonej liczbie stron
+  memory_store.getFreeFrames(table_of_pages.getPageTableSize(),&table_of_pages,pid);//wywo³anie funkcji przydzielaj¹cej ramki stronom na podstawie liczby stron w tabeli stron
+  //?dobrze przekazuje table of pages do getFreeFrames??
+  return &table_of_pages;
+}
 
 
