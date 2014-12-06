@@ -16,7 +16,7 @@ namespace sop
       void interpretLine(); // will interpret one line
     protected:
     private:
-      std::string program_line; // the one line of program code
+      std::string _program_line; // the one line of program code
     };
   }
 }

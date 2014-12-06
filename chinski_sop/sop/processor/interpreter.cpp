@@ -24,7 +24,7 @@ void sop::interpreter::InterpreterHandler::interpretLine()
   etc..
   */ 
 
-  program_line = "";
+  _program_line = "";
 }
 
 void sop::interpreter::InterpreterHandler::buildProgramLine()

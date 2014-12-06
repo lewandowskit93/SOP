@@ -1,5 +1,16 @@
 #include "./sop/processor/processor.h"
 
+sop::processor::processor::processor():
+        a(0), 
+        b(0), 
+        c(0), 
+        d(0), 
+        ip(0){}
+
+sop::processor::processor::~processor()
+{
+}
+
 void sop::processor::ProcessorHandler::clearProcessor(sop::processor::processor *proc)
 {
   proc->a = 0;
@@ -9,7 +20,7 @@ void sop::processor::ProcessorHandler::clearProcessor(sop::processor::processor 
   proc->cs = 0;
   proc->ip = 0;
   ProcessorHandler::clearStack(proc);
-  proc->quant_time = 3;
+  //proc->quant_time = 3;//Moved to executive_unit
   proc->sign_flag = 0;
   proc->zero_flag = 0;
 }

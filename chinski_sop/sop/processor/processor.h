@@ -15,16 +15,13 @@ namespace sop
       uint16_t a,b,c,d; // 16bit registers of the processor, a , b , c , d
       uint16_t cs; // code segment, hold where code begins in memory
       uint16_t ip; // instruction pointer, it's more like instruction counter, it counts the instructions
-      short quant_time; // the number of instructions readed at one time from memory
+      //short quant_time; // the number of instructions readed at one time from memory // UPDATE: it'll be done in executive_unit
       std::stack <uint16_t> processor_stack; // it's a buffor for memory
       bool zero_flag; // if (false) then operation result is not equal to 0, otherwise is equal.
       bool sign_flag; // if (false) then operation result is positive (>=0), otherwise is negative (<0)
     
-      processor(){ // constructor
-        a = b = c = d = 0;
-        ip = 0;
-        quant_time = 3;
-      }
+      processor(); // constructor
+      ~processor(); // deconstructor
     };
 
 
