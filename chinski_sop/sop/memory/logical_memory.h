@@ -11,7 +11,7 @@ namespace memory
 struct page //struktura strony
 {
   int8_t frame_number;//nr ramki do jakej przynale¿y stron
-  char valid_invalid;//czy strona w pamiêci czy nie
+  char valid_invalid;//czy strona w pamiêci czy nie, 0 - invalid, 1 - valid
 };
 class LogicalMemory
 {
