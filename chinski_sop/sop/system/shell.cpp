@@ -192,3 +192,24 @@ std::vector<std::string> sop::system::Shell::getRegisteredCommands()
   }
   return commands;
 }
+
+bool sop::system::Shell::hasParam(const std::vector<const std::string> & param, const std::string & param_name)
+{
+  for(std::vector<std::string>::size_type i = 0; i<param.size();++i)
+  {
+    if(param[i]==param_name) return true;
+  }
+  return false;
+}
+
+std::string sop::system::Shell::getParamValue(const std::vector<const std::string> & param, const std::string & param_name)
+{
+  for(std::vector<std::string>::size_type i = 0; i<(param.size()-1);++i)
+  {
+    if(param[i]==param_name)
+    {
+      return param[i+1];
+    }
+  }
+  return "";
+}
