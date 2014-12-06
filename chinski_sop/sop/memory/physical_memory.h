@@ -37,7 +37,7 @@ protected:
 private:
   bool isEnoughFrames(uint8_t pages_needed);//funkcja zwracaj¹ca czy jest wystarczaj¹co ramek, aby mo¿na by³o je przydzieliæ "z marszu" stronom, czy trzeba wykonaæ swapa
   uint8_t frame_size;//rozmiar ramki
-  int16_t storage_size; //zmienna odpowiadaj¹ca za rozmiar pamiêci
+  uint16_t storage_size; //zmienna odpowiadaj¹ca za rozmiar pamiêci
   uint16_t number_of_frames;//liczba ramek
   uint16_t number_of_free_frames;//liczba wolnych ramek
   uint16_t number_of_not_free_frames;//liczba zajêtych ramek
