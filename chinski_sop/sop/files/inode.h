@@ -9,6 +9,7 @@
 #include "block.h"
 #include "constev.h"
 #include "inode_s.h"
+#include ".\sop\logger\logger.h"
 
 namespace sop
 {

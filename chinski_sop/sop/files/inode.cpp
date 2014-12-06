@@ -22,14 +22,11 @@ sop::files::Inode::Inode(bool isDirectory, uid_t UID, gid_t GID, sop::logger::Lo
   lock(0),
   logger(logger)
 {
-  if(!isDirectory)
+  for(uint32_t i=0; i<sop::files::ConstEV::directAddrBlock; i++)
   {
-    for(uint32_t i=0; i<sop::files::ConstEV::directAddrBlock; i++)
-    {
-      this->file.directBlockAddr[i] = 0;
-    }
-    file.size=0;
+    this->file.directBlockAddr[i] = 0;
   }
+  file.size=0;
 }
 
 sop::files::Inode::~Inode()
@@ -39,13 +36,13 @@ sop::files::Inode::~Inode()
 
 sop::files::uid_t sop::files::Inode::getUID()
 {
-  this->logger->logFiles(3, "Inode getting UID");
+  //this->logger->logFiles(3, "Inode getting UID");
   return this->uid;
 }
 
 sop::files::gid_t sop::files::Inode::getGID()
 {
-  this->logger->logFiles(3, "Inode getting GID");
+  //this->logger->logFiles(3, "Inode getting GID");
   return this->gid;
 }
 
@@ -53,13 +50,22 @@ std::vector<std::array<char, sop::files::ConstEV::blockSize>> sop::files::Inode:
 {
   this->logger->logFiles(3, "Inode getting data");
   std::vector<std::array<char,sop::files::ConstEV::blockSize>> out;
-  for(auto dataInside : this->file.directBlockAddr)
+  if(this->file.size)
   {
-    out.push_back(disk->at(dataInside)->getData_d());
-  }
-  for(auto dataInside : this->file.indirectBlockAddr)
-  {
-    out.push_back(disk->at(dataInside)->getData_d());
+    for(auto dataInside : this->file.directBlockAddr)
+    {
+      if(dataInside < sop::files::ConstEV::numOfBlocks)
+      {
+        out.push_back(disk->at(dataInside)->getData_d());
+      }
+    }
+    for(auto dataInside : this->file.indirectBlockAddr)
+    {
+      if(dataInside < sop::files::ConstEV::numOfBlocks)
+      {
+        out.push_back(disk->at(dataInside)->getData_d());
+      }
+    }
   }
   return out;
 }
@@ -112,9 +118,12 @@ std::vector<sop::files::dirList> sop::files::Inode::listDir(std::array<Block*, s
     this->logger->logFiles(3, "Inode sorting lists");
     std::sort(dirs.begin(), dirs.end(), compareDirList);
     std::sort(files.begin(), files.end(), compareDirList);
-    for(uint32_t i=0; i<files.size()-1; i++)
+    if(files.size())
     {
-      dirs.push_back(files[i]);
+      for(uint32_t i=0; i<files.size(); i++)
+      {
+        dirs.push_back(files[i]);
+      }
     }
   }
   this->logger->logFiles(6, "Inode listing successful");
@@ -141,7 +150,7 @@ void sop::files::Inode::removeFromDir(std::string fileName)
 
 bool sop::files::Inode::getIsDirectory()
 {
-  this->logger->logFiles(3, "Inode: getting if this is a directory");
+  //this->logger->logFiles(3, "Inode: getting if this is a directory");
   return this->isDirectory;
 }
 
@@ -160,6 +169,12 @@ void sop::files::Inode::toggleLock()
 
 void sop::files::Inode::writeToFile(std::string input, std::vector<uint32_t>* freeSpace, std::array<Block*, sop::files::ConstEV::numOfBlocks>* drive)
 {
+  if(this->isDirectory)
+  {
+    std::cout<<"This is a directory!"<<std::endl;
+    this->logger->logFiles(2, "This is a directory");
+    return;
+  }
   this->logger->logFiles(6, "Inode: writing to file initilized");
   std::vector<std::string> insider;
   uint32_t size=input.size();
@@ -177,8 +192,42 @@ void sop::files::Inode::writeToFile(std::string input, std::vector<uint32_t>* fr
       input.clear();
     }
   }
+
+  // Clear memory if needed
+  if(this->file.indirectBlockAddr.size() > 0)
+  {
+    for(auto blocks : this->file.indirectBlockAddr)
+    {
+      freeSpace->push_back(blocks);
+      std::sort(freeSpace->begin(), freeSpace->end());
+      delete drive->at(blocks);
+      drive->at(blocks) = 0;
+    }
+  }
+  for(uint32_t i=0; i<sop::files::ConstEV::directAddrBlock; i++)
+  {
+    if(this->file.directBlockAddr[i] != 0)
+    {
+      if(i == 0)
+      {
+        this->logger->logFiles(3, "Inode: file cleared");
+      }
+      freeSpace->push_back(this->file.directBlockAddr[i]);
+      std::sort(freeSpace->begin(), freeSpace->end());
+      delete drive->at(this->file.directBlockAddr[i]);
+      drive->at(this->file.directBlockAddr[i]) = 0;
+    }
+  }
+
+  // Reserve memory
   std::vector<uint32_t> spaces;
   this->logger->logFiles(3, "Inode: reserve memory");
+  if(insider.size() > freeSpace->size())
+  {
+    std::cout<<"Insufficeint memory"<<std::endl;
+    this->logger->logFiles(2, "Insufficient memory");
+    return;
+  }
   for(uint32_t i=0; i<insider.size(); i++)
   {
     spaces.push_back(freeSpace->at(0));
@@ -186,6 +235,8 @@ void sop::files::Inode::writeToFile(std::string input, std::vector<uint32_t>* fr
     drive->at(spaces[i]) = new sop::files::Data(insider[i]);
   }
   this->file.size = size;
+
+  // Alocate memory
   this->logger->logFiles(3, "Inode: alocate memory");
   for(uint32_t i=0; i<spaces.size(); i++)
   {

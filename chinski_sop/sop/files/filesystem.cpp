@@ -58,25 +58,75 @@ sop::files::Filesystem::~Filesystem()
 // Files
 sop::files::File* sop::files::Filesystem::openFile(pid_t* PID, std::vector<std::string> path, std::string openMode)
 {
-  File* out = this->seek(0, path);
-  if(out != 0)
+  // ToDo MODE DEPENDENCY
+  // MULTIDIR
+  if(path.size()>1)
   {
-    out->setMode(*openMode.substr(0,0).c_str());
-    this->openedFilesList.push_back(out);
+    std::vector<uint32_t> currentDirBlocks;
+    std::vector<std::string> currentDirPath;
+    std::vector<std::string> root;
+    root.push_back("/");
+    
+    for(uint32_t i=0; i<this->currentDir.blockRoute.size(); i++)
+    {
+      currentDirBlocks.push_back(this->currentDir.blockRoute[i]);
+      currentDirPath.push_back(this->currentDir.path[i]);
+    }
+    this->currentDir.path.clear();
+    this->currentDir.blockRoute.clear();
+    std::vector<std::string> tmp(path);
+    path.clear();
+    path.push_back(tmp.back());
+    tmp.pop_back();
+    this->changeDirectory(PID, tmp);
+    File* out = this->seek(PID, path);
+    if(out != 0)
+    {
+      out->setMode((char)openMode[0]);
+      out->setFilename(path.at(path.size()-1));
+      this->openedFilesList.push_back(out);
+    }
+    this->currentDir.path.clear();
+    this->currentDir.blockRoute.clear();
+    for(uint32_t i=0; i<currentDirBlocks.size(); i++)
+    {
+      this->currentDir.path.push_back(currentDirPath[i]);
+      this->currentDir.blockRoute.push_back(currentDirBlocks[i]);
+    }
     return out;
   }
-  return 0;
+  //change the path to appropriate
+  if(path.size() == 1)
+  {
+    File* out = this->seek(PID, path);
+    if(out != 0)
+    {
+      out->setMode((char)openMode[0]);
+      out->setFilename(path.at(path.size()-1));
+      this->openedFilesList.push_back(out);
+    }
+    return out;
+  }
 }
 
 std::string sop::files::Filesystem::readFile(File* fileHandler)
 {
   std::string out = "";
   std::vector<std::array<char, sop::files::ConstEV::blockSize>> data = fileHandler->getData();
+  uint32_t size = fileHandler->getSize();
   for(auto vec : data)
   {
     for(int32_t i=0; i<sop::files::ConstEV::blockSize; i++)
     {
-      out+= vec[i];
+      if(size > 0)
+      {
+        out+= vec[i];
+        size--;
+      }
+      else
+      {
+        break;
+      }
     }
   }
   return out;
@@ -115,6 +165,12 @@ void sop::files::Filesystem::createFile(pid_t* PID, std::vector<std::string> pat
   this->logger->logFiles(3, "Checking for permission");
   if(writePermission)
   {
+    if(this->freeSpace.size() < 1)
+    {
+      std::cout<<"Insufficient memory"<<std::endl;
+      this->logger->logFiles(2, "Insufficient memory");
+      return;
+    }
     uint32_t reserveAddress = this->freeSpace.at(0);
     this->freeSpace.erase(this->freeSpace.begin());
     this->dataBlocks[iterator]->addInDir(path.at(path.size()-1), reserveAddress);
@@ -166,16 +222,7 @@ void sop::files::Filesystem::moveFile(pid_t* PID, std::string fileName, std::str
 void sop::files::Filesystem::writeToFile(File* fileHandler, std::string data)
 {
   this->logger->logFiles(3, "Write to file initilized");
-  if(!this->dataBlocks[fileHandler->getBlockAddr()]->getIsDirectory())
-  {
-    this->dataBlocks[fileHandler->getBlockAddr()]->writeToFile(data, &this->freeSpace, &this->dataBlocks);
-  }
-  else
-  {
-    this->logger->logFiles(2, "Is a directory");
-    std::cout<<fileHandler->getFileName()<<" is a directory!"<<std::endl;
-    return;
-  }
+  this->dataBlocks[fileHandler->getBlockAddr()]->writeToFile(data, &this->freeSpace, &this->dataBlocks);
   this->logger->logFiles(3, "File written");
 }
 
@@ -192,7 +239,8 @@ sop::files::File* sop::files::Filesystem::seek(pid_t* PID, std::vector<std::stri
   if(path.size() == 1 && path[0] == "/")
   {
     this->logger->logFiles(3, "Seek: root tree discovered");
-    return new sop::files::File(PID, currentDir, currentDir, &this->dataBlocks, this->logger);
+    sop::files::File* fh = new sop::files::File(PID, currentDir, currentDir, &this->dataBlocks, this->logger);
+    return fh;
   }
   if(path.size() > 1 && path[0] == "/")
   {
@@ -227,7 +275,9 @@ sop::files::File* sop::files::Filesystem::seek(pid_t* PID, std::vector<std::stri
   {
     this->logger->logFiles(3, "Seek: was found");
     this->logger->logFiles(3, "Search successful");
-    return new sop::files::File(PID, currentDir, this->dataBlocks.at(currentDir)->getAddress(filename), &this->dataBlocks, this->logger);
+    sop::files::File* fh = new sop::files::File(PID, currentDir, this->dataBlocks.at(currentDir)->getAddress(filename), &this->dataBlocks, this->logger);
+    fh->setFilename(filename);
+    return fh;
   }
   else
   {
@@ -265,45 +315,49 @@ std::string sop::files::Filesystem::getCurrentPath()
 }
 
 void sop::files::Filesystem::changeDirectory(pid_t* PID, std::vector<std::string> path)
-{
+{ 
+  uint32_t iter = 0;
   this->logger->logFiles(3, "Changing directory initilized");
-  if(path.size() == 1)
+  if(path[0] == "/")
   {
     this->logger->logFiles(3, "Cd: root tree found");
-    if(path[0] == "/")
+    this->currentDir.blockRoute.clear();
+    this->currentDir.path.clear();
+    iter = 1;
+    if(path.size() == 1)
     {
-      this->currentDir.blockRoute.clear();
-      this->currentDir.path.clear();
+      return;
+    }
+  }
+  if(path.size() == 1)
+  {
+    uint32_t temporary = this->dataBlocks[0]->getAddress(path[0]);
+    if(this->currentDir.blockRoute.size())
+    {
+      temporary = this->dataBlocks[this->currentDir.blockRoute.back()]->getAddress(path[0]);
+    }
+    if(this->dataBlocks[temporary]->getIsDirectory())
+    {
+      this->currentDir.blockRoute.push_back(temporary);
+      this->currentDir.path.push_back(path[0]);
     }
     else
-    {
-      uint32_t temporary = this->dataBlocks[0]->getAddress(path[0]);
-      if(this->currentDir.blockRoute.size())
-      {
-        temporary = this->dataBlocks[this->currentDir.blockRoute.back()]->getAddress(path[0]);
-      }
-      if(this->dataBlocks[temporary]->getIsDirectory())
-      {
-        this->currentDir.blockRoute.push_back(temporary);
-        this->currentDir.path.push_back(path[0]);
-      }
-      else
-      {
-        this->logger->logFiles(2, "Cd: Not a directory");
-        std::cout<<"Not a directory!"<<std::endl;
-        return;
-      }
+    {   
+      this->logger->logFiles(2, "Cd: Not a directory");
+      std::cout<<"Not a directory!"<<std::endl;
+      return;
     }
   }
   else
   {
-    uint32_t iter = 0;
-    if(path[0] == "/")
+    std::vector<std::string> tmpPath;
+    for(uint32_t i=iter; i<path.size()-1; i++)
     {
-      this->currentDir.blockRoute.clear();
-      this->currentDir.path.clear();
-      iter = 1;
+      tmpPath.push_back(path[i]);
+      this->changeDirectory(PID, tmpPath);
+      tmpPath.pop_back();
     }
+    /*
     sop::files::File* fh;
     for(uint32_t i = iter; i<path.size()-1; i++)
     {
@@ -319,8 +373,7 @@ void sop::files::Filesystem::changeDirectory(pid_t* PID, std::vector<std::string
         this->logger->logFiles(2, "Cd: Not found");
         std::cout<<"Directory not found!"<<std::endl;
         break;
-      }
-    }
+      }*/
   }
 }
 
@@ -366,6 +419,12 @@ void sop::files::Filesystem::createDirectory(pid_t* PID, std::vector<std::string
   bool writePermission = 1; // sop::user::ask for write permission
   if(writePermission)
   {
+    if(this->freeSpace.size() < 1)
+    {
+      std::cout<<"Insufficient memory"<<std::endl;
+      this->logger->logFiles(2, "Insufficient memory");
+      return;
+    }
     uint32_t reserveAddress = this->freeSpace.at(0);
     this->freeSpace.erase(this->freeSpace.begin());
     this->dataBlocks[iterator]->addInDir(path.at(path.size()-1), reserveAddress);
@@ -545,7 +604,14 @@ void sop::files::Filesystem::createDirectoryHandler(const std::vector<const std:
     }
     else
     {
-      this->createDirectory(0, path);
+      if(this->freeSpace.size()>1)
+      {
+        this->createDirectory(0, path);
+      }
+      else
+      {
+        std::cout<<"Insufficient memory"<<std::endl;
+      }
     }
   }
 }
@@ -692,15 +758,26 @@ void sop::files::Filesystem::echoHandler(const std::vector<const std::string> & 
 void sop::files::Filesystem::test(const std::vector<const std::string> & params)
 {
   std::vector<std::string> fileName;
-  fileName.push_back("abc");
   pid_t* PID = 0;
+  std::string testowy = "";
+  for(uint32_t i=0; i<44; i++)
+  {
+    testowy += std::to_string(rand()%10);
+  }
+  fileName.push_back("abc");
+  this->createDirectory(PID, fileName);
+  this->changeDirectory(PID, fileName);
+  fileName.pop_back();
+  fileName.push_back("file");
   this->createFile(PID, fileName);
-
-  sop::files::File* fh = this->openFile(PID, fileName, "w");
-  std::string temp;
-  std::cout<<"Write something:"<<std::endl;
-  std::cin>>temp;
-  fh->writeToFile(temp, &this->freeSpace);
+  this->changeDirectoryUp();
+  fileName.pop_back();
+  fileName.push_back("abc");
+  fileName.push_back("file");
+  File* fh = this->openFile(PID, fileName, "w");
+  std::cout<<this->readFile(fh)<<std::endl;
+  this->writeToFile(fh, testowy);
+  std::cout<<this->readFile(fh)<<std::endl;
   this->closeFile(fh);
   delete fh;
 }

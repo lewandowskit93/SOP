@@ -71,7 +71,6 @@ void sop::files::File::loadData()
   this->logger->logFiles(3, "File: loading data");
   sop::files::Block* filenode = this->drive->at(this->blockAddress);
   this->data = filenode->getData_i(this->drive);
-  this->isDataLoaded = 1;
 }
 
 void sop::files::File::writeToFile(std::string text, std::vector<uint32_t>* freeSpace)
@@ -93,5 +92,26 @@ void sop::files::File::setMode(char mode)
 {
   this->logger->logFiles(3, "File: setting mode");
   // TEST if permissions are valid
-  this->openMode = mode;
+  if(mode == 'w' || mode == 'x')
+  {
+    // ToDo test for permission
+  }
+  else
+  {
+    this->openMode = mode;
+  }
+}
+
+uint32_t sop::files::File::getSize()
+{
+  if(this->drive->at(this->blockAddress) != 0)
+  {
+    return this->drive->at(this->blockAddress)->getSize();
+  }
+  return 0;
+}
+
+void sop::files::File::setFilename(std::string filename)
+{
+  this->fileName = filename;
 }
