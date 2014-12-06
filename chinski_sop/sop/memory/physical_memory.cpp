@@ -70,25 +70,23 @@ sop::memory::frame* sop::memory::PhysicalMemory::getFrame(uint16_t frame_number)
 }
 void sop::memory::PhysicalMemory::getFreeFrames(uint8_t pages_needed,sop::memory::LogicalMemory* table_of_pages,uint16_t pid)
 {
-  if(isEnoughFrames(pages_needed)==true)
+  while(isEnoughFrames(pages_needed)!=true)
   {
+    //jesli poziom wolnych ramek spadnie poni¿ej poziomu krytycznego(guaridian...) wykonaj:
+
+  }
+  
     //jeœli poziom wolnych ramek jest odpowiedni po zabraniu ramek to wykonaj:
     for(int i=0;i<pages_needed;++i)
     {
-      table_of_pages->setPage(this->list_of_free_frames.front(),1,i);//przydzielenie ramki danej stronie
+      table_of_pages->setPage(this->list_of_free_frames.front(),1,i);//przydzielenie ramki danej stronie i ustawienie valid na 1
       this->setNubmerOfFreeFrames(this->getNumberOfFrames()-1);//zmniejsza liczbê wolnych ramek
       this->setNumberOfNotFreeFrames(this->getNumberOfFrames() - this->getNumberOfFreeFrames());//zwiêksza liczbê zajêtych ramek
       this->setFrame(pid,i,this->list_of_free_frames.front());//przypisanie strony danej ramce, informacje o tym zapisane w tabeli ramek
       this->assigned_frames_queue.push(this->list_of_free_frames.front());//zapisuje w kolejce która ramka zosta³a przypisana
       this->list_of_free_frames.pop_front();//usuwa przydzielon¹ ramkê z listy wolnych ramek
     }
-    return;
-  }
-  else
-  {
-    //jesli poziom wolnych ramek spadnie poni¿ej poziomu krytycznego(guaridian...) wykonaj:
-
-  }
+      
 }
 
 
