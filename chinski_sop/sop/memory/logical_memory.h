@@ -2,27 +2,33 @@
 #define _SOP_MEMORY_LOGICAL_MEMORY_H_
 
 #include <stdint.h>
+#include <boost\shared_ptr.hpp>
 
 namespace sop
 {
-namespace logical
+namespace memory
 {
 struct page //struktura strony
 {
   int8_t frame_number;//nr ramki do jakej przynale¿y stron
-  int8_t process_id;//do jakiego procesu nale¿y strona
   char valid_invalid;//czy strona w pamiêci czy nie
 };
 class LogicalMemory
 {
 public:	
-
+  explicit LogicalMemory(int8_t number_of_page);//konstruktor tworz¹cy tablicê stron o podanej liczbie stron
+  void setPageTableSize(int8_t size);//ustawia liczbê stron
+  int8_t getPageTableSize();//zwraca liczbê stron
+  page* getPage(int8_t page_nr);//zwraca wskazan¹ stronê
+  void setPage(int8_t frame_nr,char val_inv,int8_t page_nr);//ustawia poszczególnej strony i jej parametrów
+  
 protected:
 
 private:
-	static const int8_t storage_size = 256; //zmienna odpowiadaj¹ca za rozmiar tabeli stron
-	static const page page_table[storage_size];//tabela stron, rekordów tyle ile ramek
+	int8_t page_table_size; //zmienna odpowiadaj¹ca za liczbê  stron
+  boost::shared_ptr<page[]> page_table;//tabela stron, rekordów tyle ile ramek
 };
+//page_table = boost::shared_ptr<page[]>(new page[page_table_size]); w konruktorze zrobic
 
 }
 }
