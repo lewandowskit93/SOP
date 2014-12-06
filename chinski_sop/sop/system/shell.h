@@ -90,6 +90,19 @@ namespace sop
         */
         std::vector<std::string> getRegisteredCommands();
 
+        /*
+          Returns true when param vector contains element equal to param_name.
+          Returns false otherwise.
+        */
+        static bool hasParam(const std::vector<const std::string> & param, const std::string & param_name);
+
+        /*
+          Returns value of parameter specified by param_name.
+          Value is the next element after param_name in params vector.
+          If there is no parameter named param_name in the vector, or parameter is the last element (doesn't have value)
+           then the empty string is returned.
+        */
+        static std::string getParamValue(const std::vector<const std::string> & param, const std::string & param_name);
 
       protected:
       private:
