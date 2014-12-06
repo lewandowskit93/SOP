@@ -14,4 +14,4 @@ sop::users::User::User(uid_t uid, gid_t gid, const std::string & username, const
   this->home_dir=home_dir;
 }
 
-boost::shared_ptr<sop::users::User> sop::users::nobody(new sop::users::User(sop::users::kMax_uid,sop::users::kMax_gid,"nobody","","User which holds max uid. Unloggable.","home\\nobody"));
+boost::shared_ptr<sop::users::User> sop::users::nobody(new sop::users::User(sop::users::kMax_uid,sop::users::kMax_gid,"nobody","","User which holds max uid. Unloggable.","/home/nobody/"));

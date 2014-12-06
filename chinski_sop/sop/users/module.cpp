@@ -27,7 +27,7 @@ std::string sop::users::Module::getClassName() const
 void sop::users::Module::initialize()
 {
   // ToDo: load users from list (if there is no list, then create root)
-  boost::shared_ptr<User> root_usr(new User(0,0,"root","","Superuser","home\\root"));
+  boost::shared_ptr<User> root_usr(new User(0,0,"root","","Superuser","/home/root/"));
   boost::shared_ptr<Group> root_group(new Group(0,"root"));
   root_group->users_list.push_back(root_usr);
   _users_manager.addUser(root_usr);
@@ -36,11 +36,13 @@ void sop::users::Module::initialize()
   getKernel()->getShell()->registerCommand("userslist",&Module::cH_userslist,this);
   getKernel()->getShell()->registerCommand("userdel",&Module::cH_userdel,this);
   getKernel()->getShell()->registerCommand("userfind",&Module::cH_userfind,this);
+  getKernel()->getShell()->registerCommand("chpasswd",&Module::cH_chpasswd,this);
   getKernel()->getShell()->registerCommand("groupadd",&Module::cH_groupadd,this);
   getKernel()->getShell()->registerCommand("groupdel",&Module::cH_groupdel,this);
   getKernel()->getShell()->registerCommand("groupfind",&Module::cH_groupfind,this);
   getKernel()->getShell()->registerCommand("groupmembers",&Module::cH_groupmembers,this);
   getKernel()->getShell()->registerCommand("groupslist",&Module::cH_groupslist,this);
+  getKernel()->getShell()->registerCommand("groupchange",&Module::cH_groupchange,this);
 }
 
 sop::users::UsersManager* sop::users::Module::getUsersManager()
@@ -62,6 +64,7 @@ void sop::users::Module::cH_useradd(const std::vector<const std::string> & param
   }
   else
   {
+    // ToDo: only a superuser can do this
     User user;
 
     if(sop::system::Shell::hasParam(params,"-u"))
@@ -79,7 +82,6 @@ void sop::users::Module::cH_useradd(const std::vector<const std::string> & param
       boost::shared_ptr<Group> group = _groups_manager.findGroup(user.gid);
       if(!group)return;
       else if(group->group_name=="nogroup")return;
-      else if(group->group_name=="root") return; // ToDo: only root can add to this group
     }
     else
     {
@@ -110,7 +112,7 @@ void sop::users::Module::cH_useradd(const std::vector<const std::string> & param
     }
     else
     {
-      user.home_dir="home\\"+user.username;
+      user.home_dir="/home/"+user.username+"/";
     }
 
     if(_users_manager.addUser(user))
@@ -175,6 +177,7 @@ void sop::users::Module::cH_userdel(const std::vector<const std::string> & param
   {
     // ToDo:
     // user cannot be logged in
+    // only a superuser can do this
     // save the file
     boost::shared_ptr<User> user = _users_manager.findUser(params[params.size()-1]);
     if(user)
@@ -207,8 +210,40 @@ void sop::users::Module::cH_userslist(const std::vector<const std::string> & par
   }
 }
 
+void sop::users::Module::cH_chpasswd(const std::vector<const std::string> & params)
+{
+  if(sop::system::Shell::hasParam(params, "-h") || params.size()==1)
+  {
+    std::cout<<"chpasswd [-h] [-o old_password] [-n new_password] login"<<std::endl;
+    std::cout<<"Changes user password."<<std::endl;
+  }
+  else
+  {
+    boost::shared_ptr<User> user = _users_manager.findUser(params[params.size()-1]);
+    std::string old_pass = "";
+    std::string new_pass = "";
+    if(sop::system::Shell::hasParam(params, "-o"))
+    {
+      old_pass=sop::system::Shell::getParamValue(params, "-o"); // ToDo: encrypt password
+    }
+    if(sop::system::Shell::hasParam(params, "-n"))
+    {
+      new_pass=sop::system::Shell::getParamValue(params, "-n"); // ToDo: encrypt password
+    }
+
+    if(user)
+    {
+      if(user->password==old_pass)user->password=new_pass; // ToDo: save file
+      else std::cout<<"Wrong password."<<std::endl;
+    }
+    else std::cout<<"Invalid user."<<std::endl;
+
+  }
+}
+
 void sop::users::Module::cH_groupadd(const std::vector<const std::string> & params)
 {
+  // ToDo: only a superuser can do this
   if(sop::system::Shell::hasParam(params, "-h") || params.size()==1)
   {
     std::cout<<"groupadd [-h] [-g gid] group_name"<<std::endl;
@@ -263,6 +298,7 @@ void sop::users::Module::cH_groupfind(const std::vector<const std::string> & par
 
 void sop::users::Module::cH_groupdel(const std::vector<const std::string> & params)
 {
+  // ToDo: only a superuser can do this
   if(sop::system::Shell::hasParam(params, "-h") || params.size()==1)
   {
     std::cout<<"groupdel [-h] group_name"<<std::endl;
@@ -319,5 +355,41 @@ void sop::users::Module::cH_groupmembers(const std::vector<const std::string> & 
         else std::cout<<(*it)->username<<std::endl;       
       }
     }
+  }
+}
+
+void sop::users::Module::cH_groupchange(const std::vector<const std::string> & params)
+{
+  // ToDo: only a superuser can do this
+  if(sop::system::Shell::hasParam(params,"-h") || params.size()!=3)
+  {
+    std::cout<<"groupchange [-h] username gid"<<std::endl;
+    std::cout<<"Changes group that user belongs to"<<std::endl;
+    return;
+  }
+  else
+  {
+    boost::shared_ptr<User> user = _users_manager.findUser(params[params.size()-2]);
+    if(!user)
+    {
+      std::cout<<"User not found"<<std::endl;
+      return;
+    }
+    boost::shared_ptr<Group> new_group = _groups_manager.findGroup(params[params.size()-1]);
+    if(!new_group)
+    {
+      std::cout<<"New group not found"<<std::endl;
+      return;
+    }
+
+    new_group->users_list.push_back(user);
+
+    boost::shared_ptr<Group> old_group = _groups_manager.findGroup(user->gid);
+    if(old_group)
+    {
+      old_group->users_list.remove(user);
+    }
+
+    user->gid=new_group->gid;
   }
 }

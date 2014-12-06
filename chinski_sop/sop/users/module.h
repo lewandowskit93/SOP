@@ -31,12 +31,14 @@ namespace sop
         void cH_userfind(const std::vector<const std::string> & params);
         void cH_userdel(const std::vector<const std::string> & params);
         void cH_userslist(const std::vector<const std::string> & params);
+        void cH_chpasswd(const std::vector<const std::string> & params);
 
         void cH_groupadd(const std::vector<const std::string> & params);
         void cH_groupfind(const std::vector<const std::string> & params);
         void cH_groupdel(const std::vector<const std::string> & params);
         void cH_groupslist(const std::vector<const std::string> & params);
         void cH_groupmembers(const std::vector<const std::string> & params);
+        void cH_groupchange(const std::vector<const std::string> & params);
         
 
       protected:
