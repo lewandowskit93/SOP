@@ -3,6 +3,8 @@
 #include ".\sop\users\user.h"
 #include ".\sop\users\id_definitions.h"
 #include ".\sop\system\kernel.h"
+#include ".\sop\system\shell.h"
+#include ".\sop\string_converter.h"
 
 sop::users::Module::Module(sop::system::Kernel *kernel):
   sop::system::Module(kernel),
@@ -34,30 +36,9 @@ sop::users::UsersManager* sop::users::Module::getUsersManager()
   return &_users_manager;
 }
 
-bool sop::users::Module::hasParam(const std::vector<const std::string> & param, const std::string & param_name)
-{
-  for(std::vector<std::string>::size_type i = 0; i<param.size();++i)
-  {
-    if(param[i]==param_name) return true;
-  }
-  return false;
-}
-
-std::string sop::users::Module::getParamValue(const std::vector<const std::string> & param, const std::string & param_name)
-{
-  for(std::vector<std::string>::size_type i = 0; i<(param.size()-1);++i)
-  {
-    if(param[i]==param_name)
-    {
-      return param[i+1];
-    }
-  }
-  return "";
-}
-
 void sop::users::Module::cH_useradd(const std::vector<const std::string> & params)
 {
-  if(hasParam(params,"-h") || params.size()==1)
+  if(sop::system::Shell::hasParam(params,"-h") || params.size()==1)
   {
     std::cout<<"useradd [-u uid] [-g gid] [-p passwd] [-c comment] [-d home_dir] [-h] login"<<std::endl;
     std::cout<<"Creates an user specified by given parameters."<<std::endl;
@@ -66,19 +47,19 @@ void sop::users::Module::cH_useradd(const std::vector<const std::string> & param
   {
     User user;
 
-    if(hasParam(params,"-u"))
+    if(sop::system::Shell::hasParam(params,"-u"))
     {
-      user.uid = convertStringTo<uid_t>(getParamValue(params,"-u"));
+      user.uid = sop::StringConverter::convertStringTo<uid_t>(sop::system::Shell::getParamValue(params,"-u"));
     }
     else
     {
       user.uid=_users_manager.getNextFreeUID();
     }
 
-    if(hasParam(params,"-g"))
+    if(sop::system::Shell::hasParam(params,"-g"))
     {
       // ToDo: group must exist already...
-      user.gid = convertStringTo<uid_t>(getParamValue(params,"-g"));
+      user.gid = sop::StringConverter::convertStringTo<uid_t>(sop::system::Shell::getParamValue(params,"-g"));
     }
     else
     {
@@ -87,23 +68,23 @@ void sop::users::Module::cH_useradd(const std::vector<const std::string> & param
       user.gid=user.uid;
     }
 
-    if(hasParam(params, "-p"))
+    if(sop::system::Shell::hasParam(params, "-p"))
     {
       // ToDo: encrypt password
-      user.password = getParamValue(params,"-p");
+      user.password = sop::system::Shell::getParamValue(params,"-p");
     }
     
-    if(hasParam(params,"-c"))
+    if(sop::system::Shell::hasParam(params,"-c"))
     {
-      user.info = getParamValue(params,"-c");
+      user.info = sop::system::Shell::getParamValue(params,"-c");
     }
 
 
     user.username = params[params.size()-1];
 
-    if(hasParam(params,"-d"))
+    if(sop::system::Shell::hasParam(params,"-d"))
     {
-      user.home_dir=getParamValue(params,"-d");
+      user.home_dir=sop::system::Shell::getParamValue(params,"-d");
     }
     else
     {
@@ -120,13 +101,13 @@ void sop::users::Module::cH_useradd(const std::vector<const std::string> & param
 void sop::users::Module::cH_userfind(const std::vector<const std::string> & params)
 {
   boost::shared_ptr<User> user;
-  if(hasParam(params,"-u"))
+  if(sop::system::Shell::hasParam(params,"-u"))
   {
-    user = _users_manager.findUser(convertStringTo<uid_t>(getParamValue(params,"-u")));
+    user = _users_manager.findUser(sop::StringConverter::convertStringTo<uid_t>(sop::system::Shell::getParamValue(params,"-u")));
   }
-  else if(hasParam(params,"-l"))
+  else if(sop::system::Shell::hasParam(params,"-l"))
   {
-    user = _users_manager.findUser(getParamValue(params,"-l"));
+    user = _users_manager.findUser(sop::system::Shell::getParamValue(params,"-l"));
   }
   else
   {
@@ -148,7 +129,7 @@ void sop::users::Module::cH_userfind(const std::vector<const std::string> & para
 
 void sop::users::Module::cH_userdel(const std::vector<const std::string> & params)
 {
-  if(hasParam(params, "-h") || params.size()==1)
+  if(sop::system::Shell::hasParam(params, "-h") || params.size()==1)
   {
     std::cout<<"userdel [-h] login"<<std::endl;
     std::cout<<"Deletes user specified by the given username"<<std::endl;

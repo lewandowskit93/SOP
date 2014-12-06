@@ -25,22 +25,6 @@ namespace sop
 
         UsersManager* getUsersManager();
 
-        bool hasParam(const std::vector<const std::string> & param, const std::string & param_name);
-        std::string getParamValue(const std::vector<const std::string> & param, const std::string & param_name);
-
-        template<class T>
-        T convertStringTo(const std::string & value)
-        {
-          T conv_value=0;
-          if(value!="")
-          {
-            std::stringstream ss;
-            ss<<value;
-            ss>>conv_value;
-          }
-          return conv_value;
-        }
-
         void cH_useradd(const std::vector<const std::string> & params);
         void cH_userfind(const std::vector<const std::string> & params);
         void cH_userdel(const std::vector<const std::string> & params);

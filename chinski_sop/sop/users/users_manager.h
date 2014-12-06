@@ -2,7 +2,9 @@
 #define _SOP_USERS_USERS_MANAGER_H_
 
 #include <list>
+#include <string>
 #include <boost\shared_ptr.hpp>
+#include <boost\regex.hpp>
 #include ".\sop\users\id_definitions.h"
 #include ".\sop\object.h"
 #include ".\sop\users\user.h"
@@ -33,13 +35,15 @@ namespace sop
         std::list<boost::shared_ptr<User>> getUsersList();
         void loadUsersFromFile(const std::string & filename);
         void saveUsersToFile(const std::string & filename);
+        static bool isUsernameValid(const std::string & username);
+        static const boost::regex username_regex;
 
       protected:
 
         Module *_module;
         std::list<boost::shared_ptr<User>> _users_list;
       private:
-
+        
     };
   }
 }

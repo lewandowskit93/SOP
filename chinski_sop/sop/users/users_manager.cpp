@@ -1,8 +1,12 @@
+#include <boost\regex.hpp>
 #include ".\sop\users\users_manager.h"
 #include ".\sop\users\module.h"
 #include ".\sop\system\kernel.h"
 #include ".\sop\system\shell.h"
 #include ".\sop\logger\logger.h"
+#include ".\sop\string_converter.h"
+
+const boost::regex sop::users::UsersManager::username_regex = boost::regex("^[a-zA-Z][0-9a-zA-Z_]*$");
 
 sop::users::UsersManager::UsersManager(Module *module)
 {
@@ -25,16 +29,16 @@ bool sop::users::UsersManager::addUser(boost::shared_ptr<User> user)
   if(!user)return false;
 
   _module->getKernel()->getLogger()->logUsers(sop::logger::Logger::Level::INFO,"Asked to create user");
-  
-  // ToDo: make helper class for conversions string->type and type->string
-  std::stringstream ss;
-  ss<<user->uid;
-  std::string res;
-  ss>>res;
 
-  _module->getKernel()->getLogger()->logUsers(sop::logger::Logger::Level::FINE,"uid: "+res);
+  _module->getKernel()->getLogger()->logUsers(sop::logger::Logger::Level::FINE,"uid: "+sop::StringConverter::convertToString<uid_t>(user->uid));
   _module->getKernel()->getLogger()->logUsers(sop::logger::Logger::Level::FINE,"username: "+user->username);
-  // ToDo: list other user data
+  _module->getKernel()->getLogger()->logUsers(sop::logger::Logger::Level::FINER,"gid: "+sop::StringConverter::convertToString<gid_t>(user->gid));
+
+  if(!isUsernameValid(user->username))
+  {
+    _module->getKernel()->getLogger()->logUsers(sop::logger::Logger::Level::INFO,"User creation failed. Invalid username.");
+    return false;
+  }
 
   if(isUIDFree(user->uid) && isUsernameFree(user->username))
   {
@@ -236,4 +240,9 @@ void sop::users::UsersManager::saveUsersToFile(const std::string & filename)
 std::list<boost::shared_ptr<sop::users::User>> sop::users::UsersManager::getUsersList()
 {
   return _users_list;
+}
+
+bool sop::users::UsersManager::isUsernameValid(const std::string & username)
+{
+  return boost::regex_match(username,username_regex);
 }
