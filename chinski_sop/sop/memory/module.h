@@ -26,7 +26,7 @@ namespace sop
 
       private:
         PhysicalMemory storage;//nasza pamiêæ fizyczna, pierwszy argument to rozmair w bajtach, a drugi rozmiar ramki
-        uint8_t calculatePages(uint16_t program_size); //zwraca liczbê stron niezbêdn¹ dla danego programu
+        int8_t calculatePages(int8_t program_size); //zwraca liczbê stron niezbêdn¹ dla danego programu
 
     };
   }

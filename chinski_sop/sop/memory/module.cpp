@@ -21,12 +21,12 @@ void sop::memory::Module::initialize()
 {
   
 }
-uint8_t sop::memory::Module::calculatePages(uint16_t program_size)
+int8_t sop::memory::Module::calculatePages(int8_t program_size)
 {
   float number_of_pages=(float)storage.getFrameSize();
   number_of_pages=ceil(number_of_pages/program_size);
   
-  return (uint8_t)number_of_pages;
+  return (int8_t)number_of_pages;
 }
 
 
