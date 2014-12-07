@@ -1,14 +1,39 @@
 #include "./sop/processor/processor.h"
-
+#include <iostream>
 sop::processor::processor::processor():
         a(0), 
         b(0), 
         c(0), 
         d(0), 
-        ip(0){}
+        ip(0),
+        sign_flag(false),
+        zero_flag(false)
+{
+}
+        
 
 sop::processor::processor::~processor()
 {
+}
+
+void sop::processor::ProcessorHandler::printOutProcessorState(sop::processor::processor *proc)
+{
+  std::cout<<"REG A: "<<proc->a<<std::endl;
+  std::cout<<"REG B: "<<proc->b<<std::endl;
+  std::cout<<"REG C: "<<proc->c<<std::endl;
+  std::cout<<"REG D: "<<proc->d<<std::endl;
+  std::cout<<"IP: "<<proc->ip<<std::endl;
+  std::cout<<"ZERO FLAG: ";
+  if (proc->zero_flag) std::cout<<"TRUE"<<std::endl;
+  else std::cout<<"FALSE"<<std::endl;
+  std::cout<<"SIGN FLAG: ";
+  if (proc->sign_flag) std::cout<<"TRUE"<<std::endl;
+  else std::cout<<"FALSE"<<std::endl;
+  std::cout<<"STACK SIZE: "<<proc->processor_stack.size()<<std::endl;
+  if (proc->processor_stack.size()>0)
+    std::cout<<"STACK TOP: "<<proc->processor_stack.top()<<std::endl;
+
+
 }
 
 void sop::processor::ProcessorHandler::clearProcessor(sop::processor::processor *proc)

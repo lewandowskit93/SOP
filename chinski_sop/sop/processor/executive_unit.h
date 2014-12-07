@@ -23,7 +23,12 @@ namespace sop
       sop::processor::Scheduler scheduler;
 
       void cH_showQuantTimeLeft (const std::vector<const std::string> & params);
-
+      void cH_showActiveTaskQueue (const std::vector<const std::string> & params);
+      void cH_showUnactiveTaskQueue (const std::vector<const std::string> & params);
+      void cH_tick(const std::vector<const std::string> & params);
+      void cH_interpretLine(const std::vector<const std::string> & params);
+      void cH_showActualProcessorState(const std::vector<const std::string> & params);
+      void cH_showAnyProcessorState(const std::vector<const std::string> & params);
     protected:
     private:
       short _quantTimeLeft; // if == 0 then other process will be executed

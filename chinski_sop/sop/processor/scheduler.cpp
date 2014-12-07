@@ -1,4 +1,5 @@
 #include "./sop/processor/scheduler.h"
+#include <iostream>
 uint8_t sop::processor::Scheduler::getUserPriority(sop::process::Process *p)
 {
   // funkcja Tomalska sop::user::GetUserPriority(p.getUID);
@@ -25,7 +26,7 @@ sop::process::Process *sop::processor::Scheduler::getHighestPriorityProcess()
     {
       if (_first_task_array[i].size()>0)
       {
-        return _first_task_array[i].back();
+        return _first_task_array[i].front();
       }
     }
     eraChange();
@@ -36,7 +37,7 @@ sop::process::Process *sop::processor::Scheduler::getHighestPriorityProcess()
     {
       if (_second_task_array[i].size()>0)
       {
-        return _second_task_array[i].back();
+        return _second_task_array[i].front();
       }
     }
    eraChange();
@@ -112,8 +113,90 @@ sop::processor::Scheduler::Scheduler():
     for (uint8_t i = 0 ; i < 10 ; i++)
     {
       _first_task_array.push_back(std::queue<sop::process::Process*>());
+      _second_task_array.push_back(std::queue<sop::process::Process*>());
     }
   }
 
 sop::processor::Scheduler::~Scheduler()
 {}
+
+
+void sop::processor::Scheduler::printOutHelperMethod(int i, bool which)
+{
+  if (!which)
+  {
+    std::queue<sop::process::Process*> bufor = _first_task_array[i];
+    std::cout << "QUEUE["<<i<<"]:"<<std::endl;
+    while (bufor.size() != 0)
+    {
+      std::cout<<"PID: "<<bufor.front()->PID << std::endl;
+      bufor.pop();
+    }
+  }
+  else 
+  {
+    std::queue<sop::process::Process*> bufor = _second_task_array[i];
+    std::cout << "QUEUE["<<i<<"]:"<<std::endl;
+    while (bufor.size() != 0)
+    {
+      std::cout<<"PID: "<<bufor.front()->PID << std::endl;
+      bufor.pop();
+    }
+  }
+}
+
+void sop::processor::Scheduler::printOutActiveTasks()
+{
+  bool all_empty = true;
+  if (firstIsActive())
+  {
+    for (int i = 0 ; i < 10 ; i++)
+    {
+      if (!_first_task_array[i].empty())
+      {
+        all_empty = false;
+        printOutHelperMethod(i,0);
+      }
+    }
+  }
+  else if (secondIsActive())
+  {
+    for (int i = 0 ; i < 10 ; i++)
+    {
+      if (!_second_task_array[i].empty())
+      {
+        all_empty = false;
+        printOutHelperMethod(i,1);
+      }
+    }
+  }
+   if (all_empty) std::cout<<"NONE PROCESSES IN QUEUE"<< std::endl;
+}
+
+void sop::processor::Scheduler::printOutUnactiveTasks()
+{
+  bool all_empty = true;
+  if (!firstIsActive())
+  {
+    for (int i = 0 ; i < 10 ; i++)
+    {
+      if (!_first_task_array[i].empty())
+      {
+        all_empty = false;
+        printOutHelperMethod(i,0);
+      }
+    }
+  }
+  else if (!secondIsActive())
+  {
+    for (int i = 0 ; i < 10 ; i++)
+    {
+      if (!_second_task_array[i].empty())
+      {
+        all_empty = false;
+        printOutHelperMethod(i,1);
+      }
+    }
+  }
+  if (all_empty) std::cout<<"NONE PROCESSES IN QUEUE"<< std::endl;
+}

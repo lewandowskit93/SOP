@@ -24,6 +24,9 @@ namespace sop
       bool firstIsActive(); // checks if the first array is the active one
       bool secondIsActive(); // checks if the second array is the active one
       void clearTaskArray(); // used to clean vector after eraChange
+      void printOutActiveTasks();
+      void printOutUnactiveTasks();
+      void printOutHelperMethod(int i, bool which);
       Scheduler();
       ~Scheduler();
     protected:

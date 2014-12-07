@@ -171,7 +171,7 @@
     <ClInclude Include="sop\processor\executive_unit.h">
       <Filter>Header Files\sop\processor</Filter>
     </ClInclude>
-    <ClInclude Include="class_process.h">
+    <ClInclude Include="sop\processes\class_process.h">
       <Filter>Header Files\sop\processes</Filter>
     </ClInclude>
   </ItemGroup>

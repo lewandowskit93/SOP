@@ -30,6 +30,7 @@ namespace sop
 
     public:
       //General functions 
+      static void printOutProcessorState(processor *proc);
       static void clearProcessor(processor *proc); //sets default(starting) values
       static uint16_t* charRegisterHandler(processor *proc, char processor_register); // convert chat into variable
 
