@@ -30,12 +30,12 @@ uint8_t sop::memory::Module::calculatePages(uint16_t program_size)
   return (uint8_t)number_of_pages;
 }
 
-sop::memory::LogicalMemory* sop::memory::Module::allocate(uint16_t program_size,uint16_t pid)
+sop::memory::LogicalMemory sop::memory::Module::allocate(uint16_t program_size,uint16_t pid)
 {
   LogicalMemory table_of_pages(calculatePages(program_size));//tworzenie tabeli stron dla procesu, o okreœlonej liczbie stron
   physical_drive.getFreeFrames(table_of_pages.getPageTableSize(),&table_of_pages,pid,&swap_drive);//wywo³anie funkcji przydzielaj¹cej ramki stronom na podstawie liczby stron w tabeli stron
   //?dobrze przekazuje table of pages do getFreeFrames??
-  return &table_of_pages;
+  return table_of_pages;
 }
 
 void sop::memory::Module::deallocate(sop::memory::LogicalMemory* page_table)
