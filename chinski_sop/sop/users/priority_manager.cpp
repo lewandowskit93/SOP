@@ -66,6 +66,7 @@ void sop::users::PriorityManager::removeUserPriorityEntry(uid_t uid)
 
 void sop::users::PriorityManager::removeGroupPriorityEntry(gid_t gid)
 {
+  _module->getKernel()->getLogger()->logUsers(sop::logger::Logger::Level::INFO,"Removing group priority entry.");
   priorities.erase(gid);
 }
 

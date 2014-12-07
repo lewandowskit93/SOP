@@ -44,6 +44,7 @@ namespace sop
 
         void cH_nice(const std::vector<const std::string> & params);
         void cH_shownice(const std::vector<const std::string> & params);
+        void cH_removeniceentry(const std::vector<const std::string> & params);
         
 
       protected:

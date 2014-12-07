@@ -46,6 +46,7 @@ void sop::users::Module::initialize()
   getKernel()->getShell()->registerCommand("groupchange",&Module::cH_groupchange,this);
   getKernel()->getShell()->registerCommand("nice",&Module::cH_nice,this);
   getKernel()->getShell()->registerCommand("shownice",&Module::cH_shownice,this);
+  getKernel()->getShell()->registerCommand("removeniceentry",&Module::cH_removeniceentry,this);
 }
 
 sop::users::UsersManager* sop::users::Module::getUsersManager()
@@ -438,7 +439,6 @@ void sop::users::Module::cH_shownice(const std::vector<const std::string> & para
   {
     std::cout<<"shownice [-g gid] [-u uid] [-h]"<<std::endl;
     std::cout<<"Shows nice priority of group/user"<<std::endl;
-    return;
   }
   else if(sop::system::Shell::hasParam(params,"-g"))
   {
@@ -447,5 +447,27 @@ void sop::users::Module::cH_shownice(const std::vector<const std::string> & para
   else if(sop::system::Shell::hasParam(params,"-u"))
   {
     std::cout<<(int16_t)_priority_manager.getUserPriority(sop::StringConverter::convertStringTo<uid_t>(sop::system::Shell::getParamValue(params,"-u")))<<std::endl;
+  }
+}
+
+void sop::users::Module::cH_removeniceentry(const std::vector<const std::string> & params)
+{
+  if(sop::system::Shell::hasParam(params,"-h") || params.size()==1)
+  {
+    std::cout<<"removeniceentry [-h] [-s] gid"<<std::endl;
+    std::cout<<"Removes priority entry"<<std::endl;
+    return;
+  }
+
+  if(sop::system::Shell::hasParam(params,"-s"))
+  {
+    // ToDo: only for root
+  }
+
+  _priority_manager.removeGroupPriorityEntry(sop::StringConverter::convertStringTo<gid_t>(params[params.size()-1]));
+
+  if(sop::system::Shell::hasParam(params,"-s"))
+  {
+    // ToDo: save file
   }
 }
