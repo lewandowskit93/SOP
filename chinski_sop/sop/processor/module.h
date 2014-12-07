@@ -3,6 +3,8 @@
 
 #include <string>
 #include ".\sop\system\module.h"
+#include ".\sop\processor\executive_unit.h"
+
 
 namespace sop
 {
@@ -18,7 +20,7 @@ namespace sop
         virtual ~Module();
         virtual std::string getClassName() const;
         virtual void initialize();
-
+        ExecutiveUnit *ExUnit;
       protected:
 
       private:
