@@ -1,9 +1,17 @@
 #include ".\sop\users\permissions.h"
 
+sop::users::Permissions::Permissions():
+  user(kNone),
+  group(kNone),
+  others(kNone)
+{
+}
+
+
 sop::users::Permissions::Permissions(bool for_directory):
-  user(for_directory==false ? 6 : 7),
-  group(for_directory==false ? 6 : 7),
-  others(for_directory==false ? 6 : 7)
+  user(for_directory==true ? kRWX : kRW),
+  group(for_directory==true ? kRWX : kRW),
+  others(for_directory==true ? kRWX : kRW)
 {
 }
 

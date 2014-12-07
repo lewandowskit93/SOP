@@ -21,6 +21,7 @@ namespace sop
       static const permission_t kX=1;
       static const permission_t kNone=0;
 
+      Permissions(); //000
       Permissions(bool for_directory); //dir 777 file 666
       Permissions(permission_t user, permission_t group, permission_t others);
 
