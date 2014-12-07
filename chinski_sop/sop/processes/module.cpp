@@ -79,3 +79,12 @@ void sop::processes::Module::CreateShellInit()
   Procesik->setIsActuallyRunning(1);
   sop::processes::Module::addToVector(Procesik);
 }
+
+void sop::processes::Module::fork()
+{
+
+}
+
+void sop::processes::Module::exec()
+{
+}

@@ -29,9 +29,14 @@ namespace sop
         void showObjectInList(uint16_t PID);
         boost::shared_ptr<sop::process::Process> findProcess(uint16_t PID);
 
-        //stworzenie  procesu INIT
+        //stworzenie glownego procesu numer 0 (shell) z ktorego beda tworzone kolejne procesy.
+        //ma przypisane takie wartosci pol ktore spowoduja ze nie bedzie ruszany ani rpzez pamiec ani przez procesor.
         void CreateShellInit();
-
+        //stworzenie procesu potomka, ktory ma skopiowane srodowisko z procesu, z ktorego jest stworzony.
+        void fork();
+        //wyslanie kodu programu do danego procesu co spowoduje wyslanie prosby o alokacje pamieci i przydzial procesora.
+        void exec();
+      
       protected:
 
       private:

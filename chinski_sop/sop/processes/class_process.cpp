@@ -2,7 +2,9 @@
 #include "./sop/processes/class_process.h"
 
 //public
+
     //construtor
+
 sop::process::Process::Process():
     _PID(0),
     _UID(0),
@@ -13,11 +15,15 @@ sop::process::Process::Process():
     _processorFlagStatus(0),
     _endingFlagStatus(0),
     _processIsInScheduler(0){}
+
     //destructor
+
 sop::process::Process::~Process()
 {
 }
+
     //getters from protected
+
 uint16_t sop::process::Process::getPID()
 {
   return this->_PID;
@@ -37,7 +43,29 @@ uint16_t sop::process::Process::getArrayPages()
 {
   return this->_array_pages;
 }
+
+uint16_t sop::process::Process::getRejestrA()
+{
+  return this->_rejestrA;
+}
+
+uint16_t sop::process::Process::getRejestrB()
+{
+  return this->_rejestrB;
+}
+
+uint16_t sop::process::Process::getRejestrC()
+{
+  return this->_rejestrC;
+}
+
+uint16_t sop::process::Process::getRejestrD()
+{
+  return this->_rejestrD;
+}
+
     //getters from private
+
 uint16_t sop::process::Process::getPPID()
 {
   return this->_PPID;
@@ -67,8 +95,11 @@ uint16_t sop::process::Process::getIsActuallyRunning()
 {
   return this->_isActuallyRunning;
 }
+
 //protected
+
     //setters
+
 void sop::process::Process::setPID(uint16_t PID)
 {
   this->_PID = PID;
@@ -88,8 +119,31 @@ void sop::process::Process::setArrayPages(uint16_t ArrayPages)
 {
   this->_array_pages = ArrayPages;
 }
+
+void sop::process::Process::setRejestrA(uint16_t A)
+{
+  this->_rejestrA = A;
+}
+
+void sop::process::Process::setRejestrB(uint16_t B)
+{
+  this->_rejestrB = B;
+}
+
+void sop::process::Process::setRejestrC(uint16_t C)
+{
+  this->_rejestrC = C;
+}
+
+void sop::process::Process::setRejestrD(uint16_t D)
+{
+  this->_rejestrD = D;
+}
+
 //private
+
     //set enums
+
 uint16_t sop::process::Process::setStatusNew() //ustawia status na nowy
 {
   TASK_STATUS status;
@@ -117,7 +171,9 @@ uint16_t sop::process::Process::setStatusExecuted() //ustawia status na wykonany
   status = task_executed;
   return status;
 }
+
     //setters  
+
 void sop::process::Process::setPPID(uint16_t PPID)
 {
   this->_PPID = PPID;

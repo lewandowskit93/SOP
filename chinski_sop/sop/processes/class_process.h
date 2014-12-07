@@ -5,8 +5,6 @@
 #include <string>
 #include <cstdint>
 
-
-
 namespace sop
 {
   namespace process
@@ -23,6 +21,10 @@ namespace sop
       uint16_t getUID();
       uint16_t getGID();
       uint16_t getArrayPages();
+      uint16_t getRejestrA();
+      uint16_t getRejestrB();
+      uint16_t getRejestrC();
+      uint16_t getRejestrD();
       //getters from private
       uint16_t getPPID();
       uint16_t getMemoryFlagStatus();
@@ -35,6 +37,10 @@ namespace sop
       void setUID(uint16_t);
       void setGID(uint16_t);
       void setArrayPages(uint16_t);
+      void setRejestrA(uint16_t);
+      void setRejestrB(uint16_t);
+      void setRejestrC(uint16_t);
+      void setRejestrD(uint16_t);
       //set enums from private
       uint16_t setStatusNew();
       uint16_t setStatusWaiting();
@@ -58,6 +64,7 @@ namespace sop
       };
       //variables
       uint16_t _PID, _UID, _GID;
+      uint16_t _rejestrA, _rejestrB, _rejestrC, _rejestrD;
       //sop::process::Processor Procesor; //Zmienna dla Krzycha
       uint16_t _stack_counter;
       uint16_t _array_pages;
