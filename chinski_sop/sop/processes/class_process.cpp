@@ -1,8 +1,24 @@
+#include "./sop/processes/module.h"
 #include "./sop/processes/class_process.h"
 
 //protected
 
     //setters
+sop::process::Process::Process():
+    _PID(0),
+    _UID(0),
+    _GID(0),
+    _array_pages(0),
+    _PPID(0),
+    _memoryFlagStatus(0),
+    _processorFlagStatus(0),
+    _endingFlagStatus(0),
+    _processIsInScheduler(0){}
+
+sop::process::Process::~Process()
+{
+}
+
 void sop::process::Process::setPID(uint16_t PID)
 {
   this->_PID = PID;
@@ -44,12 +60,6 @@ uint16_t sop::process::Process::getArrayPages()
   return this->_array_pages;
 }
 
-//private
-void sop::process::Process::sendToScheduler()
-{
-
-}
-
     //set enums
 uint16_t sop::process::Process::setStatusNew() //ustawia status na nowy
 {
@@ -85,14 +95,24 @@ void sop::process::Process::setPPID(uint16_t PPID)
   this->_PPID = PPID;
 }
 
-void sop::process::Process::setMemoryFlagStatus(uint16_t MF)
+void sop::process::Process::setMemoryFlagStatus(uint16_t MFS)
 {
-  this->_memoryFlagStatus = MF;
+  this->_memoryFlagStatus = MFS;
 }
 
-void sop::process::Process::setProcessorFlagStatus(uint16_t PF)
+void sop::process::Process::setProcessorFlagStatus(uint16_t PFS)
 {
-  this->_processorFlagStatus = PF;
+  this->_processorFlagStatus = PFS;
+}
+
+void sop::process::Process::setEndingFlagStatus(uint16_t EFS)
+{
+  this->_endingFlagStatus = EFS;
+}
+
+void sop::process::Process::setProcessIsInScheduler(uint16_t PIIS)
+{
+  this->_processIsInScheduler = PIIS;
 }
 
     //getters
@@ -111,4 +131,13 @@ uint16_t sop::process::Process::getProcessorFlagStatus()
   return this->_processorFlagStatus;
 }
 
-    //methods
+uint16_t sop::process::Process::getEndingFlagStatus()
+{
+  return this->_endingFlagStatus;
+}
+
+uint16_t sop::process::Process::getProcessIsInScheduler()
+{
+  return this->_processIsInScheduler;
+}
+

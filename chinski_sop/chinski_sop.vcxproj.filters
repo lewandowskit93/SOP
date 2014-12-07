@@ -224,11 +224,11 @@
     <ClCompile Include="sop\initializable.cpp">
       <Filter>Source Files\sop</Filter>
     </ClCompile>
-    <ClCompile Include="sop\processes\class_process.h">
-      <Filter>Source Files\sop\processes</Filter>
-    </ClCompile>
     <ClCompile Include="sop\processes\class_process.cpp">
       <Filter>Source Files\sop\processes</Filter>
+    </ClCompile>
+    <ClCompile Include="sop\processes\class_process.h">
+      <Filter>Header Files\sop\processes</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

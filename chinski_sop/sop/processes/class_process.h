@@ -6,6 +6,7 @@
 #include <cstdint>
 
 
+
 namespace sop
 {
   namespace process
@@ -13,6 +14,19 @@ namespace sop
     class Process
     {
     public:  
+      Process();
+      ~Process();
+      //getters from protected
+      uint16_t getPID();
+      uint16_t getUID();
+      uint16_t getGID();
+      uint16_t getArrayPages();
+      //getters from private
+      uint16_t getPPID();
+      uint16_t getMemoryFlagStatus();
+      uint16_t getProcessorFlagStatus();
+      uint16_t getEndingFlagStatus();
+      uint16_t getProcessIsInScheduler();
   
     protected:
       //setters
@@ -20,11 +34,6 @@ namespace sop
       void setUID(uint16_t);
       void setGID(uint16_t);
       void setArrayPages(uint16_t);
-      //getters
-      uint16_t getPID();
-      uint16_t getUID();
-      uint16_t getGID();
-      uint16_t getArrayPages();
       //enumeration
       enum TASK_STATUS
       {
@@ -35,12 +44,11 @@ namespace sop
       };
       //variables
       uint16_t _PID, _UID, _GID;
-      uint16_t _register_A, _register_B, _register_C, _register_D;
+      //sop::process::Processor Procesor; //Zmienna dla Krzycha
       uint16_t _stack_counter;
       uint16_t _array_pages;
 
     private:
-      void sendToScheduler(); //funkcja wysylajaca do planisty info, ze proces moze byc brany pod uwage(tymczasowo typu void)
       //set enums
       uint16_t setStatusNew();
       uint16_t setStatusWaiting();
@@ -50,17 +58,18 @@ namespace sop
       void setPPID(uint16_t);
       void setMemoryFlagStatus(uint16_t);
       void setProcessorFlagStatus(uint16_t);
-      //getters
-      uint16_t getPPID();
-      uint16_t getMemoryFlagStatus();
-      uint16_t getProcessorFlagStatus();
+      void setEndingFlagStatus(uint16_t);
+      void setProcessIsInScheduler(uint16_t);
+      
       //methods
 
       //variables
       uint16_t _PPID;
       uint16_t _memoryFlagStatus;     // flaga ustawiana na 1 jesli zostanie przydzielona pamiec
       uint16_t _processorFlagStatus;  // flaga ustawiana na 1 jesli zostanie przydzielony procesor
-
+      uint16_t _endingFlagStatus;     // flaga ustawiona na 1 jak proces zakonczyl wykonywanie programu
+      uint16_t _processIsInScheduler; // flaga ustawiona na 1 jesli proces znajduje sie w schedulerze
+       
     };
   }
 }
