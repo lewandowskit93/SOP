@@ -17,6 +17,8 @@ namespace sop
       void processorTick(); // processor ticks once every quant time 
       ExecutiveUnit(); // constructor
       ~ExecutiveUnit(); // deconstructor
+      sop::interpreter::InterpreterHandler interpreter;
+      sop::processor::Scheduler scheduler;
     protected:
     private:
       short _quantTimeLeft; // if == 0 then other process will be executed
