@@ -17,6 +17,7 @@ class LogicalMemory
 {
 public:	
   explicit LogicalMemory(uint8_t number_of_page);//konstruktor tworz¹cy tablicê stron o podanej liczbie stron
+  ~LogicalMemory();//destruktor, stworzono dla mo¿liwoœci zapisania do loggera ze coœ zosta³o zniszczone
   void setPageTableSize(uint8_t size);//ustawia liczbê stron
   uint8_t getPageTableSize();//zwraca liczbê stron
   page* getPage(uint8_t page_nr);//zwraca wskazan¹ stronê

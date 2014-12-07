@@ -18,9 +18,10 @@ namespace memory
   class SwapFile
   {
 public:	
+  SwapFile(uint16_t swap_size,uint8_t swap_frame_size);//kontstruktor tworz¹cy plik wymiany i ustawiajacy liczbê ramek
+  ~SwapFile();//destruktor, stworzono dla mo¿liwoœci zapisania do loggera ze coœ zosta³o zniszczone
   uint8_t getSwapFrameSize();//zwraca rozmiar ramki w swapie,taki sam jak w fizycznej pamieci
   uint8_t* getSwap();//zwraca wskaŸnik na swapa
-  SwapFile(uint16_t swap_size,uint8_t swap_frame_size);//kontstruktor tworz¹cy plik wymiany i ustawiajacy liczbê ramek
   uint16_t getNumberOfSwapFrames();//zwraca liczbe ramek w pliku wymainy
   uint16_t getNumberOfFreeSwapFrames();//zwraca liczbê wolnych ramek w pliku wymiany
   void setNubmerOfFreeSwapFrames(uint16_t change);//ustawia liczbê wolnych ramek w pliku wymiany

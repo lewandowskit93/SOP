@@ -14,6 +14,11 @@ sop::memory::SwapFile::SwapFile(uint16_t swap_size,uint8_t swap_frame_size)
   }
 }
 
+sop::memory::SwapFile::~SwapFile()
+{
+
+}
+
 uint8_t sop::memory::SwapFile::getSwapFrameSize()
 {
   return this->swap_frame_size;

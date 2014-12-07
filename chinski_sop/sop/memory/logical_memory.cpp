@@ -8,6 +8,11 @@ sop::memory::LogicalMemory::LogicalMemory(uint8_t number_of_page)
   
 }
 
+sop::memory::LogicalMemory::~LogicalMemory()
+{
+
+}
+
 void sop::memory::LogicalMemory::setPageTableSize(uint8_t size)
 {
   this->page_table_size=size;

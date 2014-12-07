@@ -20,10 +20,11 @@ namespace memory
 class PhysicalMemory
 {
 public:	
+  PhysicalMemory(uint16_t storage_size,uint8_t frame_size);//kontstruktor tworz¹cy pamiêæ i ustawiajacy liczbê ramek
+  ~PhysicalMemory();//destruktor, stworzono dla mo¿liwoœci zapisania do loggera ze coœ zosta³o zniszczone
   uint8_t getFrameSize();//zwraca rozmiar ramki
   uint16_t getStorageSize();//zwraca rozmiar pamiêci
   uint8_t* getStorage();//zwraca wskaŸnik na pamiêæ fizyczn¹
-  PhysicalMemory(uint16_t storage_size,uint8_t frame_size);//kontstruktor tworz¹cy pamiêæ i ustawiajacy liczbê ramek
   uint16_t getNumberOfFrames();//zwraca liczbe ramek
   uint16_t getNumberOfFreeFrames();//zwraca liczbê wolnych ramek
   uint16_t getNumberOfNotFreeFrames();//zwraca liczbê zajêtych ramek

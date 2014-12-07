@@ -17,6 +17,11 @@ sop::memory::PhysicalMemory::PhysicalMemory(uint16_t storage_size,uint8_t frame_
   }
 }
 
+sop::memory::PhysicalMemory::~PhysicalMemory()
+{
+
+}
+
 uint8_t sop::memory::PhysicalMemory::getFrameSize()
 {
   return frame_size;
