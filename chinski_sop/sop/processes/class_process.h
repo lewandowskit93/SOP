@@ -14,7 +14,9 @@ namespace sop
     class Process
     {
     public:  
+      //constructor
       Process();
+      //destructor
       ~Process();
       //getters from protected
       uint16_t getPID();
@@ -27,13 +29,25 @@ namespace sop
       uint16_t getProcessorFlagStatus();
       uint16_t getEndingFlagStatus();
       uint16_t getProcessIsInScheduler();
-  
-    protected:
-      //setters
+      uint16_t getIsActuallyRunning();
+      //setters from protected
       void setPID(uint16_t);
       void setUID(uint16_t);
       void setGID(uint16_t);
       void setArrayPages(uint16_t);
+      //set enums from private
+      uint16_t setStatusNew();
+      uint16_t setStatusWaiting();
+      uint16_t setStatusRunning();
+      uint16_t setStatusExecuted();
+      //setters from private
+      void setPPID(uint16_t);
+      void setMemoryFlagStatus(uint16_t);
+      void setProcessorFlagStatus(uint16_t);
+      void setEndingFlagStatus(uint16_t);
+      void setProcessIsInScheduler(uint16_t);
+      void setIsActuallyRunning(uint16_t);
+    protected:
       //enumeration
       enum TASK_STATUS
       {
@@ -49,26 +63,13 @@ namespace sop
       uint16_t _array_pages;
 
     private:
-      //set enums
-      uint16_t setStatusNew();
-      uint16_t setStatusWaiting();
-      uint16_t setStatusRunning();
-      uint16_t setStatusExecuted();
-      //setters
-      void setPPID(uint16_t);
-      void setMemoryFlagStatus(uint16_t);
-      void setProcessorFlagStatus(uint16_t);
-      void setEndingFlagStatus(uint16_t);
-      void setProcessIsInScheduler(uint16_t);
-      
-      //methods
-
       //variables
       uint16_t _PPID;
       uint16_t _memoryFlagStatus;     // flaga ustawiana na 1 jesli zostanie przydzielona pamiec
       uint16_t _processorFlagStatus;  // flaga ustawiana na 1 jesli zostanie przydzielony procesor
       uint16_t _endingFlagStatus;     // flaga ustawiona na 1 jak proces zakonczyl wykonywanie programu
       uint16_t _processIsInScheduler; // flaga ustawiona na 1 jesli proces znajduje sie w schedulerze
+      uint16_t _isActuallyRunning;    // flaga ustawiona na 1 jesli proces jest aktualnie wykonywany
        
     };
   }

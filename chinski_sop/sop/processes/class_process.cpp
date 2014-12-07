@@ -1,9 +1,8 @@
 #include "./sop/processes/module.h"
 #include "./sop/processes/class_process.h"
 
-//protected
-
-    //setters
+//public
+    //construtor
 sop::process::Process::Process():
     _PID(0),
     _UID(0),
@@ -14,32 +13,11 @@ sop::process::Process::Process():
     _processorFlagStatus(0),
     _endingFlagStatus(0),
     _processIsInScheduler(0){}
-
+    //destructor
 sop::process::Process::~Process()
 {
 }
-
-void sop::process::Process::setPID(uint16_t PID)
-{
-  this->_PID = PID;
-}
-
-void sop::process::Process::setUID(uint16_t UID)
-{
-  this->_UID = UID;
-}
-
-void sop::process::Process::setGID(uint16_t GID)
-{
-  this->_GID = GID;
-}
-
-void sop::process::Process::setArrayPages(uint16_t ArrayPages)
-{
-  this->_array_pages = ArrayPages;
-}
-
-    //getters
+    //getters from protected
 uint16_t sop::process::Process::getPID()
 {
   return this->_PID;
@@ -59,7 +37,58 @@ uint16_t sop::process::Process::getArrayPages()
 {
   return this->_array_pages;
 }
+    //getters from private
+uint16_t sop::process::Process::getPPID()
+{
+  return this->_PPID;
+}
 
+uint16_t sop::process::Process::getMemoryFlagStatus()
+{
+  return this->_memoryFlagStatus;
+}
+
+uint16_t sop::process::Process::getProcessorFlagStatus()
+{
+  return this->_processorFlagStatus;
+}
+
+uint16_t sop::process::Process::getEndingFlagStatus()
+{
+  return this->_endingFlagStatus;
+}
+
+uint16_t sop::process::Process::getProcessIsInScheduler()
+{
+  return this->_processIsInScheduler;
+}
+
+uint16_t sop::process::Process::getIsActuallyRunning()
+{
+  return this->_isActuallyRunning;
+}
+//protected
+    //setters
+void sop::process::Process::setPID(uint16_t PID)
+{
+  this->_PID = PID;
+}
+
+void sop::process::Process::setUID(uint16_t UID)
+{
+  this->_UID = UID;
+}
+
+void sop::process::Process::setGID(uint16_t GID)
+{
+  this->_GID = GID;
+}
+
+void sop::process::Process::setArrayPages(uint16_t ArrayPages)
+{
+  this->_array_pages = ArrayPages;
+}
+//private
     //set enums
 uint16_t sop::process::Process::setStatusNew() //ustawia status na nowy
 {
@@ -88,8 +117,7 @@ uint16_t sop::process::Process::setStatusExecuted() //ustawia status na wykonany
   status = task_executed;
   return status;
 }
-
-    //setters
+    //setters  
 void sop::process::Process::setPPID(uint16_t PPID)
 {
   this->_PPID = PPID;
@@ -115,29 +143,11 @@ void sop::process::Process::setProcessIsInScheduler(uint16_t PIIS)
   this->_processIsInScheduler = PIIS;
 }
 
-    //getters
-uint16_t sop::process::Process::getPPID()
+void sop::process::Process::setIsActuallyRunning(uint16_t IAR)
 {
-  return this->_PPID;
+  this->_isActuallyRunning = IAR;
 }
 
-uint16_t sop::process::Process::getMemoryFlagStatus()
-{
-  return this->_memoryFlagStatus;
-}
+    
 
-uint16_t sop::process::Process::getProcessorFlagStatus()
-{
-  return this->_processorFlagStatus;
-}
-
-uint16_t sop::process::Process::getEndingFlagStatus()
-{
-  return this->_endingFlagStatus;
-}
-
-uint16_t sop::process::Process::getProcessIsInScheduler()
-{
-  return this->_processIsInScheduler;
-}
 

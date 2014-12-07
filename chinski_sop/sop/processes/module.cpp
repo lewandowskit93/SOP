@@ -21,16 +21,17 @@ void sop::processes::Module::initialize()
 {
 }
 
-//moje
+//deklaracje funkcji dzialjacych na wektorze
 
-void sop::processes::Module::addToVector(boost::shared_ptr<sop::process::Process>)
+void sop::processes::Module::addToVector(boost::shared_ptr<sop::process::Process> object)
 {
-  sop::processes::Module::ProcessVector.push_back();
+  sop::processes::Module::ProcessVector.push_back(object);
 }
 
-void sop::processes::Module::removeFromVector()
+void sop::processes::Module::removeFromVector(uint16_t PID)
 {
-  sop::processes::Module::ProcessVector.pop_back();
+  boost::shared_ptr<sop::process::Process> p =  sop::processes::Module::findProcess(PID);
+  sop::processes::Module::ProcessVector.erase(p);
 }
 
 void sop::processes::Module::showObjectInList(uint16_t PID)
@@ -53,11 +54,28 @@ boost::shared_ptr<sop::process::Process> sop::processes::Module::findProcess(uin
   std::vector<boost::shared_ptr<sop::process::Process>>::iterator it;
   for (it= ProcessVector.begin(); it!= ProcessVector.end(); ++it)
   {
-    if ((*it)->sop::process::Process::getPID() == PID)
+    if ((*it)->getPID() == PID)
     {
       process_found = (*it);
       break;
     }
   }
   return process_found;
+}
+
+//stworzenie procesu INIT
+
+void sop::processes::Module::CreateShellInit()
+{
+  boost::shared_ptr<sop::process::Process> Procesik (new sop::process::Process());
+  Procesik->setPID(0);
+  Procesik->setPPID(0);
+  Procesik->setUID(0);
+  Procesik->setGID(0);
+  Procesik->setMemoryFlagStatus(0);
+  Procesik->setProcessorFlagStatus(0);
+  Procesik->setEndingFlagStatus(0);
+  Procesik->setProcessIsInScheduler(0);
+  Procesik->setIsActuallyRunning(1);
+  sop::processes::Module::addToVector(Procesik);
 }

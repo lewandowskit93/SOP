@@ -24,10 +24,13 @@ namespace sop
 
         //definicja wektora i funkcje go obslugujace
         std::vector <boost::shared_ptr<sop::process::Process>> ProcessVector;        
-        void addToVector(boost::shared_ptr<sop::process::Process>);
-        void removeFromVector();
+        void addToVector(boost::shared_ptr<sop::process::Process> objekt);
+        void removeFromVector(uint16_t PID);
         void showObjectInList(uint16_t PID);
         boost::shared_ptr<sop::process::Process> findProcess(uint16_t PID);
+
+        //stworzenie  procesu INIT
+        void CreateShellInit();
 
       protected:
 
