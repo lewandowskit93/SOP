@@ -76,3 +76,8 @@ void sop::memory::SwapFile::popFrontListOfFreeSwapFrames()
   {
     this->list_of_free__swap_frames.pop_front();
   }
+
+void::sop::memory::SwapFile::pushEndListOfFreeSwapFrames(uint16_t frame_nr)
+{
+  this->list_of_free__swap_frames.push_back(frame_nr);
+}
