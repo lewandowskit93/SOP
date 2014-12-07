@@ -1,5 +1,6 @@
 #include <sstream>
 #include ".\sop\logger\logger.h"
+#include ".\sop\string_converter.h"
 
 sop::logger::Logger::Channel::Channel()
 {
@@ -25,9 +26,7 @@ std::string sop::logger::Logger::Channel::getChannelName(uint16_t channel)
       return "SHELL_CHANNEL";
     default:
     {
-      std::stringstream stream;
-      stream<<channel;
-      return stream.str();
+      return sop::StringConverter::convertToString<uint16_t>(channel);
     }
   }
 }
@@ -56,9 +55,7 @@ std::string sop::logger::Logger::Level::getLevelName(uint16_t level)
       return "FINEST";
     default:
     {
-      std::stringstream stream;
-      stream<<level;
-      return stream.str();
+      return sop::StringConverter::convertToString<uint16_t>(level);
     }
   }
 }
