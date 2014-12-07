@@ -9,7 +9,8 @@
 sop::users::Module::Module(sop::system::Kernel *kernel):
   sop::system::Module(kernel),
   _users_manager(this),
-  _groups_manager(this)
+  _groups_manager(this),
+  _priority_manager(this)
 {
 
 }
@@ -43,6 +44,8 @@ void sop::users::Module::initialize()
   getKernel()->getShell()->registerCommand("groupmembers",&Module::cH_groupmembers,this);
   getKernel()->getShell()->registerCommand("groupslist",&Module::cH_groupslist,this);
   getKernel()->getShell()->registerCommand("groupchange",&Module::cH_groupchange,this);
+  getKernel()->getShell()->registerCommand("nice",&Module::cH_nice,this);
+  getKernel()->getShell()->registerCommand("shownice",&Module::cH_shownice,this);
 }
 
 sop::users::UsersManager* sop::users::Module::getUsersManager()
@@ -53,6 +56,11 @@ sop::users::UsersManager* sop::users::Module::getUsersManager()
 sop::users::GroupsManager* sop::users::Module::getGroupsManager()
 {
   return &_groups_manager;
+}
+
+sop::users::PriorityManager* sop::users::Module::getPriorityManager()
+{
+  return &_priority_manager;
 }
 
 void sop::users::Module::cH_useradd(const std::vector<const std::string> & params)
@@ -391,5 +399,53 @@ void sop::users::Module::cH_groupchange(const std::vector<const std::string> & p
     }
 
     user->gid=new_group->gid;
+  }
+}
+
+void sop::users::Module::cH_nice(const std::vector<const std::string> & params)
+{
+  if(sop::system::Shell::hasParam(params,"-h") || params.size()<3)
+  {
+    std::cout<<"nice [-h] [-s] gid priority"<<std::endl;
+    std::cout<<"Shows nice priority of group/user"<<std::endl;
+    return;
+  }
+
+  if(sop::system::Shell::hasParam(params,"-s"))
+  {
+    //ToDo: only for root
+  }
+
+  gid_t gid = sop::StringConverter::convertStringTo<gid_t>(params[params.size()-2]);
+  priority_t priority = (priority_t)sop::StringConverter::convertStringTo<int16_t>(params[params.size()-1]);
+
+  if(priority<kDefault_priority)
+  {
+    //ToDo: only for root
+  }
+
+  _priority_manager.setGroupPriority(gid,priority);
+
+  if(sop::system::Shell::hasParam(params,"-s"))
+  {
+    //ToDo: save file
+  }
+}
+
+void sop::users::Module::cH_shownice(const std::vector<const std::string> & params)
+{
+  if(sop::system::Shell::hasParam(params,"-h") || params.size()==1)
+  {
+    std::cout<<"shownice [-g gid] [-u uid] [-h]"<<std::endl;
+    std::cout<<"Shows nice priority of group/user"<<std::endl;
+    return;
+  }
+  else if(sop::system::Shell::hasParam(params,"-g"))
+  {
+    std::cout<<(int16_t)_priority_manager.getGroupPriority(sop::StringConverter::convertStringTo<gid_t>(sop::system::Shell::getParamValue(params,"-g")))<<std::endl;
+  }
+  else if(sop::system::Shell::hasParam(params,"-u"))
+  {
+    std::cout<<(int16_t)_priority_manager.getUserPriority(sop::StringConverter::convertStringTo<uid_t>(sop::system::Shell::getParamValue(params,"-u")))<<std::endl;
   }
 }

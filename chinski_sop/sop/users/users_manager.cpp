@@ -8,9 +8,10 @@
 
 const boost::regex sop::users::UsersManager::username_regex = boost::regex("^[a-zA-Z][0-9a-zA-Z_]*$");
 
-sop::users::UsersManager::UsersManager(Module *module)
+sop::users::UsersManager::UsersManager(Module *module):
+  sop::Object(),
+  _module(module)  
 {
-  _module=module;
   _users_list.push_back(nobody);
 }
 

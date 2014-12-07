@@ -7,6 +7,7 @@
 #include ".\sop\system\module.h"
 #include ".\sop\users\users_manager.h"
 #include ".\sop\users\groups_manager.h"
+#include ".\sop\users\priority_manager.h"
 
 namespace sop
 {
@@ -26,6 +27,7 @@ namespace sop
 
         UsersManager* getUsersManager();
         GroupsManager* getGroupsManager();
+        PriorityManager* getPriorityManager();
 
         void cH_useradd(const std::vector<const std::string> & params);
         void cH_userfind(const std::vector<const std::string> & params);
@@ -39,6 +41,9 @@ namespace sop
         void cH_groupslist(const std::vector<const std::string> & params);
         void cH_groupmembers(const std::vector<const std::string> & params);
         void cH_groupchange(const std::vector<const std::string> & params);
+
+        void cH_nice(const std::vector<const std::string> & params);
+        void cH_shownice(const std::vector<const std::string> & params);
         
 
       protected:
@@ -46,6 +51,7 @@ namespace sop
       private:
         UsersManager _users_manager;
         GroupsManager _groups_manager;
+        PriorityManager _priority_manager;
     };
   }
 }

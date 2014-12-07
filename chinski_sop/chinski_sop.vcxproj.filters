@@ -177,6 +177,9 @@
     <ClInclude Include="sop\users\groups_manager.h">
       <Filter>Header Files\sop\users</Filter>
     </ClInclude>
+    <ClInclude Include="sop\users\priority_manager.h">
+      <Filter>Header Files\sop\users</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="sop\system\shell.cpp">
@@ -259,6 +262,9 @@
     </ClCompile>
     <ClCompile Include="sop\users\groups_manager.cpp">
       <Filter>Source Files\sop\users\exceptions</Filter>
+    </ClCompile>
+    <ClCompile Include="sop\users\priority_manager.cpp">
+      <Filter>Source Files\sop\users</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

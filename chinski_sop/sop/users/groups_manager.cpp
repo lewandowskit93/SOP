@@ -8,9 +8,10 @@
 
 const boost::regex sop::users::GroupsManager::group_name_regex = boost::regex("^[a-zA-Z][0-9a-zA-Z_]*$");
 
-sop::users::GroupsManager::GroupsManager(Module *module)
+sop::users::GroupsManager::GroupsManager(Module *module):
+  sop::Object(),
+  _module(module)  
 {
-  _module=module;
   nogroup->users_list.push_back(nobody);
   _groups_list.push_back(nogroup);
 }
