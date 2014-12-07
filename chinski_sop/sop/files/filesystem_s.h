@@ -3,34 +3,34 @@
 
 #include <iostream>
 #include <string>
-#include <boost/shared_ptr.hpp>
 #include "sop/files/filesystem.h"
-#include "sop/files/inode_s.h"
-#include "sop/files/data_s.h"
+//#include "sop/files/inode.h"
+//#include "sop/files/data.h"
 #include "sop/logger/logger.h"
 
 namespace sop
 {
   namespace files
   {
+    class Filesystem;
     class Filesystem_s
     {
     public:
       Filesystem_s(Filesystem* fpPtr, sop::logger::Logger* logger);
       ~Filesystem_s();
 
-      void readData();
-      void writeData();
+      void readData(std::vector<std::string>);
+      std::vector<std::string> writeData();
 
     protected:
 
     private:
-      boost::shared_ptr<Filesystem> filesystem_p;
+      Filesystem* filesystem_p;
         
-      void readFreeSpace();
-      void writeFreeSpace();
-      void readDataBlocks();
-      void writeDataBlocks();
+      void readFreeSpace(std::string);
+      void readDataBlocks(std::vector<std::string>);
+      std::string writeFreeSpace();
+      std::vector<std::string> writeDataBlocks();
       sop::logger::Logger* logger;
     };
   }

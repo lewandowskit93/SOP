@@ -293,6 +293,7 @@ void sop::files::Inode::removeFile(std::vector<uint32_t>* freeSpace, std::array<
   this->logger->logFiles(6, "Inode: removing file successful");
 }
 
+// Throws error if not empty
 void sop::files::Inode::removeDir(std::vector<uint32_t>* freeSpace, std::array<Block*, sop::files::ConstEV::numOfBlocks>* drive)
 {
   this->logger->logFiles(6, "Inode: removing directory initialized");
@@ -303,8 +304,9 @@ void sop::files::Inode::removeDir(std::vector<uint32_t>* freeSpace, std::array<B
     {
       this->logger->logFiles(2, "Inode: directory not empty");
       std::string toster;
-      std::cout<<"The directory is not empty! Do you fancy removing all files and directories inside? (Y/n)";
-      std::cin>>toster;
+      std::cout<<"The directory is not empty!"<<std::endl;
+      throw std::string("error");
+      /*std::cin>>toster;
       if(toster == "Y" || toster == "y")
       {
         for(auto data : this->directory.inodesInside)
@@ -324,7 +326,7 @@ void sop::files::Inode::removeDir(std::vector<uint32_t>* freeSpace, std::array<B
       else
       {
         std::cout<<"The files are staying as well as a directory. Think what you gonna delete before hitting enter!"<<std::endl;
-      }
+      }*/
     }
     this->logger->logFiles(3, "Inode: scanning blocks");
     for(uint32_t i=0; i<sop::files::ConstEV::numOfBlocks; i++)

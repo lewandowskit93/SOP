@@ -7,7 +7,9 @@
 #include ".\sop\files\filesystem.h"
 #include ".\sop\files\file.h"
 #include ".\sop\files\inode.h"
+#include ".\sop\files\data.h"
 #include ".\sop\logger\logger.h"
+#include ".\sop\files\serialize.h"
 
 std::vector<std::string> getPathFromParam(std::string path)
 {
@@ -30,7 +32,8 @@ std::vector<std::string> getPathFromParam(std::string path)
 }
 
 sop::files::Filesystem::Filesystem(sop::logger::Logger* logger) :
-  logger(logger)
+  logger(logger),
+  serialize(0)
 {
   this->logger->logFiles(5, "Initilizing filesystem");
   this->logger->logFiles(4, "Setting free spaces and inicilizing structures");
@@ -48,6 +51,7 @@ sop::files::Filesystem::Filesystem(sop::logger::Logger* logger, std::string disk
   logger(logger)
 {
   this->logger->logFiles(6, "Restore filesystem initilized");
+  this->serialize = new sop::files::Serialize(this, diskFileName, this->logger);
 }
 
 sop::files::Filesystem::~Filesystem()
@@ -107,6 +111,7 @@ sop::files::File* sop::files::Filesystem::openFile(pid_t* PID, std::vector<std::
     }
     return out;
   }
+  return 0;
 }
 
 std::string sop::files::Filesystem::readFile(File* fileHandler)
@@ -467,9 +472,18 @@ void sop::files::Filesystem::removeDirectory(pid_t* PID, std::vector<std::string
     if(this->dataBlocks[iterator]->getIsDirectory())
     {
       uint32_t tmp = iterator;
-      iterator = this->dataBlocks[iterator]->getAddress(path.at(path.size()-1));
-      this->dataBlocks[iterator]->removeDir(&this->freeSpace, &this->dataBlocks);
-      this->dataBlocks[tmp]->removeFromDir(path.at(path.size()-1));
+      try
+      {
+        iterator = this->dataBlocks[iterator]->getAddress(path.at(path.size()-1));
+        this->dataBlocks[iterator]->removeDir(&this->freeSpace, &this->dataBlocks);
+        this->dataBlocks[tmp]->removeFromDir(path.at(path.size()-1));
+      }
+      catch(std::string)
+      {
+        this->logger->logFiles(2, "Failed in removing");
+        std::cout<<"Removal failed"<<std::endl;
+        return;
+      }
     }
     else
     {
@@ -506,7 +520,12 @@ std::vector<sop::files::dirList> sop::files::Filesystem::list()
 */
 void sop::files::Filesystem::changeDirectoryHandler(const std::vector<const std::string> & params)
 {
-  this->logger->logFiles(3, "CD handler initialization");
+  this->logger->logFiles(3, "Change directory handler initialization");
+  if(params.size()>1 && params[0]=="-h")
+  {
+    // ToDo std::cout<<
+    return;
+  }
   if(params.size() > 1)
   {
     if(params.at(1) == "..")
@@ -531,15 +550,25 @@ void sop::files::Filesystem::changeDirectoryHandler(const std::vector<const std:
   }
 }
 
-// WRITE
+// WRITE ToDo
 void sop::files::Filesystem::moveHandler(const std::vector<const std::string> & params)
 {
+  if(params.size()>1 && params[0] == "-h")
+  {
+    // ToDo std::cout<<
+    return;
+  }
   std::cout<<"Not yet implemented"<<std::endl;
 }
 
 void sop::files::Filesystem::removeFileHandler(const std::vector<const std::string> & params)
 {
   this->logger->logFiles(3, "Remove file handler initialization");
+  if(params.size()>1 && params[0] == "-h")
+  {
+    // ToDo std::cout<<
+    return;
+  }
   auto param = params;
   param.erase(param.begin());
   for(auto data : param)
@@ -558,6 +587,11 @@ void sop::files::Filesystem::removeFileHandler(const std::vector<const std::stri
 
 void sop::files::Filesystem::nanoHandler(const std::vector<const std::string> & params)
 {
+  if(params.size()>1 && params[0] == "-h")
+  {
+    // ToDo std::cout<<
+    return;
+  }
   this->logger->logFiles(3, "File editor");
   std::cout<<"Loading nano..."<<std::endl<<"Nano not yet supported"<<std::endl;
 }
@@ -565,6 +599,11 @@ void sop::files::Filesystem::nanoHandler(const std::vector<const std::string> & 
 void sop::files::Filesystem::createFileHandler(const std::vector<const std::string> & params)
 {
   this->logger->logFiles(3, "Create file handler initialization");
+  if(params.size()>1 && params[0] == "-h")
+  {
+    // ToDo std::cout<<
+    return;
+  }
   auto param(params);
   param.erase(param.begin());
   if(!param.size())
@@ -589,6 +628,11 @@ void sop::files::Filesystem::createFileHandler(const std::vector<const std::stri
 void sop::files::Filesystem::createDirectoryHandler(const std::vector<const std::string> & params)
 {
   this->logger->logFiles(3, "Create directory handler initalization");
+  if(params.size()>1 && params[0] == "-h")
+  {
+    // ToDo std::cout<<
+    return;
+  }
   auto param(params);
   param.erase(param.begin());
   if(!param.size())
@@ -619,6 +663,11 @@ void sop::files::Filesystem::createDirectoryHandler(const std::vector<const std:
 void sop::files::Filesystem::removeDirectoryHandler(const std::vector<const std::string> & params)
 {
   this->logger->logFiles(3, "Remove directory handler initalization");
+  if(params.size()>1 && params[0] == "-h")
+  {
+    // ToDo std::cout<<
+    return;
+  }
   auto param(params);
   param.erase(param.begin());
   if(!param.size())
@@ -642,6 +691,11 @@ void sop::files::Filesystem::removeDirectoryHandler(const std::vector<const std:
 void sop::files::Filesystem::listHandler(const std::vector<const std::string> & params)
 {
   this->logger->logFiles(3, "List handler initalization");
+  if(params.size()>1 && params[0] == "-h")
+  {
+    // ToDo std::cout<<
+    return;
+  }
   std::vector<sop::files::dirList> x = this->list();
   uint32_t size = x.size();
   if(x.size())
@@ -666,13 +720,39 @@ void sop::files::Filesystem::printStats()
 
 void sop::files::Filesystem::printDisk(uint32_t parts)
 {
+  if(parts == 0)
+  {
+    return;
+  }
+  std::cout<<"   ";
+  for(uint32_t tmp=0; tmp<parts; tmp++)
+  {
+    if(tmp < 10)
+    {
+      std::cout<<std::to_string(tmp);
+    }
+    else
+    {
+      std::cout<<static_cast<char>(tmp+55);
+    }
+    std::cout<<" ";
+  }
+  std::cout<<std::endl;
   for(uint32_t iterator=0; iterator < ceil(sop::files::ConstEV::numOfBlocks/parts); iterator++)
   {
+    std::cout<<"  ";
     for(uint32_t tmp=0; tmp<(parts*2+1); tmp++)
     {
       std::cout<<"-";
     }
-    std::cout<<std::endl<<"|";
+    if(iterator < 9)
+    {
+      std::cout<<std::endl<<std::to_string(iterator+1)<<" |";
+    }
+    else
+    {
+      std::cout<<std::endl<<std::to_string(iterator+1)<<"|";
+    }
     for(uint32_t tmp=0; tmp<parts; tmp++)
     {
       if(this->dataBlocks[iterator*parts + tmp] == 0)
@@ -694,6 +774,7 @@ void sop::files::Filesystem::printDisk(uint32_t parts)
     }
     std::cout<<std::endl;
   }
+  std::cout<<"  ";
   for(uint32_t tmp=0; tmp<(parts*2+1); tmp++)
   {
     std::cout<<"-";
@@ -708,11 +789,144 @@ void sop::files::Filesystem::printDiskTree(uint32_t depth)
   std::cout<<"DiskTree: Not yet implemented"<<std::endl;
 }
 
+void sop::files::Filesystem::printInodeBlock(uint32_t block)
+{
+  if(this->dataBlocks[block] != 0)
+  {
+    std::cout<<"Is directory: "<<this->dataBlocks[block]->getIsDirectory()<<std::endl;
+    std::cout<<"UID: "<<this->dataBlocks[block]->getUID()<<std::endl;
+    std::cout<<"GID: "<<this->dataBlocks[block]->getGID()<<std::endl;
+    std::cout<<"Size: ";
+    if(this->dataBlocks[block]->getIsDirectory())
+    {
+      std::vector<sop::files::dirList> listing = this->dataBlocks[block]->listDir(&this->dataBlocks);
+      std::cout<<listing.size()<<std::endl;
+    }
+    else
+    {
+      std::cout<<this->dataBlocks[block]->getSize()<<std::endl;
+    }
+  }
+  else
+  {
+    std::cout<<"Inode block not found!"<<std::endl;
+    this->logger->logFiles(2, "Inode block not found!");
+  }
+}
+
+void sop::files::Filesystem::printDataBlock(uint32_t block)
+{
+  if(this->dataBlocks[block] != 0)
+  {
+    if(this->dataBlocks[block]->getIsDirectory())
+    {
+      std::cout<<"This is a directory!"<<std::endl;
+      this->logger->logFiles(2, "This is a directory");
+    }
+    else
+    {
+      std::array<char, sop::files::ConstEV::blockSize> data = this->dataBlocks[block]->getData_d();
+      for(uint32_t i=0; i<sop::files::ConstEV::blockSize; i++)
+      {
+        std::cout<<data[i];
+      }
+      std::cout<<std::endl;
+    }
+  }
+  else
+  {
+    std::cout<<"Data block not found!"<<std::endl;
+    this->logger->logFiles(2, "Data block not found!");
+  }
+}
+
 void sop::files::Filesystem::statHandler(const std::vector<const std::string> & params)
 {
+  std::vector<std::string> param;
+  for(uint32_t i=0; i<params.size(); i++)
+  {
+    param.push_back(params[i]);
+  }
+  param.erase(param.begin());
   this->logger->logFiles(6, "Printing disk statistics");
-  this->printStats();
-  this->printDisk(16);
+  if(param.size()>0)
+  {
+    for(uint32_t i=0; i < param.size(); i++)
+    {
+      if(param[i] == "-h")
+      {
+        std::cout<<"DiskStat - prints disk based statistics"<<std::endl;
+        std::cout<<"   -d <blockNr>\t prints data block if available"<<std::endl;
+        std::cout<<"   -i <blockNr>\t prints inode data if available"<<std::endl;
+        std::cout<<"   -s \t\t prints opened files, free spaces, current path..."<<std::endl;
+        std::cout<<"   -t <depth>\t prints disk tree"<<std::endl;
+        std::cout<<"   --disk \t prints disk blocks summary"<<std::endl;
+        return;
+      } 
+      if(param[i] == "--disk")
+      {
+        if(param.size() > i+1)
+        {
+          this->printDisk(atoi(param[i+1].c_str()));
+          i++;
+        }
+        else
+        {
+          std::cout<<"No parameter for disk print!"<<std::endl;
+          this->logger->logFiles(2, "No parameter for disk print");
+        }
+      }
+      if(param[i] == "-s")
+      {
+        this->printStats();
+      }
+      if(param[i] == "-i")
+      {
+        if(param.size() > i+1)
+        {
+          this->printInodeBlock(atoi(param[i+1].c_str()));
+          i++;
+        }
+        else
+        {
+          std::cout<<"No parameter for Inode print!"<<std::endl;
+          this->logger->logFiles(2, "No parameter for Inode print");
+        }
+      }
+      if(param[i] == "-d")
+      {
+        if(param.size()-1 > i+1)
+        {
+          this->printDataBlock(atoi(param[i+1].c_str()));
+          i++;
+        }
+        else
+        {
+          std::cout<<"No parameter for data block print!"<<std::endl;
+          this->logger->logFiles(2, "No parameter for data block print");
+        }
+      }
+      if(param[i] == "-t")
+      {
+        if(param.size()-1 > i+1)
+        {
+          this->printDiskTree(atoi(param[i+1].c_str()));
+          i++;
+        }
+        else
+        {
+          std::cout<<"No parameter for disk tree print!"<<std::endl;
+          this->logger->logFiles(2, "No parameter for disk tree print");
+        }
+      }
+    }
+  }
+  else
+  {
+    this->printStats();
+    std::cout<<std::endl;
+    this->printDisk(16);
+  }
 }
 
 // REWRITE!!!
@@ -757,6 +971,10 @@ void sop::files::Filesystem::echoHandler(const std::vector<const std::string> & 
 
 void sop::files::Filesystem::test(const std::vector<const std::string> & params)
 {
+  this->serialize = new sop::files::Serialize(this, "disk.txt", this->logger);
+  this->serialize->save();
+  this->serialize->read();
+    //T.E.S.T. OF FILE CREATION AND NESTED OPENING
   std::vector<std::string> fileName;
   pid_t* PID = 0;
   std::string testowy = "";
@@ -789,4 +1007,144 @@ uint32_t sop::files::Filesystem::getCurrentPathIterator()
     return this->currentDir.blockRoute.back();
   }
   return 0;
+}
+
+std::string sop::files::Filesystem::writeInode(uint32_t addr)
+{
+  std::string output = "dir="+std::to_string((uint32_t)this->dataBlocks[addr]->getIsDirectory())+"\n";
+  output += "uid="+std::to_string(this->dataBlocks[addr]->getUID())+"\n";
+  output += "gid="+std::to_string(this->dataBlocks[addr]->getGID())+"\n";
+  Inode* copy = dynamic_cast<Inode*>(this->dataBlocks[addr]);
+  if(this->dataBlocks[addr]->getIsDirectory())
+  {
+    for(auto iter : copy->directory.inodesInside)
+    {
+      output += iter.first+"\t"+std::to_string(iter.second)+"\n";
+    }
+  }
+  else
+  {
+    output += "direct=";
+    for(uint32_t i=0; i<sop::files::ConstEV::directAddrBlock; i++)
+    {
+      output += std::to_string(copy->file.directBlockAddr[i]) + ",";
+    }
+    output += "\nindirect=";
+    for(uint32_t i=0; i<copy->file.indirectBlockAddr.size(); i++)
+    {
+      output += std::to_string(copy->file.indirectBlockAddr[i]) + ",";
+    }
+    output +="\nsize="+std::to_string(copy->file.size)+"\n";
+  }
+  return output;
+}
+
+std::string sop::files::Filesystem::writeData(uint32_t addr)
+{
+  std::string output="";
+  std::array<char, sop::files::ConstEV::blockSize> tmp = this->dataBlocks[addr]->getData_d();
+  for(uint32_t i=0; i<sop::files::ConstEV::blockSize; i++)
+  {
+    output += tmp[i];
+  }
+  return output;
+}
+
+void sop::files::Filesystem::readInode(uint32_t addr,  std::vector<std::string> data)
+{
+  bool isDir;
+  uint32_t UID, GID;
+  //read
+  bool valid = true;
+  std::map<std::string, uint32_t> dirmap;
+  std::vector<uint32_t> direct, indirect;
+  uint32_t size;
+  for(uint32_t i=0; i<4; i++)
+  {
+    if(!data[0][i] == "dir="[i]) valid = false;
+    if(!data[1][i] == "uid="[i]) valid = false;
+    if(!data[2][i] == "gid="[i]) valid = false;
+  }
+  if(valid)
+  {
+    if(data[0][4] == '0')
+    {
+      isDir = false;
+    }
+    else
+    {
+      isDir = true;
+    }
+    UID = atoi(data[1].substr(4,data[1].size()-5).c_str());
+    GID = atoi(data[2].substr(4, data[2].size()-5).c_str());
+  }
+  else
+  {
+    return;
+  }
+  if(isDir)
+  {
+    for(uint32_t i=3; i<data.size(); i++)
+    {
+      std::string a = data[i].substr(0, data[i].find("\t"));
+      data[i].erase(0, data[i].find("\t"));
+      std::string b = data[i];
+      if(a != "")
+      {
+        dirmap[a] = atoi(b.c_str());
+      }
+    }
+  }
+  else
+  {
+    data[3].erase(data[3].find("direct="), 7);
+    while(data[3].size())
+    {
+      direct.push_back(atoi(data[3].substr(0, data[3].find(",")).c_str()));
+      data[3].erase(0, data[3].find(",")+1);
+    }
+    data[4].erase(data[4].find("indirect="), 9);
+    while(data[4].size())
+    {
+      indirect.push_back(atoi(data[4].substr(0, data[4].find(",")).c_str()));
+      data[4].erase(0, data[4].find(","));
+    }
+    data[5].erase(data[5].find("size="), 5);
+    size = atoi(data[5].c_str());
+  }
+
+  //save
+  if(this->dataBlocks[addr] == 0)
+  {
+    this->dataBlocks[addr] = new Inode(isDir, UID, GID, this->logger);
+  }
+  Inode* temporary = dynamic_cast<Inode*>(this->dataBlocks[addr]);
+  temporary->isDirectory = isDir;
+  temporary->uid = UID;
+  temporary->gid = GID;
+  if(isDir)
+  {
+    temporary->directory.inodesInside = dirmap;
+  }
+  else
+  {
+    for(uint32_t i=0; i<sop::files::ConstEV::directAddrBlock; i++)
+    {
+      temporary->file.directBlockAddr[i] = direct[i];
+    }
+    temporary->file.indirectBlockAddr.clear();
+    for(auto x : indirect)
+    {
+      temporary->file.indirectBlockAddr.push_back(x);
+    }
+  }
+}
+
+void sop::files::Filesystem::readData(uint32_t addr, std::string data)
+{
+  sop::files::Data* temp = dynamic_cast<sop::files::Data*>(this->dataBlocks[addr]);
+  for(uint32_t i=0; i<sop::files::ConstEV::blockSize; i++)
+  {
+    temp->containter[i] = data[i];
+  }
 }

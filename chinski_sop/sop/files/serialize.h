@@ -3,7 +3,8 @@
 
 #include <iostream>
 #include <string>
-#include <boost/shared_ptr.hpp>
+#include <vector>
+#include <fstream>
 #include "sop/files/filesystem.h"
 #include "sop/files/filesystem_s.h"
 #include "sop/logger/logger.h"
@@ -12,6 +13,8 @@ namespace sop
 {
   namespace files
   {
+    class Filesystem_s;
+    class Filesystem;
     class Serialize
     {
     public:
@@ -22,10 +25,13 @@ namespace sop
       void read();
     protected:
     private:
-      boost::shared_ptr<Filesystem> filesystem_p;
-      boost::shared_ptr<Filesystem_s> fsSerialize_p;
+      Filesystem* filesystem_p;
+      Filesystem_s* fsSerialize_p;
       std::string filename;
       sop::logger::Logger* logger;
+      void serialize(std::fstream&);
+      void itemize(std::fstream&);
+      Filesystem_s* serialFilesystem;
     };
   }
 }

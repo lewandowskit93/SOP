@@ -6,6 +6,7 @@
 #include <vector>
 #include <array>
 #include "inode.h"
+#include "filesystem.h"
 #include "constev.h"
 
 namespace sop

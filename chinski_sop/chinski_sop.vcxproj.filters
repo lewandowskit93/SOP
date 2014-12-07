@@ -189,12 +189,6 @@
     <ClInclude Include="sop\files\filesystem_s.h">
       <Filter>Header Files\sop\files\serialization</Filter>
     </ClInclude>
-    <ClInclude Include="sop\files\data_s.h">
-      <Filter>Header Files\sop\files\serialization</Filter>
-    </ClInclude>
-    <ClInclude Include="sop\files\inode_s.h">
-      <Filter>Header Files\sop\files\serialization</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="sop\system\shell.cpp">
@@ -279,12 +273,6 @@
       <Filter>Source Files\sop\files\serialization</Filter>
     </ClCompile>
     <ClCompile Include="sop\files\serialize.cpp">
-      <Filter>Source Files\sop\files\serialization</Filter>
-    </ClCompile>
-    <ClCompile Include="sop\files\data_s.cpp">
-      <Filter>Source Files\sop\files\serialization</Filter>
-    </ClCompile>
-    <ClCompile Include="sop\files\inode_s.cpp">
       <Filter>Source Files\sop\files\serialization</Filter>
     </ClCompile>
   </ItemGroup>

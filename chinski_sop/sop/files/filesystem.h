@@ -9,8 +9,9 @@
 #include <map>
 #include "file.h"
 #include "block.h"
-#include "filesystem_s.h"
+//#include "filesystem_s.h"
 #include "./sop/logger/logger.h"
+#include "./sop/files/serialize.h"
 
 namespace sop
 {
@@ -18,6 +19,7 @@ namespace sop
   {
     class File;
     class Ext;
+    class Serialize;
     /*
       Current opened directory containter
     */
@@ -39,6 +41,10 @@ namespace sop
       Filesystem(sop::logger::Logger* logger, std::string diskFileName);
       ~Filesystem();
       sop::logger::Logger* logger;
+      std::string writeInode(uint32_t);
+      std::string writeData(uint32_t);
+      void readInode(uint32_t, std::vector<std::string>);
+      void readData(uint32_t, std::string);
 
       // Files
       File* openFile(pid_t* PID, std::vector<std::string> path, std::string openMode);
@@ -68,6 +74,8 @@ namespace sop
       void printStats();
       void printDisk(uint32_t parts);
       void printDiskTree(uint32_t depth);
+      void printDataBlock(uint32_t block);
+      void printInodeBlock(uint32_t block);
 
       // Handlers
       void changeDirectoryHandler(const std::vector<const std::string> & params);
@@ -92,6 +100,7 @@ namespace sop
       std::vector<uint32_t> freeSpace;
       std::array<Block*, sop::files::ConstEV::numOfBlocks> dataBlocks;
       uint32_t getCurrentPathIterator();
+      Serialize* serialize;
 
       friend class Filesystem_s;
     };

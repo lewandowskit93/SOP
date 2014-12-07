@@ -8,7 +8,7 @@
 #include <map>
 #include "block.h"
 #include "constev.h"
-#include "inode_s.h"
+//#include "filesystem_s.h"
 #include ".\sop\logger\logger.h"
 
 namespace sop
@@ -72,7 +72,7 @@ namespace sop
       bool lock;
       sop::logger::Logger* logger;
 
-      friend class Inode_s;
+      friend class Filesystem;
     };
   }
 }
