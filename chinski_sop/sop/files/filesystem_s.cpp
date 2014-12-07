@@ -31,7 +31,7 @@ sop::files::Filesystem_s::Filesystem_s(Filesystem* fsPtr, sop::logger::Logger* l
   filesystem_p(fsPtr),
   logger(logger)
 {
-  this->logger->logFiles(3, "Filesystem serialization member");
+  this->logger->logFiles(3, "Filesystem serialization module initilized");
 }
 
 sop::files::Filesystem_s::~Filesystem_s()
@@ -58,7 +58,7 @@ void sop::files::Filesystem_s::readData(std::vector<std::string> input)
         tmps.clear();
       }
       tmps.push_back(input[i]);
-      std::cout<<input[i]<<std::endl;
+      //std::cout<<input[i]<<std::endl;
     }
     this->readDataBlocks(tmps);
   }

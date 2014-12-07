@@ -178,6 +178,7 @@ void sop::files::Inode::writeToFile(std::string input, std::vector<uint32_t>* fr
   this->logger->logFiles(6, "Inode: writing to file initilized");
   std::vector<std::string> insider;
   uint32_t size=input.size();
+  this->file.size = size;
   this->logger->logFiles(3, "Inode: input check");
   while(input.size())
   {
@@ -203,6 +204,7 @@ void sop::files::Inode::writeToFile(std::string input, std::vector<uint32_t>* fr
       delete drive->at(blocks);
       drive->at(blocks) = 0;
     }
+    this->file.indirectBlockAddr.clear();
   }
   for(uint32_t i=0; i<sop::files::ConstEV::directAddrBlock; i++)
   {
@@ -234,7 +236,6 @@ void sop::files::Inode::writeToFile(std::string input, std::vector<uint32_t>* fr
     freeSpace->erase(freeSpace->begin());
     drive->at(spaces[i]) = new sop::files::Data(insider[i]);
   }
-  this->file.size = size;
 
   // Alocate memory
   this->logger->logFiles(3, "Inode: alocate memory");

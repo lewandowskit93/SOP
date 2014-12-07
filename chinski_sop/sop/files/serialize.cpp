@@ -57,7 +57,7 @@ void sop::files::Serialize::read()
     return;
   }
   std::getline(fs,tmp);
-  std::cout<<tmp<<std::endl;
+  //std::cout<<tmp<<std::endl;
   if(tmp == "<HARDDISK V0.7>")
   {
     this->itemize(fs);
@@ -89,7 +89,7 @@ void sop::files::Serialize::itemize(std::fstream& fs)
     std::string tmp;
     std::getline(fs,tmp);
     output.push_back(tmp);
-    std::cout<<tmp<<std::endl;
+    //std::cout<<tmp<<std::endl;
   }
   this->serialFilesystem->readData(output);
 }

@@ -1,0 +1,85 @@
+<HARDDISK V0.7>
+freesp=6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63
+#$#
+<block id=0 type=inode>
+dir=1
+uid=0
+gid=0
+test	1
+
+<block id=1 type=inode>
+dir=0
+uid=0
+gid=0
+direct=2,3,4,
+indirect=5,
+size=100
+
+<block id=2 type=data>
+askdjfpoasjdfa
+sdfjaklsnccosjdio
+<block id=3 type=data>
+pfvas odfsaoiof ajsfn kask jflkj
+<block id=4 type=data>
+ajdsfasjfjasd fasfa
+sj fas dfjka
+<block id=5 type=data>
+j df様様様様様様様様様様様様様様
+<block id=6 type=empty>
+<block id=7 type=empty>
+<block id=8 type=empty>
+<block id=9 type=empty>
+<block id=10 type=empty>
+<block id=11 type=empty>
+<block id=12 type=empty>
+<block id=13 type=empty>
+<block id=14 type=empty>
+<block id=15 type=empty>
+<block id=16 type=empty>
+<block id=17 type=empty>
+<block id=18 type=empty>
+<block id=19 type=empty>
+<block id=20 type=empty>
+<block id=21 type=empty>
+<block id=22 type=empty>
+<block id=23 type=empty>
+<block id=24 type=empty>
+<block id=25 type=empty>
+<block id=26 type=empty>
+<block id=27 type=empty>
+<block id=28 type=empty>
+<block id=29 type=empty>
+<block id=30 type=empty>
+<block id=31 type=empty>
+<block id=32 type=empty>
+<block id=33 type=empty>
+<block id=34 type=empty>
+<block id=35 type=empty>
+<block id=36 type=empty>
+<block id=37 type=empty>
+<block id=38 type=empty>
+<block id=39 type=empty>
+<block id=40 type=empty>
+<block id=41 type=empty>
+<block id=42 type=empty>
+<block id=43 type=empty>
+<block id=44 type=empty>
+<block id=45 type=empty>
+<block id=46 type=empty>
+<block id=47 type=empty>
+<block id=48 type=empty>
+<block id=49 type=empty>
+<block id=50 type=empty>
+<block id=51 type=empty>
+<block id=52 type=empty>
+<block id=53 type=empty>
+<block id=54 type=empty>
+<block id=55 type=empty>
+<block id=56 type=empty>
+<block id=57 type=empty>
+<block id=58 type=empty>
+<block id=59 type=empty>
+<block id=60 type=empty>
+<block id=61 type=empty>
+<block id=62 type=empty>
+<block id=63 type=empty>

@@ -81,7 +81,7 @@ namespace sop
       void changeDirectoryHandler(const std::vector<const std::string> & params);
       void moveHandler(const std::vector<const std::string> & params);
       void removeFileHandler(const std::vector<const std::string> & params);
-      void nanoHandler(const std::vector<const std::string> & params);
+      void viHandler(const std::vector<const std::string> & params);
       void createFileHandler(const std::vector<const std::string> & params);
       void createDirectoryHandler(const std::vector<const std::string> & params);
       void removeDirectoryHandler(const std::vector<const std::string> & params);
@@ -101,6 +101,7 @@ namespace sop
       std::array<Block*, sop::files::ConstEV::numOfBlocks> dataBlocks;
       uint32_t getCurrentPathIterator();
       Serialize* serialize;
+      void vi(File*);
 
       friend class Filesystem_s;
     };

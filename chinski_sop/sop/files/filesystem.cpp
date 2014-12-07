@@ -1,5 +1,6 @@
 #include <string>
 #include <iostream>
+#include <conio.h>
 #include <math.h>
 #include <algorithm>
 #include <cstdint>
@@ -50,18 +51,27 @@ sop::files::Filesystem::Filesystem(sop::logger::Logger* logger) :
 sop::files::Filesystem::Filesystem(sop::logger::Logger* logger, std::string diskFileName) :
   logger(logger)
 {
+  this->logger->logFiles(6, "Initilizing filesystem");
   this->logger->logFiles(6, "Restore filesystem initilized");
+  for(uint32_t i=0; i < sop::files::ConstEV::numOfBlocks; i++)
+  {
+    //this->freeSpace.push_back(i);
+    this->dataBlocks[i] = 0;
+  }
   this->serialize = new sop::files::Serialize(this, diskFileName, this->logger);
+  this->serialize->read();
 }
 
 sop::files::Filesystem::~Filesystem()
 {
   this->logger->logFiles(6, "Destroing filesystem");
+  this->serialize->save();
 }
 
 // Files
 sop::files::File* sop::files::Filesystem::openFile(pid_t* PID, std::vector<std::string> path, std::string openMode)
 {
+  this->serialize->read();
   // ToDo MODE DEPENDENCY
   // MULTIDIR
   if(path.size()>1)
@@ -116,16 +126,17 @@ sop::files::File* sop::files::Filesystem::openFile(pid_t* PID, std::vector<std::
 
 std::string sop::files::Filesystem::readFile(File* fileHandler)
 {
+  this->serialize->read();
   std::string out = "";
   std::vector<std::array<char, sop::files::ConstEV::blockSize>> data = fileHandler->getData();
   uint32_t size = fileHandler->getSize();
-  for(auto vec : data)
+  for(uint32_t y=0; y<data.size(); y++)
   {
-    for(int32_t i=0; i<sop::files::ConstEV::blockSize; i++)
+    for(uint32_t i=0; i<sop::files::ConstEV::blockSize; i++)
     {
       if(size > 0)
       {
-        out+= vec[i];
+        out+= data[y][i];
         size--;
       }
       else
@@ -139,6 +150,7 @@ std::string sop::files::Filesystem::readFile(File* fileHandler)
 
 void sop::files::Filesystem::createFile(pid_t* PID, std::vector<std::string> path)
 {
+  this->serialize->read();
   this->logger->logFiles(3, "File creation initilized");
   uint32_t iterator = 0;
   File* returned = seek(0, path);
@@ -189,6 +201,7 @@ void sop::files::Filesystem::createFile(pid_t* PID, std::vector<std::string> pat
   }
   this->logger->logFiles(5, "File has been created");
   std::cout<<"touch: "<<path.at(path.size()-1)<<" has been created!"<<std::endl;
+  this->serialize->save();
 }
 
 void sop::files::Filesystem::closeFile(File* fileHandler)
@@ -197,10 +210,12 @@ void sop::files::Filesystem::closeFile(File* fileHandler)
   this->openedFilesList.remove(fileHandler);
   //delete fileHandler;
   this->logger->logFiles(6, "File closed");
+  this->serialize->save();
 }
 
 void sop::files::Filesystem::removeFile(pid_t* PID, std::vector<std::string> path)
 {
+  this->serialize->read();
   this->logger->logFiles(3, "File remove initilized");
   sop::files::File* fh = seek(0, path);
   std::vector<std::string> tmp(path);
@@ -217,6 +232,7 @@ void sop::files::Filesystem::removeFile(pid_t* PID, std::vector<std::string> pat
     this->dataBlocks[this->getCurrentPathIterator()]->removeFromDir(path.at(0));
   }
   this->logger->logFiles(3, "File removed");
+  this->serialize->save();
 }
 
 void sop::files::Filesystem::moveFile(pid_t* PID, std::string fileName, std::string newDirectory)
@@ -226,13 +242,16 @@ void sop::files::Filesystem::moveFile(pid_t* PID, std::string fileName, std::str
 
 void sop::files::Filesystem::writeToFile(File* fileHandler, std::string data)
 {
+  this->serialize->read();
   this->logger->logFiles(3, "Write to file initilized");
   this->dataBlocks[fileHandler->getBlockAddr()]->writeToFile(data, &this->freeSpace, &this->dataBlocks);
   this->logger->logFiles(3, "File written");
+  this->serialize->save();
 }
 
 sop::files::File* sop::files::Filesystem::seek(pid_t* PID, std::vector<std::string> path)
 {
+  this->serialize->read();
   this->logger->logFiles(3, "Seek initilized");
   if(!path.size())
   {
@@ -321,9 +340,10 @@ std::string sop::files::Filesystem::getCurrentPath()
 
 void sop::files::Filesystem::changeDirectory(pid_t* PID, std::vector<std::string> path)
 { 
+  this->serialize->read();
   uint32_t iter = 0;
   this->logger->logFiles(3, "Changing directory initilized");
-  if(path[0] == "/")
+  if(path[0] == "")
   {
     this->logger->logFiles(3, "Cd: root tree found");
     this->currentDir.blockRoute.clear();
@@ -333,6 +353,7 @@ void sop::files::Filesystem::changeDirectory(pid_t* PID, std::vector<std::string
     {
       return;
     }
+    path.erase(path.begin());
   }
   if(path.size() == 1)
   {
@@ -394,6 +415,7 @@ void sop::files::Filesystem::changeDirectoryUp()
 
 void sop::files::Filesystem::createDirectory(pid_t* PID, std::vector<std::string> path) // use temporary current Directory structure
 {
+  this->serialize->read();
   this->logger->logFiles(3, "Creating directory initilized");
   uint32_t iterator = 0;
   File* returned = seek(0, path);
@@ -443,10 +465,12 @@ void sop::files::Filesystem::createDirectory(pid_t* PID, std::vector<std::string
   }
   this->logger->logFiles(6, "Creating directory successful");
   std::cout<<"mkdir: "<<path.at(path.size()-1)<<" has been created!"<<std::endl;
+  this->serialize->save();
 }
 
 void sop::files::Filesystem::removeDirectory(pid_t* PID, std::vector<std::string> path)
 {
+  this->serialize->read();
   this->logger->logFiles(3, "Removing directory initialization");
   uint32_t iterator = 0;
   File* returned = seek(0, path);
@@ -498,6 +522,7 @@ void sop::files::Filesystem::removeDirectory(pid_t* PID, std::vector<std::string
   }
   this->logger->logFiles(6, "Directory removal successful");
   std::cout<<"rmdir: "<<path.at(path.size()-1)<<" has been removed!"<<std::endl;
+  this->serialize->save();
 }
 
 /*
@@ -505,6 +530,7 @@ void sop::files::Filesystem::removeDirectory(pid_t* PID, std::vector<std::string
 */
 std::vector<sop::files::dirList> sop::files::Filesystem::list()
 {
+  this->serialize->read();
   this->logger->logFiles(3, "Initilizing listing");
   uint32_t iterator = 0;
   if(this->currentDir.blockRoute.size())
@@ -521,9 +547,9 @@ std::vector<sop::files::dirList> sop::files::Filesystem::list()
 void sop::files::Filesystem::changeDirectoryHandler(const std::vector<const std::string> & params)
 {
   this->logger->logFiles(3, "Change directory handler initialization");
-  if(params.size()>1 && params[0]=="-h")
+  if(params.size()>1 && params[1]=="-h")
   {
-    // ToDo std::cout<<
+    std::cout<<"cd - changes the directory to another"<<std::endl;
     return;
   }
   if(params.size() > 1)
@@ -553,9 +579,9 @@ void sop::files::Filesystem::changeDirectoryHandler(const std::vector<const std:
 // WRITE ToDo
 void sop::files::Filesystem::moveHandler(const std::vector<const std::string> & params)
 {
-  if(params.size()>1 && params[0] == "-h")
+  if(params.size()>1 && params[1] == "-h")
   {
-    // ToDo std::cout<<
+    std::cout<<"mv - moves the file/directory to another"<<std::endl;
     return;
   }
   std::cout<<"Not yet implemented"<<std::endl;
@@ -564,9 +590,9 @@ void sop::files::Filesystem::moveHandler(const std::vector<const std::string> & 
 void sop::files::Filesystem::removeFileHandler(const std::vector<const std::string> & params)
 {
   this->logger->logFiles(3, "Remove file handler initialization");
-  if(params.size()>1 && params[0] == "-h")
+  if(params.size()>1 && params[1] == "-h")
   {
-    // ToDo std::cout<<
+    std::cout<<"rm - removes file"<<std::endl;
     return;
   }
   auto param = params;
@@ -576,7 +602,7 @@ void sop::files::Filesystem::removeFileHandler(const std::vector<const std::stri
     auto path = getPathFromParam(data);
     if(path.size()>1)
     {
-      std::cout<<"Not yet implemented. Try to use one one level path"<<std::endl;
+      std::cout<<"Not supported. Try to use one one level path"<<std::endl;
     }
     else
     {
@@ -585,15 +611,126 @@ void sop::files::Filesystem::removeFileHandler(const std::vector<const std::stri
   }
 }
 
-void sop::files::Filesystem::nanoHandler(const std::vector<const std::string> & params)
+void sop::files::Filesystem::vi(sop::files::File* fp)
 {
-  if(params.size()>1 && params[0] == "-h")
+  std::cout<<std::endl<<std::endl;
+  std::cout<<"Filename: "<<fp->getFileName()<<std::endl;
+  std::cout<<":r - read, :w - write, :q - quit, :i - input mode"<<std::endl;
+  enum mode
   {
-    // ToDo std::cout<<
+    INPUT = 1,
+    READ = 2,
+    WRITE = 3,
+    WAIT = 4,
+    QUIT = 0
+  };
+  mode modeVal = WAIT;
+  std::string output = "";
+  bool exit = true;
+  while(modeVal)
+  {
+    switch(modeVal)
+    {
+    case INPUT:
+      char tmp;
+      while((tmp = _getch()) !=27)
+      {
+        output += tmp;
+        //this->logger->logFiles(3, "Vi: reading characters: "+std::to_string(tmp));
+        _putch(tmp);
+        if(tmp == 13)
+        {
+          std::cout<<std::endl;
+        }
+      }
+      modeVal = WAIT;
+      break;
+    case READ:
+      std::cout<<std::endl<<std::endl;
+      this->logger->logFiles(3, "Vi: reading data from file");
+      output = this->readFile(fp);
+      std::cout<<output<<std::endl;
+      std::cout<<"Data read"<<std::endl;
+      modeVal = WAIT;
+      break;
+    case WRITE:
+      while(output.find("\r") != std::string::npos)
+      {
+        output.replace(output.find("\r"), 1, "\n");
+      }
+      this->writeToFile(fp, output);
+      this->logger->logFiles(3, "Vi: writing data to file");
+      std::cout<<"Data written"<<std::endl;
+      modeVal = WAIT;
+      break;
+    case WAIT:
+      char tmp1, tmp2;
+      do
+      {
+        std::cout<<"\rChoose mode: ";
+        tmp1 = _getch();
+        _putch(tmp1);
+        if((tmp1) == ':')
+        {
+          //putch(tmp1);
+          tmp2 = _getch();
+          _putch(tmp2);
+          exit = false;
+          switch(tmp2)
+          {
+          case 'i':
+            modeVal = INPUT;
+            break;
+          case 'r':
+            modeVal = READ;
+            break;
+          case 'w':
+            modeVal = WRITE;
+            break;
+          case'q':
+            modeVal = QUIT;
+            break;
+          default:
+            exit = true;
+          }
+        }
+        else
+        {
+          exit = true;
+        }
+      } while(exit);
+      std::cout<<std::endl;
+      break;
+    default:
+      // ToDo : command not known info
+      break;
+    }
+  }
+}
+
+void sop::files::Filesystem::viHandler(const std::vector<const std::string> & params)
+{
+  this->serialize->read();
+  if(params.size()>1 && params[1] == "-h")
+  {
+    std::cout<<"vi - test-fitted file editor. Allows to edit files, guess You not"<<std::endl;
     return;
   }
   this->logger->logFiles(3, "File editor");
-  std::cout<<"Loading nano..."<<std::endl<<"Nano not yet supported"<<std::endl;
+  std::cout<<"Loading vi..."<<std::endl;
+  //std::cout<<"Vi not yet supported"<<std::endl;
+  this->serialize->read();
+  if(params.size() == 2)
+  {
+    pid_t* PID = 0;
+    sop::files::File* fh = this->openFile(PID, getPathFromParam(params[1]), "w");
+    if(fh != 0)
+    {
+      this->vi(fh);
+      this->closeFile(fh);
+    }
+  }
+  this->serialize->save();
 }
 
 void sop::files::Filesystem::createFileHandler(const std::vector<const std::string> & params)
@@ -601,7 +738,7 @@ void sop::files::Filesystem::createFileHandler(const std::vector<const std::stri
   this->logger->logFiles(3, "Create file handler initialization");
   if(params.size()>1 && params[0] == "-h")
   {
-    // ToDo std::cout<<
+    std::cout<<"touch - creates file"<<std::endl;
     return;
   }
   auto param(params);
@@ -620,7 +757,7 @@ void sop::files::Filesystem::createFileHandler(const std::vector<const std::stri
     }
     else
     {
-      std::cout<<"Not yet implemented. Try to use one one level path"<<std::endl;
+      std::cout<<"Not supported. Try to use one one level path"<<std::endl;
     }
   }
 }
@@ -628,9 +765,9 @@ void sop::files::Filesystem::createFileHandler(const std::vector<const std::stri
 void sop::files::Filesystem::createDirectoryHandler(const std::vector<const std::string> & params)
 {
   this->logger->logFiles(3, "Create directory handler initalization");
-  if(params.size()>1 && params[0] == "-h")
+  if(params.size()>1 && params[1] == "-h")
   {
-    // ToDo std::cout<<
+    std::cout<<"mkdir - creates directory"<<std::endl;
     return;
   }
   auto param(params);
@@ -644,7 +781,7 @@ void sop::files::Filesystem::createDirectoryHandler(const std::vector<const std:
     auto path = getPathFromParam(data);
     if(path.size()>1)
     {
-      std::cout<<"Not yet implemented. Try to use one one level path"<<std::endl;
+      std::cout<<"Not supported. Try to use one one level path"<<std::endl;
     }
     else
     {
@@ -663,9 +800,9 @@ void sop::files::Filesystem::createDirectoryHandler(const std::vector<const std:
 void sop::files::Filesystem::removeDirectoryHandler(const std::vector<const std::string> & params)
 {
   this->logger->logFiles(3, "Remove directory handler initalization");
-  if(params.size()>1 && params[0] == "-h")
+  if(params.size()>1 && params[1] == "-h")
   {
-    // ToDo std::cout<<
+    std::cout<<"rmdir - removes directory"<<std::endl;
     return;
   }
   auto param(params);
@@ -679,7 +816,7 @@ void sop::files::Filesystem::removeDirectoryHandler(const std::vector<const std:
     auto path = getPathFromParam(data);
     if(path.size()>1)
     {
-      std::cout<<"Not yet implemented. Try to use one one level path"<<std::endl;
+      std::cout<<"Not supported. Try to use one one level path"<<std::endl;
     }
     else
     {
@@ -691,9 +828,9 @@ void sop::files::Filesystem::removeDirectoryHandler(const std::vector<const std:
 void sop::files::Filesystem::listHandler(const std::vector<const std::string> & params)
 {
   this->logger->logFiles(3, "List handler initalization");
-  if(params.size()>1 && params[0] == "-h")
+  if(params.size()>1 && params[1] == "-h")
   {
-    // ToDo std::cout<<
+    std::cout<<"ll - lists files and directories in current directory"<<std::endl;
     return;
   }
   std::vector<sop::files::dirList> x = this->list();
@@ -709,6 +846,36 @@ void sop::files::Filesystem::listHandler(const std::vector<const std::string> & 
   }
   std::cout<<"_________"<<std::endl;
   std::cout<<"Total: "<<std::to_string(size)<<std::endl;
+}
+
+void sop::files::Filesystem::catHandler(const std::vector< const std::string>& params)
+{
+  this->logger->logFiles(3, "Cat handler initalization");
+  if(params.size()>1 && params[1] == "-h")
+  {
+    std::cout<<"cat - prints inside of a file"<<std::endl;
+    return;
+  }
+  pid_t* PID = 0;
+  if(params.size()>1)
+  {
+    for(uint32_t i=1; i<params.size(); i++)
+    {
+      std::vector<std::string> tmp = getPathFromParam(params[i]);
+      sop::files::File* fp = this->openFile(PID,tmp, "r");
+      if(fp == 0)
+      {
+        this->logger->logFiles(2, "File not found");
+        std::cout<<"File not found"<<std::endl;
+        return;
+      }
+      else
+      {
+        std::cout<<this->readFile(fp)<<std::endl;
+      }
+      closeFile(fp);
+    }
+  }
 }
 
 void sop::files::Filesystem::printStats()
@@ -860,6 +1027,7 @@ void sop::files::Filesystem::statHandler(const std::vector<const std::string> & 
         std::cout<<"   -i <blockNr>\t prints inode data if available"<<std::endl;
         std::cout<<"   -s \t\t prints opened files, free spaces, current path..."<<std::endl;
         std::cout<<"   -t <depth>\t prints disk tree"<<std::endl;
+        std::cout<<"   -f \t\t prints free spaces"<<std::endl;
         std::cout<<"   --disk \t prints disk blocks summary"<<std::endl;
         return;
       } 
@@ -879,6 +1047,18 @@ void sop::files::Filesystem::statHandler(const std::vector<const std::string> & 
       if(param[i] == "-s")
       {
         this->printStats();
+      }
+      if(param[i] == "-f")
+      {
+        for(uint32_t i=0; i<(freeSpace.size()); i++)
+        {
+          std::cout<<this->freeSpace[i]<<"\t";
+          if((i+1)%6 == 0 && i!=0)
+          {
+            std::cout<<std::endl;
+          }
+        }
+        std::cout<<std::endl;
       }
       if(param[i] == "-i")
       {
@@ -971,33 +1151,7 @@ void sop::files::Filesystem::echoHandler(const std::vector<const std::string> & 
 
 void sop::files::Filesystem::test(const std::vector<const std::string> & params)
 {
-  this->serialize = new sop::files::Serialize(this, "disk.txt", this->logger);
-  this->serialize->save();
-  this->serialize->read();
-    //T.E.S.T. OF FILE CREATION AND NESTED OPENING
-  std::vector<std::string> fileName;
-  pid_t* PID = 0;
-  std::string testowy = "";
-  for(uint32_t i=0; i<44; i++)
-  {
-    testowy += std::to_string(rand()%10);
-  }
-  fileName.push_back("abc");
-  this->createDirectory(PID, fileName);
-  this->changeDirectory(PID, fileName);
-  fileName.pop_back();
-  fileName.push_back("file");
-  this->createFile(PID, fileName);
-  this->changeDirectoryUp();
-  fileName.pop_back();
-  fileName.push_back("abc");
-  fileName.push_back("file");
-  File* fh = this->openFile(PID, fileName, "w");
-  std::cout<<this->readFile(fh)<<std::endl;
-  this->writeToFile(fh, testowy);
-  std::cout<<this->readFile(fh)<<std::endl;
-  this->closeFile(fh);
-  delete fh;
+  std::cout<<"Currently no pending tests"<<std::endl;
 }
 
 uint32_t sop::files::Filesystem::getCurrentPathIterator()
@@ -1107,7 +1261,7 @@ void sop::files::Filesystem::readInode(uint32_t addr,  std::vector<std::string> 
     while(data[4].size())
     {
       indirect.push_back(atoi(data[4].substr(0, data[4].find(",")).c_str()));
-      data[4].erase(0, data[4].find(","));
+      data[4].erase(0, data[4].find(",")+1);
     }
     data[5].erase(data[5].find("size="), 5);
     size = atoi(data[5].c_str());
@@ -1137,12 +1291,18 @@ void sop::files::Filesystem::readInode(uint32_t addr,  std::vector<std::string> 
     {
       temporary->file.indirectBlockAddr.push_back(x);
     }
+    temporary->file.size = size;
   }
 }
 
 void sop::files::Filesystem::readData(uint32_t addr, std::string data)
 {
-  sop::files::Data* temp = dynamic_cast<sop::files::Data*>(this->dataBlocks[addr]);
+  sop::files::Data* temp;
+  if(this->dataBlocks[addr] == 0)
+  {
+    this->dataBlocks[addr] = new Data();
+  }
+  temp = dynamic_cast<sop::files::Data*>(this->dataBlocks[addr]);
   for(uint32_t i=0; i<sop::files::ConstEV::blockSize; i++)
   {
     temp->containter[i] = data[i];

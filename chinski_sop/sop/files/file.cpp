@@ -34,12 +34,17 @@ uint32_t sop::files::File::getBlockAddr()
 
 std::vector<std::array<char, sop::files::ConstEV::blockSize>> sop::files::File::getData()
 {
-  this->logger->logFiles(3, "File: getting data");
-  if(!this->isDataLoaded)
+  if(this->logger)
   {
+    this->logger->logFiles(3, "File: getting data");
     this->loadData();
+    return this->data;
   }
-  return this->data;
+  else
+  {
+    std::cout<<"Presumeably bad File initialization discovered"<<std::endl;
+  }
+  return *new std::vector<std::array<char, sop::files::ConstEV::blockSize>>;
 }
       
 char sop::files::File::getMode()
