@@ -35,6 +35,7 @@
     <ClInclude Include="sop\users\groups_manager.h" />
     <ClInclude Include="sop\users\id_definitions.h" />
     <ClInclude Include="sop\users\module.h" />
+    <ClInclude Include="sop\users\permissions.h" />
     <ClInclude Include="sop\users\priority_manager.h" />
     <ClInclude Include="sop\users\user.h" />
     <ClInclude Include="sop\users\users_manager.h" />
@@ -65,6 +66,7 @@
     <ClCompile Include="sop\users\groups_manager.cpp" />
     <ClCompile Include="sop\users\id_definitions.cpp" />
     <ClCompile Include="sop\users\module.cpp" />
+    <ClCompile Include="sop\users\permissions.cpp" />
     <ClCompile Include="sop\users\priority_manager.cpp" />
     <ClCompile Include="sop\users\user.cpp" />
     <ClCompile Include="sop\users\users_manager.cpp" />
