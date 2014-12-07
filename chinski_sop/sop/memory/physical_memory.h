@@ -5,7 +5,8 @@
 #include <boost\shared_ptr.hpp>
 #include <list>
 #include <queue>
-#include "logical_memory.h"
+#include ".\sop\memory\logical_memory.h"
+#include ".\sop\memory\swap.h"
 namespace sop
 {
 namespace memory
@@ -29,7 +30,7 @@ public:
   void setNubmerOfFreeFrames(uint16_t change);//ustawia liczbê wolnych ramek
   void setNumberOfNotFreeFrames(uint16_t change);//ustawia liczbê zajêtych ramek
   uint8_t getGuardianLevelofFreeFrames();//zwraca krytyczn¹ liczbê wolnych ramek
-  void getFreeFrames(uint8_t pages_needed,sop::memory::LogicalMemory* table_of_pages,uint16_t pid);//funkcja odpowiedzialna za przydzielenie ramek stronom, na podstawie liczby poz¹danych stron
+  void getFreeFrames(uint8_t pages_needed,sop::memory::LogicalMemory* table_of_pages,uint16_t pid, SwapFile* file_swap);//funkcja odpowiedzialna za przydzielenie ramek stronom, na podstawie liczby poz¹danych stron
   void setFrame(uint16_t pid,uint8_t page_number,uint16_t frame_number);//ustawia rekord w tabeli ramek na podstawie podanych argumentów
   frame* getFrame(uint16_t frame_number);//zwraca opis danej ramki z tabeli ramek
 protected:
@@ -46,6 +47,7 @@ private:
   boost::shared_ptr<frame[]> frame_table;//tabela ramek
   std::list <uint16_t> list_of_free_frames;//lista wolnych ramek
   std::queue <uint16_t>assigned_frames_queue;//kolejka FIFO przydzielanych ramek, potrzebna przy wymianie stron(algorytm FIFO)
+  void swap(SwapFile* file_swap,LogicalMemory* table_of_pages,int8_t victim,int8_t fram);//funkcja wymiataj¹ca strone na plik wymiany
  
 };
 

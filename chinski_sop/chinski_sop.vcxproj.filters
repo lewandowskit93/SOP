@@ -165,6 +165,9 @@
     <ClInclude Include="sop\memory\physical_memory.h">
       <Filter>Header Files\sop\memory</Filter>
     </ClInclude>
+    <ClInclude Include="sop\memory\swap.h">
+      <Filter>Header Files\sop\memory</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="sop\system\shell.cpp">
@@ -234,6 +237,9 @@
       <Filter>Source Files\sop\memory</Filter>
     </ClCompile>
     <ClCompile Include="sop\memory\logical_memory.cpp">
+      <Filter>Source Files\sop\memory</Filter>
+    </ClCompile>
+    <ClCompile Include="sop\memory\swap.cpp">
       <Filter>Source Files\sop\memory</Filter>
     </ClCompile>
   </ItemGroup>

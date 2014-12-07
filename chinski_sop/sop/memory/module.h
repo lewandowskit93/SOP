@@ -5,6 +5,7 @@
 #include ".\sop\system\module.h"
 #include ".\sop\memory\logical_memory.h"
 #include ".\sop\memory\physical_memory.h"
+#include ".\sop\memory\swap.h"
 
 namespace sop
 {
@@ -26,8 +27,9 @@ namespace sop
       protected:
 
       private:
-        PhysicalMemory memory_store;//nasza pamiêæ fizyczna, pierwszy argument to rozmair w bajtach, a drugi rozmiar ramki
+        PhysicalMemory physical_drive;//nasza pamiêæ fizyczna, pierwszy argument to rozmair w bajtach, a drugi rozmiar ramki
         uint8_t calculatePages(uint16_t program_size); //zwraca liczbê stron niezbêdn¹ dla danego programu
+        SwapFile swap_drive;
 
     };
   }

@@ -21,6 +21,7 @@
     <ClInclude Include="sop\memory\logical_memory.h" />
     <ClInclude Include="sop\memory\module.h" />
     <ClInclude Include="sop\memory\physical_memory.h" />
+    <ClInclude Include="sop\memory\swap.h" />
     <ClInclude Include="sop\object.h" />
     <ClInclude Include="sop\processes\exceptions\module_exception.h" />
     <ClInclude Include="sop\processes\module.h" />
@@ -45,6 +46,7 @@
     <ClCompile Include="sop\memory\logical_memory.cpp" />
     <ClCompile Include="sop\memory\module.cpp" />
     <ClCompile Include="sop\memory\physical_memory.cpp" />
+    <ClCompile Include="sop\memory\swap.cpp" />
     <ClCompile Include="sop\object.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="sop\processes\exceptions\module_exception.cpp" />
