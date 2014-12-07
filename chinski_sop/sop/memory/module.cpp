@@ -38,4 +38,31 @@ sop::memory::LogicalMemory* sop::memory::Module::allocate(uint16_t program_size,
   return &table_of_pages;
 }
 
+void sop::memory::Module::deallocate(sop::memory::LogicalMemory* page_table)
+{
+   //wyczyscic pamie fizyzna, nadpisac zeraami//ew swapa i odpowiendio tabela ramek swapa OPCJONALNIE
+  for(int i=0;i<page_table->getPageTableSize();++i)//odpowiada za zmiane danych w tabeli ramek pamiêci fizycznje/swapa na podstawie ka¿dej ze stron
+  {
+    if(page_table->getBitValidInvalid(i)==1)
+    {
+      this->physical_drive.setFrame(0,0,i);//zmiana w tabeli ramek w pamiêci fizycznej
+      this->physical_drive.pushEndListOfFreeFrames(page_table->getFrameNr(i));//wrzucenie danej ramki do listy wolnych ramek
+      this->physical_drive.setNubmerOfFreeFrames(this->physical_drive.getNumberOfFreeFrames()+1);//zwiekszenie liczby wolnych ramek
+      this->physical_drive.setNumberOfNotFreeFrames(this->physical_drive.getNumberOfFrames()-this->physical_drive.getNumberOfFreeFrames());//zmniejszenie liczby zajetych ramek
+      this->physical_drive.FindAndEraseFromDeque(page_table->getFrameNr(i));//znalezienie i usuniecie ramki z kolejki zajetych ramek
+    }
+    if(page_table->getBitValidInvalid(i)==0)
+    {
+      this->swap_drive.setSwapFrame(0,0,i);//zmiana w tabeli ramek swapa
+      this->swap_drive.pushEndListOfFreeSwapFrames(page_table->getFrameNr(i));//wrzucenie danej ramki do listy wolnych ramek
+      this->swap_drive.setNubmerOfFreeSwapFrames(this->swap_drive.getNumberOfFreeSwapFrames()+1);//zwiekszenie liczby wolnych ramek
+      
+    }
+  }
+  
+
+  
+
+}
+
 

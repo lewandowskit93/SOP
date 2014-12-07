@@ -21,7 +21,8 @@ public:
   uint8_t getPageTableSize();//zwraca liczbê stron
   page* getPage(uint8_t page_nr);//zwraca wskazan¹ stronê
   void setPage(uint8_t frame_nr,char val_inv,uint8_t page_nr);//ustawia poszczególnej strony i jej parametrów
-  
+  char getBitValidInvalid(uint8_t page_nr);//zwraca wartosc bitu valid/invalid
+  uint16_t getFrameNr(uint8_t page_nr);//zwraca nr ramki ze struktury strona
 protected:
 
 private:

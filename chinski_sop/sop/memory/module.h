@@ -21,7 +21,8 @@ namespace sop
         virtual ~Module();
         virtual std::string getClassName() const;
         virtual void initialize();
-        LogicalMemory* allocate(uint16_t program_size,uint16_t pid);
+        LogicalMemory* allocate(uint16_t program_size,uint16_t pid);//przydzia³ ramek stronom, zwraca wskaznik na tabelê stron
+        void deallocate(LogicalMemory* page_table);
       
 
       protected:

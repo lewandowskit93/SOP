@@ -18,6 +18,16 @@ uint8_t sop::memory::LogicalMemory::getPageTableSize()
   return page_table_size;
 }
 
+char sop::memory::LogicalMemory::getBitValidInvalid(uint8_t page_nr)
+{
+  return this->page_table[page_nr].valid_invalid;
+}
+
+uint16_t sop::memory::LogicalMemory::getFrameNr(uint8_t page_nr)
+{
+  return this->page_table[page_nr].frame_number;
+}
+
 sop::memory::page* sop::memory::LogicalMemory::getPage(uint8_t page_nr)
 {
   return &page_table[page_nr];

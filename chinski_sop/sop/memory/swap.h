@@ -28,7 +28,8 @@ public:
   void setSwapFrame(uint16_t pid,uint8_t page_number,uint16_t swap_frame_number);//ustawia rekord w tabeli ramek na podstawie podanych argumentów
   bool getIsThereAnyFrameValue();//zwraca czy swap nie jest zapchany
   uint8_t getFreeFrame();//zwraca pierwsza¹ woln¹ ramkê
-  void popFrontListOfFreeSwapFrames();
+  void popFrontListOfFreeSwapFrames();//usuwa ramke bedaca z przodu listy wolnych ramek
+  void pushEndListOfFreeSwapFrames(uint16_t frame_nr);//wstawia na koniec lisy nr wolnej ramki
 protected:
   
 private:
