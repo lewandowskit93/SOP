@@ -26,7 +26,9 @@ sop::process::Process *sop::processor::Scheduler::getHighestPriorityProcess()
     {
       if (_first_task_array[i].size()>0)
       {
-        return _first_task_array[i].front();
+        sop::process::Process *buf = _first_task_array[i].front();
+        _first_task_array[i].pop();
+        return buf;
       }
     }
     eraChange();
@@ -37,7 +39,9 @@ sop::process::Process *sop::processor::Scheduler::getHighestPriorityProcess()
     {
       if (_second_task_array[i].size()>0)
       {
-        return _second_task_array[i].front();
+        sop::process::Process *buf = _second_task_array[i].front();
+        _second_task_array[i].pop();
+        return buf;
       }
     }
    eraChange();
@@ -71,17 +75,34 @@ void sop::processor::Scheduler::addToActiveTaskArray(sop::process::Process *p)
     _second_task_array[priority].push(p);
   }
 }
-
+bool sop::processor::Scheduler::isEraChangeNeeded()
+{
+  if (firstIsActive())
+  {
+    for (int i = 0 ; i < 10 ; i++)
+    {
+      if (!_first_task_array[i].empty()) return false;
+    }
+  }
+  else if (secondIsActive())
+  {
+    for (int i = 0 ; i < 10 ; i++)
+    {
+      if (!_second_task_array[i].empty()) return false;
+    }
+  }
+  return true;
+}
 void sop::processor::Scheduler::eraChange()
 {
   if (_isFirstActive)
   {
-    clearTaskArray();
+    //clearTaskArray();
     _isFirstActive = false;
     _isSecondActive = true;
   }
   else if (_isSecondActive){
-    clearTaskArray();
+    //clearTaskArray();
     _isFirstActive = true;
     _isSecondActive = false;
   }

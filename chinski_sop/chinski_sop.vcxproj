@@ -29,6 +29,7 @@
     <ClInclude Include="sop\processor\module.h" />
     <ClInclude Include="sop\processor\processor.h" />
     <ClInclude Include="sop\processor\scheduler.h" />
+    <ClInclude Include="sop\string_converter.h" />
     <ClInclude Include="sop\system\exceptions\module_exceptions.h" />
     <ClInclude Include="sop\system\exceptions\kernel_exceptions.h" />
     <ClInclude Include="sop\system\module.h" />
@@ -56,6 +57,7 @@
     <ClCompile Include="sop\processor\module.cpp" />
     <ClCompile Include="sop\processor\processor.cpp" />
     <ClCompile Include="sop\processor\scheduler.cpp" />
+    <ClCompile Include="sop\string_converter.cpp" />
     <ClCompile Include="sop\system\exceptions\module_exceptions.cpp" />
     <ClCompile Include="sop\system\exceptions\kernel_exceptions.cpp" />
     <ClCompile Include="sop\system\module.cpp" />

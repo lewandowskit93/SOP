@@ -21,6 +21,7 @@ namespace sop
       void addToUnactiveTaskArray(sop::process::Process *p); // adding to unactive task array
       void addToActiveTaskArray(sop::process::Process *p); // adding to active task array
       void eraChange(); // will change unactive one to active 
+      bool isEraChangeNeeded(); // checks if era change has to be done
       bool firstIsActive(); // checks if the first array is the active one
       bool secondIsActive(); // checks if the second array is the active one
       void clearTaskArray(); // used to clean vector after eraChange

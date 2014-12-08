@@ -26,5 +26,6 @@ void sop::processor::Module::initialize()
   shell->registerCommand("sacttask",&ExecutiveUnit::cH_showActiveTaskQueue,(this->ExUnit));
   shell->registerCommand("suacttask",&ExecutiveUnit::cH_showUnactiveTaskQueue,(this->ExUnit));
   shell->registerCommand("procstate",&ExecutiveUnit::cH_showActualProcessorState,(this->ExUnit));
+  shell->registerCommand("fulltick",&ExecutiveUnit::cH_fullTick,(this->ExUnit));
   //shell->registerCommand("aprocstate",&ExecutiveUnit::cH_showAnyProcessorState,(this->ExUnit));
 }

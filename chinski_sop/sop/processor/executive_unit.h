@@ -5,6 +5,7 @@
 #include "./sop/processor/scheduler.h"
 #include "./sop/logger/logger.h"
 #include <vector>
+#include <string>
 namespace sop
 {
   namespace processor
@@ -15,20 +16,26 @@ namespace sop
     public:
       short getQuantTimeLeft(); // get actual quant time that is left 
       void resetQuantTime(); // resets quant time to standard quant time
-      void processorTick(); // processor ticks once every quant time 
+      std::string processorTick(); // processor ticks once every quant time 
+      void activateProcessor(); // initial start of executive unit work
       ExecutiveUnit(sop::logger::Logger *logger); // constructor
       ~ExecutiveUnit(); // deconstructor
+      void mainExecutiveLoop();
       sop::logger::Logger* logger;
       sop::interpreter::InterpreterHandler interpreter;
       sop::processor::Scheduler scheduler;
+      sop::process::Process *_runningProcess;
+      sop::process::Process *_lastUsedProcess;
 
       void cH_showQuantTimeLeft (const std::vector<const std::string> & params);
       void cH_showActiveTaskQueue (const std::vector<const std::string> & params);
       void cH_showUnactiveTaskQueue (const std::vector<const std::string> & params);
-      void cH_tick(const std::vector<const std::string> & params);
+      void cH_fullTick(const std::vector<const std::string> & params);
       void cH_interpretLine(const std::vector<const std::string> & params);
       void cH_showActualProcessorState(const std::vector<const std::string> & params);
       void cH_showAnyProcessorState(const std::vector<const std::string> & params);
+      
+      void testerMethod();
     protected:
     private:
       short _quantTimeLeft; // if == 0 then other process will be executed

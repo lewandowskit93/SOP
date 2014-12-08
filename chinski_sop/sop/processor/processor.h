@@ -9,7 +9,7 @@ namespace sop
 
   namespace processor
   {
-
+   
     struct processor
     {
       uint16_t a,b,c,d; // 16bit registers of the processor, a , b , c , d
@@ -30,8 +30,11 @@ namespace sop
 
     public:
       //General functions 
-      static void printOutProcessorState(processor *proc);
+      static void multipliesAandB(processor *proc); // A  *  B, and the result is held in C
+      static void dividesAandB(processor *proc); // A / B, result in C, rest from division in D
+      static void printOutProcessorState(processor *proc); // prints out all processor fields
       static void clearProcessor(processor *proc); //sets default(starting) values
+      static uint16_t softCharRegisterHandler(processor *proc, char processor_register); // gets processor value
       static uint16_t* charRegisterHandler(processor *proc, char processor_register); // convert chat into variable
 
       //Command register
@@ -39,11 +42,13 @@ namespace sop
       static void registerDecrement(processor *proc, char processor_register); // decrementing register field by one
 
       //Command register,value 
+      
       static void registerIncrementByValue(processor *proc, char processor_register, uint16_t value); // incrementing register field by value 
       static void registerDecrementByValue(processor *proc, char processor_register, uint16_t value); // decrementing register field by value
       static void setRegisterField(processor *proc, char processor_register, uint16_t value); // setting value into register field
       
       //Command register,register
+      static void compareRegisters(processor *proc, char register_one, char register_two); // comparing two registers, setting proper flags
       static void copySourceRegisterToDestinationRegister(processor *proc, char source_processor_register, char destination_processor_register); // source means processor to copy from,
                                                                                                                                   // and destination means processor to be pasted in
       static void addSourceRegisterToDestinationRegister(processor *proc, char source_processor_register, char destination_processor_register); // e.g destA = destA + srcB 
@@ -64,8 +69,9 @@ namespace sop
       static void unsetSignFlag(processor *proc); // setting sign flag to false
 
       //Stack
-      static void addToStack(/**/);
-      static void popFromStack(/**/);
+      static void addValueToStack(processor *proc, uint16_t value); // adds value to stack
+      static void addRegisterToStack(processor *proc, char register); // adds register value to stack
+      static void popFromStack(processor *proc, char register); // pops from stack to specified register 
       static void clearStack(processor *proc); // cleares all data in the stack
 
 
