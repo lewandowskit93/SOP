@@ -33,6 +33,7 @@ namespace sop
     class PermissionsUtilities
     {
       public:
+        static bool isModeAllowed(permission_t permission,permission_t mode);
         static std::string getRWXString(permission_t permission);
         static std::string getRWXString(permission_t user, permission_t group, permission_t others);
         static std::string getRWXString(Permissions permissions);

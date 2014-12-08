@@ -23,6 +23,11 @@ sop::users::Permissions::Permissions(permission_t user, permission_t group, perm
 }
 
 
+bool sop::users::PermissionsUtilities::isModeAllowed(permission_t permission,permission_t mode)
+{
+  return (permission & mode) == mode;
+}
+
 std::string sop::users::PermissionsUtilities::getRWXString(permission_t permission)
 {
   switch(permission) //maybe bit &?

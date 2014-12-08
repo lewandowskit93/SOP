@@ -22,8 +22,23 @@ std::string sop::users::PermissionsManager::getClassName() const
 
 bool sop::users::PermissionsManager::hasPermission(inode *node, pcb *process, permission_t mode)
 {
-  //ToDo: check permissions
-  return false;
+  if(!node || !process)return false;
+  else
+  {
+    if(process->uid==0)return true;
+    else if(process->uid==node->uid)
+    {
+      return PermissionsUtilities::isModeAllowed(node->permissions.user,mode);
+    }
+    else if(process->gid==node->gid)
+    {
+      return PermissionsUtilities::isModeAllowed(node->permissions.group,mode);
+    }
+    else
+    {
+      return PermissionsUtilities::isModeAllowed(node->permissions.others,mode);
+    }
+  }
 }
 
 bool sop::users::PermissionsManager::changePermissions(inode *node, pcb *process, const Permissions & permissions)
