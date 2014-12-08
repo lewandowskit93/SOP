@@ -80,3 +80,35 @@ bool sop::users::PermissionsManager::changeINodeOthersPermission(inode *node, pc
   }
   return false;
 }
+
+bool sop::users::PermissionsManager::changeOwner(inode *node, pcb *process, uid_t new_uid)
+{
+  if(hasPermission(node,process,Permissions::kW))
+  {
+    if(process->uid==0)
+    {
+      if(!_module->getUsersManager()->findUser(new_uid))return false;
+      node->uid=new_uid;
+      return true;
+    }
+    return false;
+  }
+  return false;
+}
+
+bool sop::users::PermissionsManager::changeGroup(inode *node, pcb *process, uid_t new_gid)
+{
+  if(hasPermission(node,process,Permissions::kW))
+  {
+    boost::shared_ptr<User> user = _module->getUsersManager()->findUser(process->uid);
+    if(!user)return false;
+    if(user->gid==new_gid)
+    {
+      if(!_module->getGroupsManager()->findGroup(new_gid))return false; // ToDo: isInGroup(gid,uid) function?
+      node->gid=new_gid;
+      return true;
+    }
+    return false;
+  }
+  return false;
+}

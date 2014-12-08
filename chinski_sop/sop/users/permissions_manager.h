@@ -3,6 +3,7 @@
 
 #include <string>
 #include ".\sop\object.h"
+#include ".\sop\users\id_definitions.h"
 #include ".\sop\users\permissions.h"
 
 namespace sop
@@ -25,6 +26,8 @@ namespace sop
         bool changeINodeUserPermission(inode *node, pcb *process, permission_t mode);
         bool changeINodeGroupPermission(inode *node, pcb *process, permission_t mode);
         bool changeINodeOthersPermission(inode *node, pcb *process, permission_t mode);
+        bool changeOwner(inode *node, pcb *process, uid_t new_uid);
+        bool changeGroup(inode *node, pcb *process, uid_t new_gid);
 
       protected:
         Module *_module;
