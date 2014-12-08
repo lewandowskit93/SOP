@@ -5,6 +5,7 @@
 #include ".\sop\system\kernel.h"
 #include ".\sop\system\shell.h"
 #include ".\sop\string_converter.h"
+#include ".\sop\users\fakers.h"
 
 sop::users::Module::Module(sop::system::Kernel *kernel):
   sop::system::Module(kernel),
@@ -74,7 +75,12 @@ void sop::users::Module::cH_useradd(const std::vector<const std::string> & param
   }
   else
   {
-    // ToDo: only a superuser can do this
+    if(!_permissions_manager.isSuperUser(fakers::getProcess(0).get()))
+    {
+      std::cout<<"Not a super user."<<std::endl;
+      return;
+    }
+
     User user;
 
     if(sop::system::Shell::hasParam(params,"-u"))
@@ -186,10 +192,19 @@ void sop::users::Module::cH_userdel(const std::vector<const std::string> & param
   else
   {
     // ToDo:
-    // user cannot be logged in
-    // only a superuser can do this
     // save the file
+    if(!_permissions_manager.isSuperUser(fakers::getProcess(0).get()))
+    {
+      std::cout<<"Not a super user."<<std::endl;
+      return;
+    }
+
     boost::shared_ptr<User> user = _users_manager.findUser(params[params.size()-1]);
+    if(fakers::getProcess(0)->uid==user->uid)
+    {
+      std::cout<<"User cannot be logged in."<<std::endl;
+      return;
+    }
     if(user)
     {
       boost::shared_ptr<Group> group = _groups_manager.findGroup(user->gid);
@@ -253,7 +268,6 @@ void sop::users::Module::cH_chpasswd(const std::vector<const std::string> & para
 
 void sop::users::Module::cH_groupadd(const std::vector<const std::string> & params)
 {
-  // ToDo: only a superuser can do this
   if(sop::system::Shell::hasParam(params, "-h") || params.size()==1)
   {
     std::cout<<"groupadd [-h] [-g gid] group_name"<<std::endl;
@@ -261,6 +275,11 @@ void sop::users::Module::cH_groupadd(const std::vector<const std::string> & para
   }
   else
   {
+    if(!_permissions_manager.isSuperUser(fakers::getProcess(0).get()))
+    {
+      std::cout<<"Not a super user."<<std::endl;
+      return;
+    }
     Group group;
     group.group_name=params[params.size()-1];
     if(sop::system::Shell::hasParam(params, "-g"))
@@ -308,7 +327,6 @@ void sop::users::Module::cH_groupfind(const std::vector<const std::string> & par
 
 void sop::users::Module::cH_groupdel(const std::vector<const std::string> & params)
 {
-  // ToDo: only a superuser can do this
   if(sop::system::Shell::hasParam(params, "-h") || params.size()==1)
   {
     std::cout<<"groupdel [-h] group_name"<<std::endl;
@@ -316,6 +334,11 @@ void sop::users::Module::cH_groupdel(const std::vector<const std::string> & para
   }
   else
   {
+    if(!_permissions_manager.isSuperUser(fakers::getProcess(0).get()))
+    {
+      std::cout<<"Not a super user."<<std::endl;
+      return;
+    }
     _groups_manager.deleteGroup(params[params.size()-1]);
     // ToDo: save the file
   }
@@ -370,7 +393,6 @@ void sop::users::Module::cH_groupmembers(const std::vector<const std::string> & 
 
 void sop::users::Module::cH_groupchange(const std::vector<const std::string> & params)
 {
-  // ToDo: only a superuser can do this
   if(sop::system::Shell::hasParam(params,"-h") || params.size()!=3)
   {
     std::cout<<"groupchange [-h] username gid"<<std::endl;
@@ -379,6 +401,11 @@ void sop::users::Module::cH_groupchange(const std::vector<const std::string> & p
   }
   else
   {
+    if(!_permissions_manager.isSuperUser(fakers::getProcess(0).get()))
+    {
+      std::cout<<"Not a super user."<<std::endl;
+      return;
+    }
     boost::shared_ptr<User> user = _users_manager.findUser(params[params.size()-2]);
     if(!user)
     {
@@ -406,24 +433,36 @@ void sop::users::Module::cH_groupchange(const std::vector<const std::string> & p
 
 void sop::users::Module::cH_nice(const std::vector<const std::string> & params)
 {
-  if(sop::system::Shell::hasParam(params,"-h") || params.size()<3)
+  if(sop::system::Shell::hasParam(params,"-h") || params.size()==1)
   {
     std::cout<<"nice [-h] [-s] gid priority"<<std::endl;
-    std::cout<<"Shows nice priority of group/user"<<std::endl;
+    std::cout<<"Shows nice priority of group/user. -s saves current nice settings"<<std::endl;
     return;
   }
 
   if(sop::system::Shell::hasParam(params,"-s"))
   {
-    //ToDo: only for root
+    if(!_permissions_manager.isSuperUser(fakers::getProcess(0).get()))
+    {
+      std::cout<<"Not a super user."<<std::endl;
+      return;
+    }
+    //ToDo: save file
+    return;
   }
+
+  if(params.size()!=3)return;
 
   gid_t gid = sop::StringConverter::convertStringTo<gid_t>(params[params.size()-2]);
   priority_t priority = (priority_t)sop::StringConverter::convertStringTo<int16_t>(params[params.size()-1]);
 
   if(priority<kDefault_priority)
   {
-    //ToDo: only for root
+    if(!_permissions_manager.isSuperUser(fakers::getProcess(0).get()))
+    {
+      std::cout<<"Not a super user."<<std::endl;
+      return;
+    }
   }
 
   _priority_manager.setGroupPriority(gid,priority);
@@ -455,20 +494,9 @@ void sop::users::Module::cH_removeniceentry(const std::vector<const std::string>
 {
   if(sop::system::Shell::hasParam(params,"-h") || params.size()==1)
   {
-    std::cout<<"removeniceentry [-h] [-s] gid"<<std::endl;
+    std::cout<<"removeniceentry [-h] gid"<<std::endl;
     std::cout<<"Removes priority entry"<<std::endl;
     return;
   }
-
-  if(sop::system::Shell::hasParam(params,"-s"))
-  {
-    // ToDo: only for root
-  }
-
   _priority_manager.removeGroupPriorityEntry(sop::StringConverter::convertStringTo<gid_t>(params[params.size()-1]));
-
-  if(sop::system::Shell::hasParam(params,"-s"))
-  {
-    // ToDo: save file
-  }
 }
