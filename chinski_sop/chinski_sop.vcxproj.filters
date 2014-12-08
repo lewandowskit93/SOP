@@ -186,6 +186,9 @@
     <ClInclude Include="sop\users\fakers.h">
       <Filter>Header Files\sop\users</Filter>
     </ClInclude>
+    <ClInclude Include="sop\users\permissions_manager.h">
+      <Filter>Header Files\sop\users</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="sop\system\shell.cpp">
@@ -276,6 +279,9 @@
       <Filter>Source Files\sop\users</Filter>
     </ClCompile>
     <ClCompile Include="sop\users\fakers.cpp">
+      <Filter>Source Files\sop\users</Filter>
+    </ClCompile>
+    <ClCompile Include="sop\users\permissions_manager.cpp">
       <Filter>Source Files\sop\users</Filter>
     </ClCompile>
   </ItemGroup>

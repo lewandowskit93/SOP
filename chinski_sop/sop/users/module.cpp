@@ -10,7 +10,8 @@ sop::users::Module::Module(sop::system::Kernel *kernel):
   sop::system::Module(kernel),
   _users_manager(this),
   _groups_manager(this),
-  _priority_manager(this)
+  _priority_manager(this),
+  _permissions_manager(this)
 {
 
 }

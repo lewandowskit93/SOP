@@ -8,6 +8,7 @@
 #include ".\sop\users\users_manager.h"
 #include ".\sop\users\groups_manager.h"
 #include ".\sop\users\priority_manager.h"
+#include ".\sop\users\permissions_manager.h"
 
 namespace sop
 {
@@ -28,6 +29,7 @@ namespace sop
         UsersManager* getUsersManager();
         GroupsManager* getGroupsManager();
         PriorityManager* getPriorityManager();
+        PermissionsManager* getPermissionsManager();
 
         void cH_useradd(const std::vector<const std::string> & params);
         void cH_userfind(const std::vector<const std::string> & params);
@@ -53,6 +55,7 @@ namespace sop
         UsersManager _users_manager;
         GroupsManager _groups_manager;
         PriorityManager _priority_manager;
+        PermissionsManager _permissions_manager;
     };
   }
 }
