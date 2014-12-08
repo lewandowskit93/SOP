@@ -11,8 +11,11 @@ namespace sop
   namespace users
   {
     class Module;
-    struct pcb;
-    struct inode;
+    namespace fakers
+    {
+      struct pcb;
+      struct inode;
+    }
 
     class PermissionsManager : public Object
     {
@@ -21,13 +24,14 @@ namespace sop
         virtual ~PermissionsManager();
         virtual std::string getClassName() const;
 
-        bool hasPermission(inode *node, pcb *process, permission_t mode);
-        bool changePermissions(inode *node, pcb *process, const Permissions & permissions); //has to have permissions
-        bool changeINodeUserPermission(inode *node, pcb *process, permission_t mode);
-        bool changeINodeGroupPermission(inode *node, pcb *process, permission_t mode);
-        bool changeINodeOthersPermission(inode *node, pcb *process, permission_t mode);
-        bool changeOwner(inode *node, pcb *process, uid_t new_uid);
-        bool changeGroup(inode *node, pcb *process, uid_t new_gid);
+        bool hasPermission(fakers::inode *node, fakers::pcb *process, permission_t mode);
+        bool changePermissions(fakers::inode *node, fakers::pcb *process, const Permissions & permissions); //has to have permissions
+        bool changeINodeUserPermission(fakers::inode *node, fakers::pcb *process, permission_t mode);
+        bool changeINodeGroupPermission(fakers::inode *node, fakers::pcb *process, permission_t mode);
+        bool changeINodeOthersPermission(fakers::inode *node, fakers::pcb *process, permission_t mode);
+        bool changeOwner(fakers::inode *node, fakers::pcb *process, uid_t new_uid);
+        bool changeGroup(fakers::inode *node, fakers::pcb *process, uid_t new_gid);
+        bool isSuperUser(fakers::pcb *process);
 
       protected:
         Module *_module;

@@ -20,12 +20,12 @@ std::string sop::users::PermissionsManager::getClassName() const
 }
 
 
-bool sop::users::PermissionsManager::hasPermission(inode *node, pcb *process, permission_t mode)
+bool sop::users::PermissionsManager::hasPermission(fakers::inode *node, fakers::pcb *process, permission_t mode)
 {
   if(!node || !process)return false;
   else
   {
-    if(process->uid==0)return true;
+    if(isSuperUser(process))return true;
     else if(process->uid==node->uid)
     {
       return PermissionsUtilities::isModeAllowed(node->permissions.user,mode);
@@ -41,7 +41,7 @@ bool sop::users::PermissionsManager::hasPermission(inode *node, pcb *process, pe
   }
 }
 
-bool sop::users::PermissionsManager::changePermissions(inode *node, pcb *process, const Permissions & permissions)
+bool sop::users::PermissionsManager::changePermissions(fakers::inode *node, fakers::pcb *process, const Permissions & permissions)
 {
   if(hasPermission(node,process,Permissions::kW))
   {
@@ -51,7 +51,7 @@ bool sop::users::PermissionsManager::changePermissions(inode *node, pcb *process
   return false;
 }
 
-bool sop::users::PermissionsManager::changeINodeUserPermission(inode *node, pcb *process, permission_t mode)
+bool sop::users::PermissionsManager::changeINodeUserPermission(fakers::inode *node, fakers::pcb *process, permission_t mode)
 {
   if(hasPermission(node,process,Permissions::kW))
   {
@@ -61,7 +61,7 @@ bool sop::users::PermissionsManager::changeINodeUserPermission(inode *node, pcb 
   return false;
 }
 
-bool sop::users::PermissionsManager::changeINodeGroupPermission(inode *node, pcb *process, permission_t mode)
+bool sop::users::PermissionsManager::changeINodeGroupPermission(fakers::inode *node, fakers::pcb *process, permission_t mode)
 {
   if(hasPermission(node,process,Permissions::kW))
   {
@@ -71,7 +71,7 @@ bool sop::users::PermissionsManager::changeINodeGroupPermission(inode *node, pcb
   return false;
 }
 
-bool sop::users::PermissionsManager::changeINodeOthersPermission(inode *node, pcb *process, permission_t mode)
+bool sop::users::PermissionsManager::changeINodeOthersPermission(fakers::inode *node, fakers::pcb *process, permission_t mode)
 {
   if(hasPermission(node,process,Permissions::kW))
   {
@@ -81,11 +81,11 @@ bool sop::users::PermissionsManager::changeINodeOthersPermission(inode *node, pc
   return false;
 }
 
-bool sop::users::PermissionsManager::changeOwner(inode *node, pcb *process, uid_t new_uid)
+bool sop::users::PermissionsManager::changeOwner(fakers::inode *node, fakers::pcb *process, uid_t new_uid)
 {
   if(hasPermission(node,process,Permissions::kW))
   {
-    if(process->uid==0)
+    if(isSuperUser(process))
     {
       if(!_module->getUsersManager()->findUser(new_uid))return false;
       node->uid=new_uid;
@@ -96,7 +96,7 @@ bool sop::users::PermissionsManager::changeOwner(inode *node, pcb *process, uid_
   return false;
 }
 
-bool sop::users::PermissionsManager::changeGroup(inode *node, pcb *process, uid_t new_gid)
+bool sop::users::PermissionsManager::changeGroup(fakers::inode *node, fakers::pcb *process, uid_t new_gid)
 {
   if(hasPermission(node,process,Permissions::kW))
   {
@@ -111,4 +111,10 @@ bool sop::users::PermissionsManager::changeGroup(inode *node, pcb *process, uid_
     return false;
   }
   return false;
+}
+
+bool sop::users::PermissionsManager::isSuperUser(fakers::pcb *process)
+{
+  if(!process) return false;
+  return process->uid==0;
 }
