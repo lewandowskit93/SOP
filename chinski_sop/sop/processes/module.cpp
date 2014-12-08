@@ -82,9 +82,26 @@ void sop::processes::Module::CreateShellInit()
 
 void sop::processes::Module::fork()
 {
+  //if (isTrueProcess == 0)
+  //stworz nowy proces
+  //ustaw flage isrunning na 1
+  //ustaw flagemomory na 0
+  //ustaw flageprocesor na 0
+  //ustaw flageisending na 0
+  //pobierz nowy PID
+  //przypisz PID procesu na ktorym wykonywany jest fork jako PPID
+  //przypisz wartosci adresu tablicy stron, czyli 0
 
+  //else if (isTrueProcess == 1)
+  //stworz nowy proces
+  //pobierz nowy PID
+  //przypisz PID procesu na ktorym wykonywany jest fork jako PPID
+  //skopiuj adres tablicy stron
+  //skopiuj zawartosci rejestrow
+  //ustaw flage is running na 0 co spowoduje poproszenie o procesor
 }
 
 void sop::processes::Module::exec()
 {
+
 }
