@@ -37,7 +37,7 @@ namespace sop
     class Filesystem
     {
     public:
-      Filesystem(sop::logger::Logger* logger);
+      //Filesystem(sop::logger::Logger* logger);
       Filesystem(sop::logger::Logger* logger, std::string diskFileName);
       ~Filesystem();
       sop::logger::Logger* logger;
@@ -74,6 +74,7 @@ namespace sop
       void printStats();
       void printDisk(uint32_t parts);
       void printDiskTree(uint32_t depth);
+      void diskTree(uint32_t depth, std::vector<sop::files::dirList> root, std::string prelimiter);
       void printDataBlock(uint32_t block);
       void printInodeBlock(uint32_t block);
 
@@ -90,6 +91,7 @@ namespace sop
       void listHandler(const std::vector<const std::string> & params);
       void echoHandler(const std::vector<const std::string> & params);
       void statHandler(const std::vector<const std::string> & params);
+      void formatHandler(const std::vector<const std::string> & params);
       void test(const std::vector<const std::string> & params);
     
     protected:

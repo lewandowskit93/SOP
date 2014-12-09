@@ -22,6 +22,7 @@ namespace sop
       std::string drwx;
       std::string size;
       std::string name;
+      uint32_t block;
     };
 
     class ConstEV

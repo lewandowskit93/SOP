@@ -4,6 +4,7 @@
 #include <math.h>
 #include <algorithm>
 #include <cstdint>
+#include <Windows.h>
 #include <boost\make_shared.hpp>
 #include ".\sop\files\filesystem.h"
 #include ".\sop\files\file.h"
@@ -11,6 +12,19 @@
 #include ".\sop\files\data.h"
 #include ".\sop\logger\logger.h"
 #include ".\sop\files\serialize.h"
+
+void clearConsole()
+{
+  COORD topLeft={0,0};
+  HANDLE console = GetStdHandle(STD_OUTPUT_HANDLE);
+  CONSOLE_SCREEN_BUFFER_INFO screen;
+  DWORD written;
+
+  GetConsoleScreenBufferInfo(console, &screen);
+  FillConsoleOutputCharacterA(console, ' ', screen.dwSize.X * screen.dwSize.Y, topLeft, &written);
+  FillConsoleOutputAttribute(console, FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_RED, screen.dwSize.X * screen.dwSize.Y, topLeft, &written);
+  SetConsoleCursorPosition(console, topLeft);
+}
 
 std::vector<std::string> getPathFromParam(std::string path)
 {
@@ -31,7 +45,7 @@ std::vector<std::string> getPathFromParam(std::string path)
   outPath.push_back(path);
   return outPath;
 }
-
+/*
 sop::files::Filesystem::Filesystem(sop::logger::Logger* logger) :
   logger(logger),
   serialize(0)
@@ -46,7 +60,7 @@ sop::files::Filesystem::Filesystem(sop::logger::Logger* logger) :
   std::sort(this->freeSpace.begin(), this->freeSpace.end());
   this->dataBlocks[0] = new sop::files::Inode(true, 0,0, this->logger);
   this->logger->logFiles(6, "Filesystem initialization successful");
-}
+}*/
 
 sop::files::Filesystem::Filesystem(sop::logger::Logger* logger, std::string diskFileName) :
   logger(logger)
@@ -215,24 +229,30 @@ void sop::files::Filesystem::closeFile(File* fileHandler)
 
 void sop::files::Filesystem::removeFile(pid_t* PID, std::vector<std::string> path)
 {
-  this->serialize->read();
-  this->logger->logFiles(3, "File remove initilized");
-  sop::files::File* fh = seek(0, path);
-  std::vector<std::string> tmp(path);
-  tmp.pop_back();  
-  this->logger->logFiles(3, "Removing file");
-  fh->removeFile(&this->freeSpace);
-  if(tmp.size())
+  try
   {
-    fh = seek(0, tmp);
-    this->dataBlocks[fh->getBlockAddr()]->removeFromDir(path.back());
+    this->serialize->read();
+    this->logger->logFiles(3, "File remove initilized");
+    sop::files::File* fh = seek(0, path);
+    std::vector<std::string> tmp(path);
+    tmp.pop_back();  
+    this->logger->logFiles(3, "Removing file");
+    fh->removeFile(&this->freeSpace);
+    if(tmp.size())
+    {
+      fh = seek(0, tmp);
+      this->dataBlocks.at(fh->getBlockAddr())->removeFromDir(path.back());
+    }
+    else
+    {
+      this->dataBlocks.at(this->getCurrentPathIterator())->removeFromDir(path.at(0));
+    }
+    this->logger->logFiles(3, "File removed");
+    this->serialize->save();
   }
-  else
+  catch(...)
   {
-    this->dataBlocks[this->getCurrentPathIterator()]->removeFromDir(path.at(0));
   }
-  this->logger->logFiles(3, "File removed");
-  this->serialize->save();
 }
 
 void sop::files::Filesystem::moveFile(pid_t* PID, std::string fileName, std::string newDirectory)
@@ -615,13 +635,14 @@ void sop::files::Filesystem::vi(sop::files::File* fp)
 {
   std::cout<<std::endl<<std::endl;
   std::cout<<"Filename: "<<fp->getFileName()<<std::endl;
-  std::cout<<":r - read, :w - write, :q - quit, :i - input mode"<<std::endl;
+  std::cout<<":r - read, :w - write, :q - quit, :i - input mode, :c - clear"<<std::endl;
   enum mode
   {
     INPUT = 1,
     READ = 2,
     WRITE = 3,
     WAIT = 4,
+    CLEAR = 5,
     QUIT = 0
   };
   mode modeVal = WAIT;
@@ -632,11 +653,14 @@ void sop::files::Filesystem::vi(sop::files::File* fp)
     switch(modeVal)
     {
     case INPUT:
+      this->logger->logFiles(3, "Vi: reading data from file");
+      output = this->readFile(fp);
+      std::cout<<output<<std::endl;
       char tmp;
       while((tmp = _getch()) !=27)
       {
         output += tmp;
-        //this->logger->logFiles(3, "Vi: reading characters: "+std::to_string(tmp));
+        this->logger->logFiles(3, "Vi: reading characters: "+std::to_string(tmp));
         _putch(tmp);
         if(tmp == 13)
         {
@@ -670,12 +694,21 @@ void sop::files::Filesystem::vi(sop::files::File* fp)
         std::cout<<"\rChoose mode: ";
         tmp1 = _getch();
         _putch(tmp1);
+        if(tmp1 == 27)
+        {
+          std::cout<<"\rChoose mode:           ";
+          continue;
+        }
         if((tmp1) == ':')
         {
-          //putch(tmp1);
+          if(tmp1 == 27)
+          {
+            std::cout<<"\rChoose mode:           ";
+            continue;
+          }
           tmp2 = _getch();
           _putch(tmp2);
-          exit = false;
+          exit = true;
           switch(tmp2)
           {
           case 'i':
@@ -690,19 +723,28 @@ void sop::files::Filesystem::vi(sop::files::File* fp)
           case'q':
             modeVal = QUIT;
             break;
+          case 'c':
+            modeVal = CLEAR;
+            break;
           default:
-            exit = true;
+            exit = false;
           }
         }
         else
         {
-          exit = true;
+          exit = false;
         }
-      } while(exit);
+      } while(!exit);
       std::cout<<std::endl;
       break;
+    case CLEAR:
+      output.clear();
+      std::cout<<output<<std::endl;
+      modeVal = WAIT;
+      break;
     default:
-      // ToDo : command not known info
+      std::cout<<"Error: not known"<<std::endl;
+      this->logger->logFiles(2, "Error, not known");
       break;
     }
   }
@@ -716,6 +758,7 @@ void sop::files::Filesystem::viHandler(const std::vector<const std::string> & pa
     std::cout<<"vi - test-fitted file editor. Allows to edit files, guess You not"<<std::endl;
     return;
   }
+  clearConsole();
   this->logger->logFiles(3, "File editor");
   std::cout<<"Loading vi..."<<std::endl;
   //std::cout<<"Vi not yet supported"<<std::endl;
@@ -949,11 +992,48 @@ void sop::files::Filesystem::printDisk(uint32_t parts)
   std::cout<<std::endl;
 }
 
+void sop::files::Filesystem::diskTree(uint32_t depth, std::vector<sop::files::dirList> root, std::string prelimiter)
+{
+  if(depth > 0)
+  {
+    if(root.size()>0)
+    {
+      for(uint32_t x=0; x<root.size(); x++)
+      {
+        std::cout<<prelimiter<<root[x].name<<std::endl;
+        if(this->dataBlocks[root[x].block]->getIsDirectory())
+        {
+          this->diskTree(depth-1, this->dataBlocks[root[x].block]->listDir(&this->dataBlocks),prelimiter+"| ");
+        }
+      }
+    }
+    else return;
+  }
+  else return;
+}
+
 void sop::files::Filesystem::printDiskTree(uint32_t depth)
 {
   this->logger->logFiles(6, "Printing disk tree");
-  std::cout<<"Loading DiskTree"<<std::endl;
-  std::cout<<"DiskTree: Not yet implemented"<<std::endl;
+  std::cout<<"Loading DiskTree..."<<std::endl;
+  if(depth > 0)
+  {
+    std::vector<sop::files::dirList> root = this->dataBlocks[0]->listDir(&this->dataBlocks);
+    if(root.size() > 0)
+    {
+      std::cout<<std::endl;
+      this->diskTree(depth, root, " ");
+    }
+    else
+    {
+      std::cout<<"Directory is empty"<<std::endl;
+    }
+  }
+  else
+  {
+    std::cout<<"DiskTree: digging deep inside your lungs is not possible"<<std::endl;
+    this->logger->logFiles(2, "DiskTree: digging deep inside your lungs is not possible");
+  }
 }
 
 void sop::files::Filesystem::printInodeBlock(uint32_t block)
@@ -1075,7 +1155,7 @@ void sop::files::Filesystem::statHandler(const std::vector<const std::string> & 
       }
       if(param[i] == "-d")
       {
-        if(param.size()-1 > i+1)
+        if(param.size() > i+1)
         {
           this->printDataBlock(atoi(param[i+1].c_str()));
           i++;
@@ -1088,7 +1168,7 @@ void sop::files::Filesystem::statHandler(const std::vector<const std::string> & 
       }
       if(param[i] == "-t")
       {
-        if(param.size()-1 > i+1)
+        if(param.size() > i+1)
         {
           this->printDiskTree(atoi(param[i+1].c_str()));
           i++;
@@ -1306,5 +1386,40 @@ void sop::files::Filesystem::readData(uint32_t addr, std::string data)
   for(uint32_t i=0; i<sop::files::ConstEV::blockSize; i++)
   {
     temp->containter[i] = data[i];
+  }
+}
+
+void sop::files::Filesystem::formatHandler(const std::vector<const std::string> & params)
+{
+  if(params.size() > 1)
+  {
+    if(params[1] == "--yes")
+    {
+        this->logger->logFiles(5, "Formating filesystem");
+        this->logger->logFiles(4, "Setting free spaces and presetting structures");
+        this->freeSpace.clear();
+        for(uint32_t i=0; i < sop::files::ConstEV::numOfBlocks; i++)
+        {
+          this->freeSpace.push_back(i);
+          if(this->dataBlocks[i] != 0)
+          {
+            delete this->dataBlocks[i];
+          }
+          this->dataBlocks[i] = 0;
+        }
+        std::sort(this->freeSpace.begin(), this->freeSpace.end());
+        this->dataBlocks[0] = new sop::files::Inode(true, 0,0, this->logger);
+        this->serialize->save();
+        std::cout<<"Format successful"<<std::endl;
+        this->logger->logFiles(6, "Filesystem format successful");
+    }
+    else
+    {
+      std::cout<<"format - reset disk to 0 state in format of EXT-like filesystem"<<std::endl;
+    }
+  }
+  else
+  {
+    std::cout<<"format - reset disk to 0 state in format of EXT-like filesystem"<<std::endl;
   }
 }

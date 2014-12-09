@@ -120,3 +120,12 @@ void sop::files::File::setFilename(std::string filename)
 {
   this->fileName = filename;
 }
+
+sop::files::Inode* sop::files::File::getInode()
+{
+  if(this->blockAddress >= 0 && this->blockAddress < sop::files::ConstEV::numOfBlocks)
+  {
+    return new Inode(*dynamic_cast<sop::files::Inode*>(this->drive->at(this->blockAddress)));
+  }
+  return nullptr;
+}

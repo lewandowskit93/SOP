@@ -1,0 +1,293 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Source Files\sop">
+      <UniqueIdentifier>{f8ea96df-210b-462a-8b41-f28d4357c380}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\sop\system">
+      <UniqueIdentifier>{7cae82ad-8a7c-4e2f-ae7c-be23abcabf58}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\sop\logger">
+      <UniqueIdentifier>{4e3c8b93-e2c6-4fa7-8c02-04a3a749c978}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\sop">
+      <UniqueIdentifier>{847ab7cc-614b-4097-bbb2-23784fb597c9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\sop\system">
+      <UniqueIdentifier>{ca89b6ef-a797-4c15-bac7-c37dc6304cc7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\sop\logger">
+      <UniqueIdentifier>{2b7aa4cd-76e2-4233-a377-ddec0341ac26}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\sop\system\exceptions">
+      <UniqueIdentifier>{33374956-6fee-456d-b056-aece0fa4b691}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\sop\system\exceptions">
+      <UniqueIdentifier>{ecf17171-9c0c-46b9-b218-a9bd40a9bd73}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\sop\users">
+      <UniqueIdentifier>{aeab3c3b-12b7-485d-956c-6c89ab7913fb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\sop\files">
+      <UniqueIdentifier>{74083613-e04b-411a-9102-3f0afb2f5bc8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\sop\processes">
+      <UniqueIdentifier>{70a88273-b8f5-40b7-b9f0-1d8adf16bad7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\sop\memory">
+      <UniqueIdentifier>{c254316f-e827-4848-ac8f-5338f06a3135}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\sop\processor">
+      <UniqueIdentifier>{1749ff36-fd15-4222-a655-2e5e66a58197}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\sop\users">
+      <UniqueIdentifier>{e64cc0b4-9333-45e2-b5dc-11c3bd306948}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\sop\files">
+      <UniqueIdentifier>{d1e79683-fcc0-48d8-95aa-42845a8cc29a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\sop\processes">
+      <UniqueIdentifier>{f1351008-2215-4139-9c51-96296cd2bb4b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\sop\processor">
+      <UniqueIdentifier>{9905d79a-aa07-48f1-9bad-8dbe16308678}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\sop\memory">
+      <UniqueIdentifier>{90073e96-e862-442d-a699-0554b88fa457}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\sop\files\exceptions">
+      <UniqueIdentifier>{5afcbca9-93eb-48af-8561-e0d0a0abacbf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\sop\files\exceptions">
+      <UniqueIdentifier>{a217eb08-5835-41a8-9a06-b8bf2c323345}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\sop\memory\exceptions">
+      <UniqueIdentifier>{847a3c9c-7a6f-4fad-81b8-21f6ccc98419}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\sop\memory\exceptions">
+      <UniqueIdentifier>{e9effe74-845a-4c1c-b069-78f2d7364f4d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\sop\processes\exceptions">
+      <UniqueIdentifier>{85bc345a-6713-4551-88a5-7eb1efab2574}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\sop\processes\exceptions">
+      <UniqueIdentifier>{129b1185-16ea-4478-9623-5c6584400876}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\sop\processor\exceptions">
+      <UniqueIdentifier>{5544a9a1-2079-40ef-ab88-395241dbc2a4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\sop\processor\exceptions">
+      <UniqueIdentifier>{5202c9ba-550c-4cf9-9f6a-d6d12bcfaac4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\sop\users\exceptions">
+      <UniqueIdentifier>{b638dbeb-eb1b-49c2-9e5c-09433aa2e9fc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\sop\users\exceptions">
+      <UniqueIdentifier>{c3c56568-69fd-4644-a6d4-f006e95f114e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\sop\files\serialization">
+      <UniqueIdentifier>{a31e82cb-1545-4695-af3b-02914c6111e1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\sop\files\serialization">
+      <UniqueIdentifier>{02acdbf4-7414-4f16-a306-a37c3609f72a}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="sop\system\module.h">
+      <Filter>Header Files\sop\system</Filter>
+    </ClInclude>
+    <ClInclude Include="sop\system\shell.h">
+      <Filter>Header Files\sop\system</Filter>
+    </ClInclude>
+    <ClInclude Include="sop\logger\logger.h">
+      <Filter>Header Files\sop\logger</Filter>
+    </ClInclude>
+    <ClInclude Include="sop\object.h">
+      <Filter>Header Files\sop</Filter>
+    </ClInclude>
+    <ClInclude Include="sop\system\exceptions\module_exceptions.h">
+      <Filter>Header Files\sop\system\exceptions</Filter>
+    </ClInclude>
+    <ClInclude Include="sop\logger\console_logger.h">
+      <Filter>Header Files\sop\logger</Filter>
+    </ClInclude>
+    <ClInclude Include="sop\users\module.h">
+      <Filter>Header Files\sop\users</Filter>
+    </ClInclude>
+    <ClInclude Include="sop\processes\module.h">
+      <Filter>Header Files\sop\processes</Filter>
+    </ClInclude>
+    <ClInclude Include="sop\processor\module.h">
+      <Filter>Header Files\sop\processor</Filter>
+    </ClInclude>
+    <ClInclude Include="sop\memory\module.h">
+      <Filter>Header Files\sop\memory</Filter>
+    </ClInclude>
+    <ClInclude Include="sop\files\module.h">
+      <Filter>Header Files\sop\files</Filter>
+    </ClInclude>
+    <ClInclude Include="sop\exception.h">
+      <Filter>Header Files\sop</Filter>
+    </ClInclude>
+    <ClInclude Include="sop\files\exceptions\module_exception.h">
+      <Filter>Header Files\sop\files\exceptions</Filter>
+    </ClInclude>
+    <ClInclude Include="sop\memory\exceptions\module_exception.h">
+      <Filter>Header Files\sop\memory\exceptions</Filter>
+    </ClInclude>
+    <ClInclude Include="sop\processes\exceptions\module_exception.h">
+      <Filter>Header Files\sop\processes\exceptions</Filter>
+    </ClInclude>
+    <ClInclude Include="sop\processor\exceptions\module_exception.h">
+      <Filter>Header Files\sop\processor\exceptions</Filter>
+    </ClInclude>
+    <ClInclude Include="sop\users\exceptions\module_exception.h">
+      <Filter>Header Files\sop\users\exceptions</Filter>
+    </ClInclude>
+    <ClInclude Include="sop\system\kernel.h">
+      <Filter>Header Files\sop\system</Filter>
+    </ClInclude>
+    <ClInclude Include="sop\system\exceptions\kernel_exceptions.h">
+      <Filter>Header Files\sop\system\exceptions</Filter>
+    </ClInclude>
+    <ClInclude Include="sop\initializable.h">
+      <Filter>Header Files\sop</Filter>
+    </ClInclude>
+<<<<<<< HEAD
+    <ClInclude Include="sop\files\inode.h">
+      <Filter>Header Files\sop\files</Filter>
+    </ClInclude>
+    <ClInclude Include="sop\files\filesystem.h">
+      <Filter>Header Files\sop\files</Filter>
+    </ClInclude>
+    <ClInclude Include="sop\files\file.h">
+      <Filter>Header Files\sop\files</Filter>
+    </ClInclude>
+    <ClInclude Include="sop\files\block.h">
+      <Filter>Header Files\sop\files</Filter>
+    </ClInclude>
+    <ClInclude Include="sop\files\data.h">
+      <Filter>Header Files\sop\files</Filter>
+    </ClInclude>
+    <ClInclude Include="sop\files\constev.h">
+      <Filter>Header Files\sop\files</Filter>
+    </ClInclude>
+    <ClInclude Include="sop\files\serialize.h">
+      <Filter>Header Files\sop\files\serialization</Filter>
+    </ClInclude>
+    <ClInclude Include="sop\files\filesystem_s.h">
+      <Filter>Header Files\sop\files\serialization</Filter>
+=======
+    <ClInclude Include="sop\string_converter.h">
+      <Filter>Header Files\sop</Filter>
+>>>>>>> string_converter
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="sop\system\shell.cpp">
+      <Filter>Source Files\sop\system</Filter>
+    </ClCompile>
+    <ClCompile Include="sop\system\module.cpp">
+      <Filter>Source Files\sop\system</Filter>
+    </ClCompile>
+    <ClCompile Include="sop\logger\logger.cpp">
+      <Filter>Source Files\sop\logger</Filter>
+    </ClCompile>
+    <ClCompile Include="sop\object.cpp">
+      <Filter>Source Files\sop</Filter>
+    </ClCompile>
+    <ClCompile Include="sop\exception.cpp">
+      <Filter>Source Files\sop</Filter>
+    </ClCompile>
+    <ClCompile Include="sop\system\exceptions\module_exceptions.cpp">
+      <Filter>Source Files\sop\system\exceptions</Filter>
+    </ClCompile>
+    <ClCompile Include="sop\logger\console_logger.cpp">
+      <Filter>Source Files\sop\logger</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="sop\users\module.cpp">
+      <Filter>Source Files\sop\users</Filter>
+    </ClCompile>
+    <ClCompile Include="sop\processes\module.cpp">
+      <Filter>Source Files\sop\processes</Filter>
+    </ClCompile>
+    <ClCompile Include="sop\processor\module.cpp">
+      <Filter>Source Files\sop\processor</Filter>
+    </ClCompile>
+    <ClCompile Include="sop\memory\module.cpp">
+      <Filter>Source Files\sop\memory</Filter>
+    </ClCompile>
+    <ClCompile Include="sop\files\module.cpp">
+      <Filter>Source Files\sop\files</Filter>
+    </ClCompile>
+    <ClCompile Include="sop\files\exceptions\module_exception.cpp">
+      <Filter>Source Files\sop\files\exceptions</Filter>
+    </ClCompile>
+    <ClCompile Include="sop\memory\exceptions\module_exception.cpp">
+      <Filter>Source Files\sop\memory\exceptions</Filter>
+    </ClCompile>
+    <ClCompile Include="sop\processes\exceptions\module_exception.cpp">
+      <Filter>Source Files\sop\processes\exceptions</Filter>
+    </ClCompile>
+    <ClCompile Include="sop\processor\exceptions\module_exception.cpp">
+      <Filter>Source Files\sop\processor\exceptions</Filter>
+    </ClCompile>
+    <ClCompile Include="sop\users\exceptions\module_exception.cpp">
+      <Filter>Source Files\sop\users\exceptions</Filter>
+    </ClCompile>
+    <ClCompile Include="sop\system\kernel.cpp">
+      <Filter>Source Files\sop\system</Filter>
+    </ClCompile>
+    <ClCompile Include="sop\system\exceptions\kernel_exceptions.cpp">
+      <Filter>Source Files\sop\system\exceptions</Filter>
+    </ClCompile>
+    <ClCompile Include="sop\initializable.cpp">
+      <Filter>Source Files\sop</Filter>
+    </ClCompile>
+<<<<<<< HEAD
+    <ClCompile Include="sop\files\filesystem.cpp">
+      <Filter>Source Files\sop\files</Filter>
+    </ClCompile>
+    <ClCompile Include="sop\files\inode.cpp">
+      <Filter>Source Files\sop\files</Filter>
+    </ClCompile>
+    <ClCompile Include="sop\files\file.cpp">
+      <Filter>Source Files\sop\files</Filter>
+    </ClCompile>
+    <ClCompile Include="sop\files\data.cpp">
+      <Filter>Source Files\sop\files</Filter>
+    </ClCompile>
+    <ClCompile Include="sop\files\block.cpp">
+      <Filter>Source Files\sop\files</Filter>
+    </ClCompile>
+    <ClCompile Include="sop\files\filesystem_s.cpp">
+      <Filter>Source Files\sop\files\serialization</Filter>
+    </ClCompile>
+    <ClCompile Include="sop\files\serialize.cpp">
+      <Filter>Source Files\sop\files\serialization</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ClassDiagram.cd" />
+=======
+    <ClCompile Include="sop\string_converter.cpp">
+      <Filter>Source Files\sop</Filter>
+    </ClCompile>
+>>>>>>> string_converter
+  </ItemGroup>
+</Project>

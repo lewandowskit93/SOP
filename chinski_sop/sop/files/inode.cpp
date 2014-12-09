@@ -101,6 +101,7 @@ std::vector<sop::files::dirList> sop::files::Inode::listDir(std::array<Block*, s
         }
         out.drwx += "r--r--r--"; //TEST
         out.name = x.first;
+        out.block = x.second;
       }
       else
       {

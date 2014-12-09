@@ -33,6 +33,7 @@ namespace sop
       void writeToFile(std::string, std::vector<uint32_t>* freeSpace);
       void sop::files::File::removeFile(std::vector<uint32_t>* freeSpace);
       void setMode(char mode);
+      Inode* getInode();
       uint32_t getSize();
       void setFilename(std::string);
 
