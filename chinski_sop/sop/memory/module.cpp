@@ -65,18 +65,6 @@ void sop::memory::Module::deallocate(sop::memory::LogicalMemory* page_table)
 
 }
 
-/*
-void::sop::memory::Module::write(char data_block[32] ,LogicalMemory page_table,uint8_t page_nr)
- {
-int j=0;
-for(int i=page_table.getFrameNr(page_nr)*this->physical_drive.getFrameSize();i<this->physical_drive.getFrameSize();++i)
-{
- this->physical_drive.getStorage()[i]=data_block[j];
- j=j+1;
-}
-
-}
-*/
 char sop::memory::Module::read(LogicalMemory page_table, uint16_t byte_number)
 {
   uint8_t page_nr=byte_number/physical_drive.getFrameSize();//obliczenie ktora strona jest podaba przez byte
@@ -84,5 +72,11 @@ char sop::memory::Module::read(LogicalMemory page_table, uint16_t byte_number)
   char byte= physical_drive.getStorage()[reference];
   return byte;
 }
+
+void sop::memory::Module::write(LogicalMemory page_table, std::string code)
+{
+
+}
+
 
 
