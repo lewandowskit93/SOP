@@ -154,7 +154,7 @@ std::vector<std::string> sop::files::Filesystem_s::writeDataBlocks()
   //<block id=x type=inode/data/empty>
   for(uint32_t i=0; i<sop::files::ConstEV::numOfBlocks; i++)
   {
-    this->logger->logFiles(3, "Writing block "+std::to_string(i));
+    this->logger->logFiles(7, "Writing block "+std::to_string(i));
     if(this->filesystem_p->dataBlocks[i] != 0)
     {
       if(this->filesystem_p->dataBlocks[i]->getGID() == -1)

@@ -237,18 +237,27 @@ void sop::files::Filesystem::removeFile(pid_t* PID, std::vector<std::string> pat
     std::vector<std::string> tmp(path);
     tmp.pop_back();  
     this->logger->logFiles(3, "Removing file");
-    fh->removeFile(&this->freeSpace);
-    if(tmp.size())
+    if(!fh->getInode()->getIsDirectory())
     {
-      fh = seek(0, tmp);
-      this->dataBlocks.at(fh->getBlockAddr())->removeFromDir(path.back());
+      fh->removeFile(&this->freeSpace);
+      if(tmp.size())
+      {
+        fh = seek(0, tmp);
+        this->dataBlocks.at(fh->getBlockAddr())->removeFromDir(path.back());
+      }
+      else
+      {
+        uint32_t test = this->getCurrentPathIterator();
+        this->dataBlocks.at(this->getCurrentPathIterator())->removeFromDir(path.at(0));
+      }
+      this->logger->logFiles(3, "File removed");
+      this->serialize->save();
     }
     else
     {
-      this->dataBlocks.at(this->getCurrentPathIterator())->removeFromDir(path.at(0));
+      std::cout<<"Is a directory!"<<std::endl;
+      this->logger->logFiles(3, "rm: Is a directory");
     }
-    this->logger->logFiles(3, "File removed");
-    this->serialize->save();
   }
   catch(...)
   {
@@ -660,7 +669,7 @@ void sop::files::Filesystem::vi(sop::files::File* fp)
       while((tmp = _getch()) !=27)
       {
         output += tmp;
-        this->logger->logFiles(3, "Vi: reading characters: "+std::to_string(tmp));
+        //this->logger->logFiles(3, "Vi: reading characters: "+std::to_string(tmp));
         _putch(tmp);
         if(tmp == 13)
         {
@@ -683,7 +692,7 @@ void sop::files::Filesystem::vi(sop::files::File* fp)
         output.replace(output.find("\r"), 1, "\n");
       }
       this->writeToFile(fp, output);
-      this->logger->logFiles(3, "Vi: writing data to file");
+      this->logger->logFiles(3, "Vi: data written");
       std::cout<<"Data written"<<std::endl;
       modeVal = WAIT;
       break;
@@ -691,19 +700,19 @@ void sop::files::Filesystem::vi(sop::files::File* fp)
       char tmp1, tmp2;
       do
       {
-        std::cout<<"\rChoose mode: ";
+        std::cout<<"\rChoose mode ";
         tmp1 = _getch();
         _putch(tmp1);
         if(tmp1 == 27)
         {
-          std::cout<<"\rChoose mode:           ";
+          std::cout<<"\rChoose mode           ";
           continue;
         }
         if((tmp1) == ':')
         {
           if(tmp1 == 27)
           {
-            std::cout<<"\rChoose mode:           ";
+            std::cout<<"\rChoose mode           ";
             continue;
           }
           tmp2 = _getch();
@@ -1395,23 +1404,25 @@ void sop::files::Filesystem::formatHandler(const std::vector<const std::string> 
   {
     if(params[1] == "--yes")
     {
-        this->logger->logFiles(5, "Formating filesystem");
-        this->logger->logFiles(4, "Setting free spaces and presetting structures");
-        this->freeSpace.clear();
-        for(uint32_t i=0; i < sop::files::ConstEV::numOfBlocks; i++)
+      this->serialize->read();
+      this->logger->logFiles(5, "Formating filesystem");
+      this->logger->logFiles(4, "Setting free spaces and presetting structures");
+      this->freeSpace.clear();
+      for(uint32_t i=0; i < sop::files::ConstEV::numOfBlocks; i++)
+      {
+        this->freeSpace.push_back(i);
+        if(this->dataBlocks[i] != 0)
         {
-          this->freeSpace.push_back(i);
-          if(this->dataBlocks[i] != 0)
-          {
-            delete this->dataBlocks[i];
-          }
-          this->dataBlocks[i] = 0;
+          delete this->dataBlocks[i];
         }
-        std::sort(this->freeSpace.begin(), this->freeSpace.end());
-        this->dataBlocks[0] = new sop::files::Inode(true, 0,0, this->logger);
-        this->serialize->save();
-        std::cout<<"Format successful"<<std::endl;
-        this->logger->logFiles(6, "Filesystem format successful");
+        this->dataBlocks[i] = 0;
+      }
+      std::sort(this->freeSpace.begin(), this->freeSpace.end());
+      this->dataBlocks[0] = new sop::files::Inode(true, 0,0, this->logger);
+      this->freeSpace.erase(this->freeSpace.begin());
+      this->serialize->save();
+      std::cout<<"Format successful"<<std::endl;
+      this->logger->logFiles(6, "Filesystem format successful");
     }
     else
     {
