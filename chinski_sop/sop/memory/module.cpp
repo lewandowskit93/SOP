@@ -65,6 +65,7 @@ void sop::memory::Module::deallocate(sop::memory::LogicalMemory* page_table)
 
 }
 
+/*
 void::sop::memory::Module::write(char data_block[32] ,LogicalMemory page_table,uint8_t page_nr)
  {
 int j=0;
@@ -75,17 +76,12 @@ for(int i=page_table.getFrameNr(page_nr)*this->physical_drive.getFrameSize();i<t
 }
 
 }
-
-char* sop::memory::Module::read(LogicalMemory page_table, uint8_t page_nr)
+*/
+char sop::memory::Module::read(LogicalMemory page_table, uint16_t byte_number)
 {
-  int j=0;
-  char data_block [32];
-  for(int i=page_table.getFrameNr(page_nr)*this->physical_drive.getFrameSize();i<this->physical_drive.getFrameSize();++i)
-  {
-    data_block[j]=this->physical_drive.getStorage()[i]=data_block[j];
-    j=j+1;
-  }
-  return data_block;
+  uint8_t page_nr=byte_number/physical_drive.getFrameSize();//obliczenie ktora strona jest podaba przez byte
+  uint16_t reference=page_table.getFrameNr(byte_number)*physical_drive.getFrameSize();//ustawienie która komórkê zczytaæ
+  return physical_drive.getStorage()[reference];
 }
 
 

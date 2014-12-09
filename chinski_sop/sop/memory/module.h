@@ -23,9 +23,7 @@ namespace sop
         virtual void initialize();
         LogicalMemory allocate(uint16_t program_size,uint16_t pid);//przydzia³ ramek stronom, zwraca wskaznik na tabelê stron
         void deallocate(LogicalMemory* page_table);//zwalnianie pamiêci
-        void write(char data_block[32] ,LogicalMemory page_table,uint8_t page_nr);//zapisanie danych do pamiêci
-        char* read(LogicalMemory page_table, uint8_t page_nr);//czytanie danych z pamiêci
-      
+        char read(LogicalMemory page_table, uint16_t byte_number);//zczytanie bajtu z pamiêci
 
       protected:
 
