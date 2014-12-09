@@ -75,6 +75,16 @@ char sop::memory::Module::read(LogicalMemory page_table, uint16_t byte_number)
 
 void sop::memory::Module::write(LogicalMemory page_table, std::string code)
 {
+  //if(code.empty()==true)
+    //error
+  //return
+  for(uint16_t i=0;i<code.length();++i)
+  {
+    for(uint8_t j=0;j<physical_drive.getFrameSize();++j)
+    {
+      physical_drive.getStorage()[page_table.getFrameNr(i/physical_drive.getFrameSize())*physical_drive.getFrameSize()+j]=code.at(i);
+    }
+  }
 
 }
 
