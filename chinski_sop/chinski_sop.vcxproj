@@ -24,6 +24,7 @@
     <ClInclude Include="sop\processes\module.h" />
     <ClInclude Include="sop\processor\exceptions\module_exception.h" />
     <ClInclude Include="sop\processor\module.h" />
+    <ClInclude Include="sop\string_converter.h" />
     <ClInclude Include="sop\system\exceptions\module_exceptions.h" />
     <ClInclude Include="sop\system\exceptions\kernel_exceptions.h" />
     <ClInclude Include="sop\system\module.h" />
@@ -49,6 +50,7 @@
     <ClCompile Include="sop\processes\class_process.h" />
     <ClCompile Include="sop\processor\exceptions\module_exception.cpp" />
     <ClCompile Include="sop\processor\module.cpp" />
+    <ClCompile Include="sop\string_converter.cpp" />
     <ClCompile Include="sop\system\exceptions\module_exceptions.cpp" />
     <ClCompile Include="sop\system\exceptions\kernel_exceptions.cpp" />
     <ClCompile Include="sop\system\module.cpp" />
