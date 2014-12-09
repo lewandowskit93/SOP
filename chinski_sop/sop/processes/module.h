@@ -22,26 +22,38 @@ namespace sop
         virtual std::string getClassName() const;
         virtual void initialize();
 
-        //definicja wektora i funkcje go obslugujace
-        std::vector <boost::shared_ptr<sop::process::Process>> ProcessVector;        
-        void addToVector(boost::shared_ptr<sop::process::Process> objekt);
-        void removeFromVector(uint16_t PID);
+        //definicje komend shellowskich
         void cH_showprocess(const std::vector<const std::string> & params);
-        boost::shared_ptr<sop::process::Process> findProcess(uint16_t PID);
+        void cH_kill(const std::vector<const std::string> & params);
+        void cH_fork(const std::vector<const std::string> & params);
+        void cH_exec(const std::vector<const std::string> & params);
 
+
+
+
+        //definicja wektora
+        std::vector <boost::shared_ptr<sop::process::Process>> ProcessVector;        
+        //dodanie procesu do wektora
+        void addToVector(boost::shared_ptr<sop::process::Process> objekt);
+        //wyszukanie procesu po PID'dzie i usuwa go z tablicy
+        void removeFromVector(uint16_t PID);
+        //wyszukanie procesu po PID'dzie
+        boost::shared_ptr<sop::process::Process> findProcess(uint16_t PID);
         //stworzenie glownego procesu numer 0 (shell) z ktorego beda tworzone kolejne procesy.
         //ma przypisane takie wartosci pol ktore spowoduja ze nie bedzie ruszany ani rpzez pamiec ani przez procesor.
         void CreateShellInit();
-        //klonowanie dla procesu sztucznegi
-        void cloneProcessTrue(boost::shared_ptr<sop::process::Process> Proces1, boost::shared_ptr<sop::process::Process> Proces2);
-        //kloniwanie dla procesu prawdziwego
-        void cloneProcessFalse(boost::shared_ptr<sop::process::Process> Proces1, boost::shared_ptr<sop::process::Process> Proces2);
         //Stworzenie nowego procesu
-        void createNewProcess();
+        boost::shared_ptr<sop::process::Process> createNewProcess();
         //stworzenie procesu potomka, ktory ma skopiowane srodowisko z procesu, z ktorego jest stworzony.
-        void fork();
-        //wyslanie kodu programu do danego procesu co spowoduje wyslanie prosby o alokacje pamieci i przydzial procesora.
+        void fork(boost::shared_ptr<sop::process::Process>);
+        //
         void exec();
+        //pobierz nowy PID
+        uint16_t getNewPID();
+        //proces macierzysty czeka az wykona sie potomek
+        void wait();
+        //proces zostaje zabity
+        void kill();
       
       protected:
 

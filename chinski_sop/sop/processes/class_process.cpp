@@ -96,9 +96,12 @@ uint16_t sop::process::Process::getIsActuallyRunning()
   return this->_isActuallyRunning;
 }
 
-//protected
+uint16_t sop::process::Process::getIsTrueProcess()
+{
+  return this->_isTrueProcess;
+}
 
-    //setters
+//setters from protected
 
 void sop::process::Process::setPID(uint16_t PID)
 {
@@ -140,9 +143,7 @@ void sop::process::Process::setRejestrD(uint16_t D)
   this->_rejestrD = D;
 }
 
-//private
-
-    //set enums
+//set enums from private
 
 uint16_t sop::process::Process::setStatusNew() //ustawia status na nowy
 {
@@ -172,7 +173,7 @@ uint16_t sop::process::Process::setStatusExecuted() //ustawia status na wykonany
   return status;
 }
 
-    //setters  
+    //setters from private
 
 void sop::process::Process::setPPID(uint16_t PPID)
 {
@@ -202,6 +203,11 @@ void sop::process::Process::setProcessIsInScheduler(uint16_t PIIS)
 void sop::process::Process::setIsActuallyRunning(uint16_t IAR)
 {
   this->_isActuallyRunning = IAR;
+}
+
+void sop::process::Process::setIsTrueProcess(uint16_t ITP)
+{
+  this->_isTrueProcess = ITP;
 }
 
     

@@ -32,6 +32,7 @@ namespace sop
       uint16_t getEndingFlagStatus();
       uint16_t getProcessIsInScheduler();
       uint16_t getIsActuallyRunning();
+      uint16_t getIsTrueProcess();
       //setters from protected
       void setPID(uint16_t);
       void setUID(uint16_t);
@@ -53,6 +54,7 @@ namespace sop
       void setEndingFlagStatus(uint16_t);
       void setProcessIsInScheduler(uint16_t);
       void setIsActuallyRunning(uint16_t);
+      void setIsTrueProcess(uint16_t);
     protected:
       //enumeration
       enum TASK_STATUS
@@ -65,18 +67,20 @@ namespace sop
       //variables
       uint16_t _PID, _UID, _GID;
       uint16_t _rejestrA, _rejestrB, _rejestrC, _rejestrD;
+      int8_t _exitCode;
       //sop::process::Processor Procesor; //Zmienna dla Krzycha
-      uint16_t _stack_counter;
-      uint16_t _array_pages;
+      //uint16_t _stack_counter;
+      uint16_t _array_pages; //typ na luzno wrzucony nie sugerowac sie
 
     private:
       //variables
       uint16_t _PPID;
       uint16_t _memoryFlagStatus;     // flaga ustawiana na 1 jesli zostanie przydzielona pamiec
       uint16_t _processorFlagStatus;  // flaga ustawiana na 1 jesli zostanie przydzielony procesor
-      uint16_t _endingFlagStatus;     // flaga ustawiona na 1 jak proces zakonczyl wykonywanie programu
+      uint16_t _endingFlagStatus;     // flaga ustawiona na 1 jesli proces zakonczyl wykonywanie programu
       uint16_t _processIsInScheduler; // flaga ustawiona na 1 jesli proces znajduje sie w schedulerze
       uint16_t _isActuallyRunning;    // flaga ustawiona na 1 jesli proces jest aktualnie wykonywany
+      uint16_t _isTrueProcess;        // flaga ustawiona na 1 jesli proces jest prawdziwy
        
     };
   }
