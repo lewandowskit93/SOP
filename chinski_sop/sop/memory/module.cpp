@@ -81,7 +81,8 @@ char sop::memory::Module::read(LogicalMemory page_table, uint16_t byte_number)
 {
   uint8_t page_nr=byte_number/physical_drive.getFrameSize();//obliczenie ktora strona jest podaba przez byte
   uint16_t reference=page_table.getFrameNr(byte_number)*physical_drive.getFrameSize();//ustawienie która komórkê zczytaæ
-  return physical_drive.getStorage()[reference];
+  char byte= physical_drive.getStorage()[reference];
+  return byte;
 }
 
 
