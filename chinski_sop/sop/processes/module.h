@@ -32,6 +32,12 @@ namespace sop
         //stworzenie glownego procesu numer 0 (shell) z ktorego beda tworzone kolejne procesy.
         //ma przypisane takie wartosci pol ktore spowoduja ze nie bedzie ruszany ani rpzez pamiec ani przez procesor.
         void CreateShellInit();
+        //klonowanie dla procesu sztucznegi
+        void cloneProcessTrue(boost::shared_ptr<sop::process::Process> Proces1, boost::shared_ptr<sop::process::Process> Proces2);
+        //kloniwanie dla procesu prawdziwego
+        void cloneProcessFalse(boost::shared_ptr<sop::process::Process> Proces1, boost::shared_ptr<sop::process::Process> Proces2);
+        //Stworzenie nowego procesu
+        void createNewProcess();
         //stworzenie procesu potomka, ktory ma skopiowane srodowisko z procesu, z ktorego jest stworzony.
         void fork();
         //wyslanie kodu programu do danego procesu co spowoduje wyslanie prosby o alokacje pamieci i przydzial procesora.

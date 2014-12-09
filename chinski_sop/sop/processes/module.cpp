@@ -80,6 +80,31 @@ void sop::processes::Module::CreateShellInit()
   sop::processes::Module::addToVector(Procesik);
 }
 
+void sop::processes::Module::cloneProcessTrue(boost::shared_ptr<sop::process::Process> Proces1, boost::shared_ptr<sop::process::Process> Proces2)
+{
+
+}
+
+void sop::processes::Module::cloneProcessFalse(boost::shared_ptr<sop::process::Process> Proces1, boost::shared_ptr<sop::process::Process> Proces2)
+{
+
+}
+
+void sop::processes::Module::createNewProcess()
+{
+  boost::shared_ptr<sop::process::Process> Procesik (new sop::process::Process());
+  Procesik->setPID(0);
+  Procesik->setPPID(0);
+  Procesik->setUID(0);
+  Procesik->setGID(0);
+  Procesik->setMemoryFlagStatus(0);
+  Procesik->setProcessorFlagStatus(0);
+  Procesik->setEndingFlagStatus(0);
+  Procesik->setProcessIsInScheduler(0);
+  Procesik->setIsActuallyRunning(0);
+  sop::processes::Module::addToVector(Procesik);
+}
+
 void sop::processes::Module::fork()
 {
   //if (isTrueProcess == 0)
