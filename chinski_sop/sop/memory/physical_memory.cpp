@@ -110,7 +110,7 @@ for (uint16_t i=0; i<this->assigned_frames_deque.size(); ++i)//znalezienie ramki
  }
  this->assigned_frames_deque.erase (it+temp,it+temp+1);//usuniecie znalezionego elementu z kolejki
 }
-  
+
 void sop::memory::PhysicalMemory::swap(SwapFile* file_swap,LogicalMemory* page_table,int8_t victim,int8_t frame)
 {
   

@@ -22,7 +22,9 @@ namespace sop
         virtual std::string getClassName() const;
         virtual void initialize();
         LogicalMemory allocate(uint16_t program_size,uint16_t pid);//przydzia³ ramek stronom, zwraca wskaznik na tabelê stron
-        void deallocate(LogicalMemory* page_table);
+        void deallocate(LogicalMemory* page_table);//zwalnianie pamiêci
+        void write(char data_block[32] ,LogicalMemory page_table,uint8_t page_nr);//zapisanie danych do pamiêci
+        char* read(LogicalMemory page_table, uint8_t page_nr);//czytanie danych z pamiêci
       
 
       protected:
