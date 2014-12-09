@@ -1,5 +1,7 @@
 #include ".\sop\processes\module.h"
 #include ".\sop\processes\class_process.h"
+#include ".\sop\system\kernel.h"
+#include ".\sop\logger\logger.h"
 
 sop::processes::Module::Module(sop::system::Kernel *kernel):
   sop::system::Module(kernel)
@@ -34,17 +36,22 @@ void sop::processes::Module::removeFromVector(uint16_t PID)
   sop::processes::Module::ProcessVector.erase(p);
 }
 
-void sop::processes::Module::showObjectInList(uint16_t PID)
+void sop::processes::Module::cH_showprocess(const std::vector<const std::string> & params)
 {
+  uint16_t PID;
   boost::shared_ptr<sop::process::Process> p = sop::processes::Module::findProcess(PID);
   if(p)
   {
-    log(p->sop::process::Process::getPID());
+    //log(p->getPID());
+    std::cout << p->getPID() << std::endl;
+    //.
+    //.
+    //.
   }
   
   else
   {
-    // nie znaleziono procesu
+    _kernel->getLogger()->logProcesses(sop::logger::Logger::Level::INFO,"Process not found");
   } 
 }
 
@@ -64,7 +71,6 @@ boost::shared_ptr<sop::process::Process> sop::processes::Module::findProcess(uin
 }
 
 //stworzenie procesu INIT
-
 void sop::processes::Module::CreateShellInit()
 {
   boost::shared_ptr<sop::process::Process> Procesik (new sop::process::Process());
@@ -107,6 +113,7 @@ void sop::processes::Module::createNewProcess()
 
 void sop::processes::Module::fork()
 {
+  sop::processes::Module::
   //if (isTrueProcess == 0)
   //stworz nowy proces
   //ustaw flage isrunning na 1

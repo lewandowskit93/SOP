@@ -26,7 +26,7 @@ namespace sop
         std::vector <boost::shared_ptr<sop::process::Process>> ProcessVector;        
         void addToVector(boost::shared_ptr<sop::process::Process> objekt);
         void removeFromVector(uint16_t PID);
-        void showObjectInList(uint16_t PID);
+        void cH_showprocess(const std::vector<const std::string> & params);
         boost::shared_ptr<sop::process::Process> findProcess(uint16_t PID);
 
         //stworzenie glownego procesu numer 0 (shell) z ktorego beda tworzone kolejne procesy.
