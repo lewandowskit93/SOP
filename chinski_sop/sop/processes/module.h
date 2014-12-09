@@ -22,38 +22,38 @@ namespace sop
         virtual std::string getClassName() const;
         virtual void initialize();
 
-        //definicje komend shellowskich
+        //polecenie shelllowskie wypisujace na ekran informacje o procesie
         void cH_showprocess(const std::vector<const std::string> & params);
+        //polecenie shellowskie zabijajace proces o podanym PID
         void cH_kill(const std::vector<const std::string> & params);
+        //polecenie shellowskie tworzocy preoces potomka
         void cH_fork(const std::vector<const std::string> & params);
+        //polecenie wywolujace funkcje exec
         void cH_exec(const std::vector<const std::string> & params);
-
-
-
-
         //definicja wektora
         std::vector <boost::shared_ptr<sop::process::Process>> ProcessVector;        
-        //dodanie procesu do wektora
+        //funkcja wstawiajaca proces do wektora procesow
         void addToVector(boost::shared_ptr<sop::process::Process> objekt);
-        //wyszukanie procesu po PID'dzie i usuwa go z tablicy
+        //funkcja usuwajaca proces z wektora procesow
         void removeFromVector(uint16_t PID);
-        //wyszukanie procesu po PID'dzie
+        //funkcja wyszukujaca proces o podanym PID
         boost::shared_ptr<sop::process::Process> findProcess(uint16_t PID);
-        //stworzenie glownego procesu numer 0 (shell) z ktorego beda tworzone kolejne procesy.
-        //ma przypisane takie wartosci pol ktore spowoduja ze nie bedzie ruszany ani rpzez pamiec ani przez procesor.
+        //funkcja tworzaca proces init/shell
         void CreateShellInit();
-        //Stworzenie nowego procesu
+        //funkcja tworzaca nowy proces
         boost::shared_ptr<sop::process::Process> createNewProcess();
-        //stworzenie procesu potomka, ktory ma skopiowane srodowisko z procesu, z ktorego jest stworzony.
+        //funkcja tworzaca nowego potomka
         void fork(boost::shared_ptr<sop::process::Process>);
-        //
+        //funkcja
         void exec();
-        //pobierz nowy PID
+        //funkcja przypisujaca nowy PID
         uint16_t getNewPID();
-        //proces macierzysty czeka az wykona sie potomek
-        void wait();
-        //proces zostaje zabity
-        void kill();
+        //funkcja wstrzymujaca proces macierzysty
+        void wait(boost::shared_ptr<sop::process::Process>, boost::shared_ptr<sop::process::Process>);
+        //funkcja zabijajaca proces
+        void kill(boost::shared_ptr<sop::process::Process>);
+        //funkcja zamykajaca proces
+        void exit(boost::shared_ptr<sop::process::Process>);
       
       protected:
 
