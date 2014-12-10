@@ -7,6 +7,7 @@
 #include <deque>
 #include ".\sop\memory\logical_memory.h"
 #include ".\sop\memory\swap.h"
+#include ".\sop\logger\logger.h"
 namespace sop
 {
 namespace memory
@@ -20,7 +21,7 @@ namespace memory
 class PhysicalMemory
 {
 public:	
-  PhysicalMemory(uint16_t storage_size,uint8_t frame_size);//kontstruktor tworz¹cy pamiêæ i ustawiajacy liczbê ramek
+  PhysicalMemory(uint16_t storage_size,uint8_t frame_size,sop::logger::Logger* log);//kontstruktor tworz¹cy pamiêæ i ustawiajacy liczbê ramek
   ~PhysicalMemory();//destruktor, stworzono dla mo¿liwoœci zapisania do loggera ze coœ zosta³o zniszczone
   uint8_t getFrameSize();//zwraca rozmiar ramki
   uint16_t getStorageSize();//zwraca rozmiar pamiêci
@@ -53,7 +54,7 @@ private:
   std::list <uint16_t> list_of_free_frames;//lista wolnych ramek
   std::deque <uint16_t>assigned_frames_deque;//kolejka FIFO przydzielanych ramek, potrzebna przy wymianie stron(algorytm FIFO)
   void swap(SwapFile* file_swap,LogicalMemory* table_of_pages,int8_t victim,int8_t fram);//funkcja wymiataj¹ca strone na plik wymiany
- 
+  sop::logger::Logger* loggg; 
 };
 
 }

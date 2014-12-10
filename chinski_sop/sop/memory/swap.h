@@ -4,6 +4,7 @@
 #include <stdint.h>
 #include <boost\shared_ptr.hpp>
 #include <list>
+#include ".\sop\logger\logger.h"
 
 namespace sop
 {
@@ -18,7 +19,7 @@ namespace memory
   class SwapFile
   {
 public:	
-  SwapFile(uint16_t swap_size,uint8_t swap_frame_size);//kontstruktor tworz¹cy plik wymiany i ustawiajacy liczbê ramek
+  SwapFile(uint16_t swap_size,uint8_t swap_frame_size,sop::logger::Logger* log);//kontstruktor tworz¹cy plik wymiany i ustawiajacy liczbê ramek
   ~SwapFile();//destruktor, stworzono dla mo¿liwoœci zapisania do loggera ze coœ zosta³o zniszczone
   uint8_t getSwapFrameSize();//zwraca rozmiar ramki w swapie,taki sam jak w fizycznej pamieci
   uint8_t* getSwap();//zwraca wskaŸnik na swapa
@@ -31,6 +32,7 @@ public:
   uint8_t getFreeFrame();//zwraca pierwsza¹ woln¹ ramkê
   void popFrontListOfFreeSwapFrames();//usuwa ramke bedaca z przodu listy wolnych ramek
   void pushEndListOfFreeSwapFrames(uint16_t frame_nr);//wstawia na koniec lisy nr wolnej ramki
+  uint16_t getSwapSize();//zwraca rozmiar swapa
 protected:
   
 private:
@@ -42,7 +44,7 @@ private:
   boost::shared_ptr<uint8_t[]> swap_file;//w³aœciwy swap file
   boost::shared_ptr<swapFrame[]> swap_frame_table;//tabela ramek dla swapu
   std::list <uint16_t> list_of_free__swap_frames;//lista wolnych ramek w swapie
- 
+  sop::logger::Logger* loggg; 
   };
 
 }

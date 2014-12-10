@@ -1,16 +1,17 @@
 //klasa odpowiedzialna za obs³ugê pamiêci logicznej
 #include ".\sop\memory\logical_memory.h"
 
-sop::memory::LogicalMemory::LogicalMemory(uint8_t number_of_page)
+sop::memory::LogicalMemory::LogicalMemory(uint8_t number_of_page, sop::logger::Logger* log) :
+  loggg(log)
 {
   setPageTableSize(number_of_page);
   page_table = boost::shared_ptr<page[]>(new page[page_table_size]);
-  
+ 
 }
 
 sop::memory::LogicalMemory::~LogicalMemory()
 {
-
+  this->loggg->logMemory(sop::logger::Logger::Level::INFO,"page table for this process has been removed");
 }
 
 void sop::memory::LogicalMemory::setPageTableSize(uint8_t size)

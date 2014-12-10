@@ -1,7 +1,8 @@
 //klasa odpowiedzialna za obs³ugê pamiêci fizycznej
 #include ".\sop\memory\physical_memory.h"
 
-sop::memory::PhysicalMemory::PhysicalMemory(uint16_t storage_size,uint8_t frame_size)
+sop::memory::PhysicalMemory::PhysicalMemory(uint16_t storage_size,uint8_t frame_size,sop::logger::Logger* log):
+  loggg(log)
 {
   this->storage_size=storage_size;
   this->frame_size=frame_size;
@@ -111,15 +112,13 @@ for (uint16_t i=0; i<this->assigned_frames_deque.size(); ++i)//znalezienie ramki
  this->assigned_frames_deque.erase (it+temp,it+temp+1);//usuniecie znalezionego elementu z kolejki
 }
 
-
-
 void sop::memory::PhysicalMemory::swap(SwapFile* file_swap,LogicalMemory* page_table,int8_t victim_page,int8_t frame)
 {
   
   //zawartosc_ramki_do_swapa przerzucic(assigned_frames_deque.front()
   for(int i=this->getFrameSize()*frame,j=this->getFrameSize()*file_swap->getFreeFrame();i<this->getFrameSize();++i,++j)
   {
-     file_swap->getSwap[j]=this->getStorage()[i];
+     file_swap->getSwap()[j]=this->getStorage()[i];
    }
    page_table->setPage(file_swap->getFreeFrame(),0,victim_page);//numer ramki w tablicy stron ustawiony na numer ramki ze swapa valid na 0
    file_swap->setSwapFrame(this->getFrame(frame)->pid,victim_page,file_swap->getFreeFrame());//zapisanie informacji o ramce na swapie w tabeli ramek, 

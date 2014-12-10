@@ -1,6 +1,7 @@
 
 #include ".\sop\memory\swap.h"
-sop::memory::SwapFile::SwapFile(uint16_t swap_size,uint8_t swap_frame_size)
+sop::memory::SwapFile::SwapFile(uint16_t swap_size,uint8_t swap_frame_size,sop::logger::Logger* log):
+  loggg(log)
 {
   this->swap_size=swap_size;
   this->swap_frame_size=swap_frame_size;
@@ -8,7 +9,7 @@ sop::memory::SwapFile::SwapFile(uint16_t swap_size,uint8_t swap_frame_size)
   swap_frame_table = boost::shared_ptr< swapFrame[]>(new swapFrame[swap_size/swap_frame_size]);
   this->number_of_swap_frames=swap_size/swap_frame_size;
   setNubmerOfFreeSwapFrames(getNumberOfSwapFrames());
-  for(int i=0;i<getNumberOfSwapFrames();++i)//< czy <= ??
+  for(int i=0;i<getNumberOfSwapFrames();++i)
   {
     list_of_free__swap_frames.push_back(i);
   }
@@ -80,4 +81,9 @@ void sop::memory::SwapFile::popFrontListOfFreeSwapFrames()
 void::sop::memory::SwapFile::pushEndListOfFreeSwapFrames(uint16_t frame_nr)
 {
   this->list_of_free__swap_frames.push_back(frame_nr);
+}
+
+uint16_t sop::memory::SwapFile::getSwapSize()
+{
+  return this->swap_size;
 }

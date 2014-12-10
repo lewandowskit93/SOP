@@ -1,11 +1,12 @@
 #include ".\sop\memory\module.h"
 #include ".\sop\system\kernel.h"
 #include ".\sop\logger\logger.h"
+#include ".\sop\string_converter.h"
 
 
 
 sop::memory::Module::Module(sop::system::Kernel *kernel):
-  sop::system::Module(kernel),physical_drive(4096,32),swap_drive(4096,32)//stworzenie pamiêci fizycznej i pliku wymiany o rozmiarze ca³kowitym, rozmairze 1 ramki
+  sop::system::Module(kernel),physical_drive(4096,32,_kernel->getLogger()),swap_drive(4096,32,_kernel->getLogger())//stworzenie pamiêci fizycznej i pliku wymiany o rozmiarze ca³kowitym, rozmairze 1 ramki
 {
 
 }
@@ -22,7 +23,11 @@ std::string sop::memory::Module::getClassName() const
 
 void sop::memory::Module::initialize()
 {
-  _kernel->getLogger()->logMemory(sop::logger::Logger::Level::INFO,"it work");
+  _kernel->getLogger()->logMemory(sop::logger::Logger::Level::INFO,"Memory has been created");
+  _kernel->getLogger()->logMemory(sop::logger::Logger::Level::INFO,"Frame size:"+sop::StringConverter::convertToString<uint16_t>(physical_drive.getFrameSize()));
+  _kernel->getLogger()->logMemory(sop::logger::Logger::Level::INFO,"Physical memory size:"+sop::StringConverter::convertToString<uint16_t>(physical_drive.getStorageSize()));
+  _kernel->getLogger()->logMemory(sop::logger::Logger::Level::INFO,"Swap file size:"+sop::StringConverter::convertToString<uint16_t>(swap_drive.getSwapSize()));
+  
  
 }
 
@@ -36,10 +41,10 @@ uint8_t sop::memory::Module::calculatePages(uint16_t program_size)
 
 sop::memory::LogicalMemory sop::memory::Module::allocate(uint16_t program_size,uint16_t pid)
 {
-  LogicalMemory table_of_pages(calculatePages(program_size));//tworzenie tabeli stron dla procesu, o okreœlonej liczbie stron
+  LogicalMemory table_of_pages(calculatePages(program_size),_kernel->getLogger());//tworzenie tabeli stron dla procesu, o okreœlonej liczbie stron
   physical_drive.getFreeFrames(table_of_pages.getPageTableSize(),&table_of_pages,pid,&swap_drive);//wywo³anie funkcji przydzielaj¹cej ramki stronom na podstawie liczby stron w tabeli stron
-  //?dobrze przekazuje table of pages do getFreeFrames??
-  return table_of_pages;
+  _kernel->getLogger()->logMemory(sop::logger::Logger::Level::INFO,"Page table for process with pid: "+sop::StringConverter::convertToString(pid)+"has beem created");
+   return table_of_pages;
 }
 
 void sop::memory::Module::deallocate(sop::memory::LogicalMemory* page_table)
@@ -49,7 +54,7 @@ void sop::memory::Module::deallocate(sop::memory::LogicalMemory* page_table)
   {
     if(page_table->getBitValidInvalid(i)==1)
     {
-      this->physical_drive.setFrame(0,0,i);//zmiana w tabeli ramek w pamiêci fizycznej
+      this->physical_drive.setFrame(0,0,page_table->getFrameNr(i));//zmiana w tabeli ramek w pamiêci fizycznej
       this->physical_drive.pushEndListOfFreeFrames(page_table->getFrameNr(i));//wrzucenie danej ramki do listy wolnych ramek
       this->physical_drive.setNubmerOfFreeFrames(this->physical_drive.getNumberOfFreeFrames()+1);//zwiekszenie liczby wolnych ramek
       this->physical_drive.setNumberOfNotFreeFrames(this->physical_drive.getNumberOfFrames()-this->physical_drive.getNumberOfFreeFrames());//zmniejszenie liczby zajetych ramek
@@ -74,6 +79,7 @@ char sop::memory::Module::read(LogicalMemory page_table, uint16_t byte_number)
   uint8_t page_nr=byte_number/physical_drive.getFrameSize();//obliczenie ktora strona jest podaba przez byte
   uint16_t reference=page_table.getFrameNr(byte_number)*physical_drive.getFrameSize();//ustawienie która komórkê zczytaæ
   char byte= physical_drive.getStorage()[reference];
+
   return byte;
 }
 
@@ -89,6 +95,7 @@ void sop::memory::Module::write(LogicalMemory page_table, std::string code)
       physical_drive.getStorage()[page_table.getFrameNr(i/physical_drive.getFrameSize())*physical_drive.getFrameSize()+j]=code.at(i);
     }
   }
+   _kernel->getLogger()->logMemory(sop::logger::Logger::Level::INFO,"Program has been loaded to memory");
 
 }
 

@@ -3,7 +3,7 @@
 
 #include <stdint.h>
 #include <boost\shared_ptr.hpp>
-
+#include ".\sop\logger\logger.h"
 namespace sop
 {
 namespace memory
@@ -16,7 +16,7 @@ struct page //struktura strony
 class LogicalMemory
 {
 public:	
-  explicit LogicalMemory(uint8_t number_of_page);//konstruktor tworz¹cy tablicê stron o podanej liczbie stron
+  explicit LogicalMemory(uint8_t number_of_page,sop::logger::Logger* log);//konstruktor tworz¹cy tablicê stron o podanej liczbie stron
   ~LogicalMemory();//destruktor, stworzono dla mo¿liwoœci zapisania do loggera ze coœ zosta³o zniszczone
   void setPageTableSize(uint8_t size);//ustawia liczbê stron
   uint8_t getPageTableSize();//zwraca liczbê stron
@@ -30,6 +30,7 @@ protected:
 private:
 	uint8_t page_table_size; //zmienna odpowiadaj¹ca za liczbê  stron
   boost::shared_ptr<page[]> page_table;//tabela stron, rekordów tyle ile ramek
+  sop::logger::Logger* loggg; 
 };
 //page_table = boost::shared_ptr<page[]>(new page[page_table_size]); w konruktorze zrobic
 

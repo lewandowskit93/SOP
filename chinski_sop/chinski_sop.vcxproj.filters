@@ -168,6 +168,9 @@
     <ClInclude Include="sop\memory\swap.h">
       <Filter>Header Files\sop\memory</Filter>
     </ClInclude>
+    <ClInclude Include="sop\string_converter.h">
+      <Filter>Header Files\sop</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="sop\system\shell.cpp">
@@ -241,6 +244,9 @@
     </ClCompile>
     <ClCompile Include="sop\memory\swap.cpp">
       <Filter>Source Files\sop\memory</Filter>
+    </ClCompile>
+    <ClCompile Include="sop\string_converter.cpp">
+      <Filter>Source Files\sop</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
