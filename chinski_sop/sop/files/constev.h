@@ -28,8 +28,13 @@ namespace sop
     class ConstEV
     {
     public:
+      // Sets inode direct block addresses
       static const uint32_t directAddrBlock = 3;
+
+      // Sets constant block size
       static const uint32_t blockSize = 32;
+
+      // Sets number of blocks on drive
       static const uint32_t numOfBlocks = 64;
 
     protected:

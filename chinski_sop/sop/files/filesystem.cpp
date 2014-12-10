@@ -48,8 +48,8 @@ std::vector<std::string> getPathFromParam(std::string path)
   return outPath;
 }
 
-sop::files::Filesystem::Filesystem(sop::logger::Logger* logger, std::string diskFileName) :
-  logger(logger)
+sop::files::Filesystem::Filesystem(sop::logger::Logger* _logger, std::string diskFileName) :
+  logger(_logger)
 {
   this->logger->logFiles(6, "Initilizing filesystem");
   this->logger->logFiles(3, "Restore filesystem initilized");
@@ -81,7 +81,6 @@ sop::files::Filesystem::~Filesystem()
 sop::files::File* sop::files::Filesystem::openFile(boost::shared_ptr<sop::process::Process> PID, std::vector<std::string> path, std::string openMode)
 {
   this->serialize->read();
-  // ToDo MODE DEPENDENCY
   if(path.size()>1)
   {
     std::vector<uint32_t> currentDirBlocks;
@@ -131,7 +130,7 @@ sop::files::File* sop::files::Filesystem::openFile(boost::shared_ptr<sop::proces
     }
     return out;
   }
-  //change the path to appropriate
+  // Changes path to appropriate
   if(path.size() == 1)
   {
     File* out = this->seek(PID, path);
@@ -300,11 +299,6 @@ void sop::files::Filesystem::removeFile(boost::shared_ptr<sop::process::Process>
   }
 }
 
-void sop::files::Filesystem::moveFile(boost::shared_ptr<sop::process::Process> PID, std::string fileName, std::string newDirectory)
-{
-  std::cout<<"Not yet implemented"<<std::endl;
-}
-
 void sop::files::Filesystem::writeToFile(File* fileHandler, std::string data)
 {
   sop::users::PermissionsManager pm;
@@ -380,9 +374,9 @@ sop::files::File* sop::files::Filesystem::seek(boost::shared_ptr<sop::process::P
   }
 }
     
-/* 
-  Directories
-*/
+/////////////////
+// Directories //
+/////////////////
 std::string sop::files::Filesystem::getCurrentDir()
 {
   this->logger->logFiles(3, "Getting current dir");
@@ -576,9 +570,9 @@ void sop::files::Filesystem::removeDirectory(boost::shared_ptr<sop::process::Pro
   this->serialize->save();
 }
 
-/*
-  Overall
-*/
+/////////////
+// Overall //
+/////////////
 std::vector<sop::files::dirList> sop::files::Filesystem::list()
 {
   this->serialize->read();
@@ -617,11 +611,11 @@ void sop::files::Filesystem::changeDirectoryHandler(const std::vector<const std:
     {
       std::vector<std::string> root;
       root.push_back("/");
-      this->changeDirectory(boost::make_shared<sop::process::Process>(0),root); 
+      this->changeDirectory(boost::make_shared<sop::process::Process>(),root); 
     }
     else
     {
-      this->changeDirectory(boost::make_shared<sop::process::Process>(0), getPathFromParam(params[1])); 
+      this->changeDirectory(boost::make_shared<sop::process::Process>(), getPathFromParam(params[1])); 
     }
   }
   else
@@ -629,17 +623,6 @@ void sop::files::Filesystem::changeDirectoryHandler(const std::vector<const std:
     this->logger->logFiles(6, "CD helper");
     std::cout<<"cd - changes directory to another"<<std::endl;
   }
-}
-
-// WRITE
-void sop::files::Filesystem::moveHandler(const std::vector<const std::string> & params)
-{
-  if(params.size()>1 && params[1] == "-h")
-  {
-    std::cout<<"mv - moves the file/directory to another"<<std::endl;
-    return;
-  }
-  std::cout<<"Not yet implemented"<<std::endl;
 }
 
 void sop::files::Filesystem::removeFileHandler(const std::vector<const std::string> & params)
@@ -1223,55 +1206,6 @@ void sop::files::Filesystem::statHandler(const std::vector<const std::string> & 
     std::cout<<std::endl;
     this->printDisk(16);
   }
-}
-
-// REWRITE!!!
-void sop::files::Filesystem::echoHandler(const std::vector<const std::string> & params){}
-/*{
-  switch(params.size())
-  {
-  case 2:
-    {
-      std::cout<<params[1]<<std::endl;
-      break;
-    }
-  case 4:
-    {
-      if(params[2] == std::string(">"))
-      {
-        sop::files::File* fh = this->seekForFile(0, params[3], &this->dataBlocks);
-        if(fh != 0)
-        {
-          fh->writeToFile(params[1], &this->freeSpace);
-          delete fh;
-          std::cout<<params[1]<<" has been writen to "<<params[3]<<std::endl;
-        }
-        else
-        {
-          std::cout<<"File "<<params[3]<<" not found!"<<std::endl;
-        }
-      }
-      else
-      {
-        std::cout<<"Regex not valid!"<<std::endl;
-      }
-      break;
-    }
-  default:
-    {
-      std::cout<<"echo - display a line of text"<<std::endl;
-    }
-  }
-}
-*/
-
-void sop::files::Filesystem::test(const std::vector<const std::string> & params)
-{
-  std::vector<std::string> test;
-  test.push_back("abc");
-  File* one = this->openFile(0, test, "w");
-  File* two = this->openFile(0, test, "w");
-  //std::cout<<"Currently no pending tests"<<std::endl;
 }
 
 uint32_t sop::files::Filesystem::getCurrentPathIterator()
