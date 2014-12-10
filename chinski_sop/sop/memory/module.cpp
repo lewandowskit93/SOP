@@ -27,14 +27,16 @@ void sop::memory::Module::initialize()
   _kernel->getLogger()->logMemory(sop::logger::Logger::Level::INFO,"Frame size:"+sop::StringConverter::convertToString<uint16_t>(physical_drive.getFrameSize()));
   _kernel->getLogger()->logMemory(sop::logger::Logger::Level::INFO,"Physical memory size:"+sop::StringConverter::convertToString<uint16_t>(physical_drive.getStorageSize()));
   _kernel->getLogger()->logMemory(sop::logger::Logger::Level::INFO,"Swap file size:"+sop::StringConverter::convertToString<uint16_t>(swap_drive.getSwapSize()));
+  //inicjalizacja komend
   
+  _kernel->getShell()->registerCommand("allocate",&sop::memory::Module::cH_allocate,this);
  
 }
 
 uint8_t sop::memory::Module::calculatePages(uint16_t program_size)
 {
   float number_of_pages=(float)physical_drive.getFrameSize();
-  number_of_pages=ceil(number_of_pages/program_size);
+  number_of_pages=ceil(((float)program_size/number_of_pages));
   
   return (uint8_t)number_of_pages;
 }
@@ -43,7 +45,7 @@ sop::memory::LogicalMemory sop::memory::Module::allocate(uint16_t program_size,u
 {
   LogicalMemory table_of_pages(calculatePages(program_size),_kernel->getLogger());//tworzenie tabeli stron dla procesu, o okreœlonej liczbie stron
   physical_drive.getFreeFrames(table_of_pages.getPageTableSize(),&table_of_pages,pid,&swap_drive);//wywo³anie funkcji przydzielaj¹cej ramki stronom na podstawie liczby stron w tabeli stron
-  _kernel->getLogger()->logMemory(sop::logger::Logger::Level::INFO,"Page table for process with pid: "+sop::StringConverter::convertToString(pid)+"has beem created");
+  _kernel->getLogger()->logMemory(sop::logger::Logger::Level::INFO,"Page table for process with pid: "+sop::StringConverter::convertToString(pid)+" has beem created");
    return table_of_pages;
 }
 
@@ -97,6 +99,27 @@ void sop::memory::Module::write(LogicalMemory page_table, std::string code)
   }
    _kernel->getLogger()->logMemory(sop::logger::Logger::Level::INFO,"Program has been loaded to memory");
 
+}
+
+//kody komend
+
+void sop::memory::Module::cH_allocate(const std::vector<const std::string> & params)
+{
+  if(sop::system::Shell::hasParam(params,"-h" )|| params.size()!=3)
+  {
+    std::cout<<"allocate [-h] Program_size PID"<<std::endl;
+    std::cout<<"Allocate memory with specified program size and PID"<<std::endl;
+    return; // wyjdzie z tej funkcji, ¿eby nie trzeba by³o robiæ else
+  }
+  LogicalMemory tabelka_stron=allocate(sop::StringConverter::convertStringTo<uint16_t>(params[1]),sop::StringConverter::convertStringTo<uint16_t>(params[2]));
+ // std::cout<<"program size:"<<sop::StringConverter::convertToString(params[1]);
+  
+  std::cout<<"This number of pages has been created: "<<sop::StringConverter::convertToString<uint16_t>(tabelka_stron.getPageTableSize())<<std::endl;
+  for(int i=0;i<tabelka_stron.getPageTableSize();++i)
+  {
+    std::cout<<"Page: "+sop::StringConverter::convertToString<uint16_t>(i)+" assigned to frame: "+sop::StringConverter::convertToString<uint16_t>(tabelka_stron.getPage(i)->frame_number) +" bit valid: "+sop::StringConverter::convertToString<uint16_t>(tabelka_stron.getPage(i)->valid_invalid);
+    std::cout<<std::endl;
+  }
 }
 
 
