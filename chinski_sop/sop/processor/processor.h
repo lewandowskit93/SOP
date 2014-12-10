@@ -1,5 +1,6 @@
 #ifndef _SOP_PROCESSOR_PROCESSOR_H_
 #define _SOP_PROCESSOR_PROCESSOR_H_
+#include <boost\shared_ptr.hpp>
 #include "./sop/string_converter.h"
 #include <stdint.h>
 #include <stack>

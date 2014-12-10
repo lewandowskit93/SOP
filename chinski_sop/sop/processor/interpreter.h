@@ -14,9 +14,9 @@ namespace sop
     class InterpreterHandler // will handle bytes received from memory and store program information
     {
     public:
-      char getByteFromMemory(sop::process::Process *p); // asking for 1 byte from memory
-      void buildProgramLine(sop::process::Process *p); // will build one line e.g. 'ADD A,B\n'
-      std::string interpretLine(sop::process::Process *p); // will interpret one line
+      char getByteFromMemory(boost::shared_ptr<sop::process::Process> p); // asking for 1 byte from memory
+      void buildProgramLine(boost::shared_ptr<sop::process::Process> p); // will build one line e.g. 'ADD A,B\n'
+      std::string interpretLine(boost::shared_ptr<sop::process::Process> p); // will interpret one line
       void pickDataPart(std::string s);
       void pickCommandPart(std::string s);
 

@@ -1,6 +1,6 @@
 #include "./sop/processor/scheduler.h"
 #include <iostream>
-uint8_t sop::processor::Scheduler::getUserPriority(sop::process::Process *p)
+uint8_t sop::processor::Scheduler::getUserPriority(boost::shared_ptr<sop::process::Process> p)
 {
   // funkcja Tomalska sop::user::GetUserPriority(p.getUID);
   //random for nw
@@ -13,17 +13,17 @@ void sop::processor::Scheduler::calculatePriority()
   //I'll think on it..
 }
 
-void sop::processor::Scheduler::addProcess(sop::process::Process *p, sop::processor::Scheduler *sched)
+void sop::processor::Scheduler::addProcess(boost::shared_ptr<sop::process::Process> p, sop::processor::Scheduler *sched)
 {
   sched->addToActiveTaskArray(p);
 }
 
-void sop::processor::Scheduler::removeProcess(sop::process::Process *p, sop::processor::Scheduler *sched)
+void sop::processor::Scheduler::removeProcess(boost::shared_ptr<sop::process::Process> p, sop::processor::Scheduler *sched)
 {
 
 }
 
-sop::process::Process *sop::processor::Scheduler::getHighestPriorityProcess()
+boost::shared_ptr<sop::process::Process> sop::processor::Scheduler::getHighestPriorityProcess()
 {
   if (firstIsActive())
   {
@@ -31,7 +31,7 @@ sop::process::Process *sop::processor::Scheduler::getHighestPriorityProcess()
     {
       if (_first_task_array[i].size()>0)
       {
-        sop::process::Process *buf = _first_task_array[i].front();
+        boost::shared_ptr<sop::process::Process> buf = _first_task_array[i].front();
         _first_task_array[i].pop();
         return buf;
       }
@@ -44,7 +44,7 @@ sop::process::Process *sop::processor::Scheduler::getHighestPriorityProcess()
     {
       if (_second_task_array[i].size()>0)
       {
-        sop::process::Process *buf = _second_task_array[i].front();
+        boost::shared_ptr<sop::process::Process> buf = _second_task_array[i].front();
         _second_task_array[i].pop();
         return buf;
       }
@@ -54,7 +54,7 @@ sop::process::Process *sop::processor::Scheduler::getHighestPriorityProcess()
   return nullptr;
 }
 
-void sop::processor::Scheduler::addToUnactiveTaskArray(sop::process::Process *p)
+void sop::processor::Scheduler::addToUnactiveTaskArray(boost::shared_ptr<sop::process::Process> p)
 {
   uint8_t priority = getUserPriority(p)+5;
   if (!firstIsActive())
@@ -68,7 +68,7 @@ void sop::processor::Scheduler::addToUnactiveTaskArray(sop::process::Process *p)
 
 }
 
-void sop::processor::Scheduler::addToActiveTaskArray(sop::process::Process *p)
+void sop::processor::Scheduler::addToActiveTaskArray(boost::shared_ptr<sop::process::Process> p)
 {
   uint8_t priority = getUserPriority(p)+5;
   if (firstIsActive())
@@ -138,8 +138,8 @@ sop::processor::Scheduler::Scheduler():
   {
     for (uint8_t i = 0 ; i < 10 ; i++)
     {
-      _first_task_array.push_back(std::queue<sop::process::Process*>());
-      _second_task_array.push_back(std::queue<sop::process::Process*>());
+      _first_task_array.push_back(std::queue<boost::shared_ptr<sop::process::Process> >());
+      _second_task_array.push_back(std::queue<boost::shared_ptr<sop::process::Process> >());
     }
   }
 
@@ -151,7 +151,7 @@ void sop::processor::Scheduler::printOutHelperMethod(int i, bool which)
 {
   if (!which)
   {
-    std::queue<sop::process::Process*> bufor = _first_task_array[i];
+    std::queue<boost::shared_ptr<sop::process::Process> > bufor = _first_task_array[i];
     std::cout << "QUEUE["<<i<<"]:"<<std::endl;
     while (bufor.size() != 0)
     {
@@ -161,7 +161,7 @@ void sop::processor::Scheduler::printOutHelperMethod(int i, bool which)
   }
   else 
   {
-    std::queue<sop::process::Process*> bufor = _second_task_array[i];
+    std::queue<boost::shared_ptr<sop::process::Process> > bufor = _second_task_array[i];
     std::cout << "QUEUE["<<i<<"]:"<<std::endl;
     while (bufor.size() != 0)
     {

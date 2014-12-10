@@ -1,6 +1,6 @@
 #include "./sop/processor/interpreter.h"
 
-char sop::interpreter::InterpreterHandler::getByteFromMemory(sop::process::Process *p)
+char sop::interpreter::InterpreterHandler::getByteFromMemory(boost::shared_ptr<sop::process::Process> p)
 {
   //char x = sop::memory::.. pobranie byte'u danych od Fiszera  
   //char x = sop::memory::LogicalMemory::read(
@@ -9,7 +9,7 @@ char sop::interpreter::InterpreterHandler::getByteFromMemory(sop::process::Proce
 }
 
 
-std::string sop::interpreter::InterpreterHandler::interpretLine(sop::process::Process *p)
+std::string sop::interpreter::InterpreterHandler::interpretLine(boost::shared_ptr<sop::process::Process> p)
 {
   
   pickCommandPart(_program_line);
@@ -252,7 +252,7 @@ std::string sop::interpreter::InterpreterHandler::getCommandPart()
 {
   return _command_part;
 }
-void sop::interpreter::InterpreterHandler::buildProgramLine(sop::process::Process *p)
+void sop::interpreter::InterpreterHandler::buildProgramLine(boost::shared_ptr<sop::process::Process> p)
 {
 
   char getChar = '\n'; 

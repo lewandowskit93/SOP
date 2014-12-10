@@ -16,8 +16,8 @@ sop::processor::ExecutiveUnit::ExecutiveUnit(sop::logger::Logger* logger):
 
 void sop::processor::ExecutiveUnit::testerMethod()
 {
-  sop::process::Process *test = new sop::process::Process();
-  test->procek.a = 65535;
+  boost::shared_ptr<sop::process::Process> test (new sop::process::Process());
+  test->procek.a = 0;
   scheduler.addToActiveTaskArray(test);
 }
 

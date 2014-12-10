@@ -14,13 +14,13 @@ namespace sop
     class Scheduler
     {
     public:
-      sop::process::Process *getHighestPriorityProcess(); // takes the highest priority process to execute
-      static void addProcess(sop::process::Process *p, sop::processor::Scheduler *sched);
-      static void removeProcess(sop::process::Process *p, sop::processor::Scheduler *sched);
-      uint8_t getUserPriority(sop::process::Process *p); // from Tomeks layer i'll load nice parameter
+      boost::shared_ptr<sop::process::Process> getHighestPriorityProcess(); // takes the highest priority process to execute
+      static void addProcess(boost::shared_ptr<sop::process::Process> p, sop::processor::Scheduler *sched);
+      static void removeProcess(boost::shared_ptr<sop::process::Process> p, sop::processor::Scheduler *sched);
+      uint8_t getUserPriority(boost::shared_ptr<sop::process::Process> p); // from Tomeks layer i'll load nice parameter
       void calculatePriority(); // will calculate priorities for all tasks in both vectors
-      void addToUnactiveTaskArray(sop::process::Process *p); // adding to unactive task array
-      void addToActiveTaskArray(sop::process::Process *p); // adding to active task array
+      void addToUnactiveTaskArray(boost::shared_ptr<sop::process::Process> p); // adding to unactive task array
+      void addToActiveTaskArray(boost::shared_ptr<sop::process::Process> p); // adding to active task array
       void eraChange(); // will change unactive one to active 
       bool isEraChangeNeeded(); // checks if era change has to be done
       bool firstIsActive(); // checks if the first array is the active one
@@ -34,9 +34,9 @@ namespace sop
     protected:
     private:
 
-      std::vector <std::queue<sop::process::Process*>> _first_task_array; // the first array of tasks [active/unactive], short is the nice parameter
+      std::vector <std::queue<boost::shared_ptr<sop::process::Process> >> _first_task_array; // the first array of tasks [active/unactive], short is the nice parameter
       bool _isFirstActive; // tells if the first array is active
-      std::vector <std::queue<sop::process::Process*>>  _second_task_array; // the second array of tasks [unactive/active], short is the nice parameter
+      std::vector <std::queue<boost::shared_ptr<sop::process::Process> >>  _second_task_array; // the second array of tasks [unactive/active], short is the nice parameter
       // short comment: vector of queues will be used like: vector[0] = -4, vector[1] = -3
       // other words.. nice + 5 (0-9)
       bool _isSecondActive; // tells if the second array is active

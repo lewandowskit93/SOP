@@ -24,8 +24,8 @@ namespace sop
       sop::logger::Logger* logger;
       sop::interpreter::InterpreterHandler interpreter;
       sop::processor::Scheduler scheduler;
-      sop::process::Process *_runningProcess;
-      sop::process::Process *_lastUsedProcess;
+      boost::shared_ptr<sop::process::Process> _runningProcess;
+      boost::shared_ptr<sop::process::Process> _lastUsedProcess;
 
       void cH_showQuantTimeLeft (const std::vector<const std::string> & params);
       void cH_showActiveTaskQueue (const std::vector<const std::string> & params);
