@@ -1,8 +1,9 @@
 #include ".\sop\files\file.h"
 #include ".\sop\files\filesystem.h"
 #include <algorithm>
+#include <boost\shared_ptr.hpp>
 
-sop::files::File::File(sop::process::Process* PID, uint32_t parentCatalog, uint32_t blockAddress, std::array<sop::files::Block*, sop::files::ConstEV::numOfBlocks>* disk, sop::logger::Logger* logger) : 
+sop::files::File::File(boost::shared_ptr<sop::process::Process> PID, uint32_t parentCatalog, uint32_t blockAddress, std::array<sop::files::Block*, sop::files::ConstEV::numOfBlocks>* disk, sop::logger::Logger* logger) : 
   PIDHolder(PID),
   parentCatalogAddress(parentCatalog),
   blockAddress(blockAddress),
@@ -166,7 +167,7 @@ sop::files::Inode* sop::files::File::getInode()
   return nullptr;
 }
 
-sop::process::Process* sop::files::File::getPID()
+boost::shared_ptr<sop::process::Process> sop::files::File::getPID()
 {
   return this->PIDHolder;
 }
@@ -183,4 +184,5 @@ sop::users::Permissions sop::files::File::getPermission()
     std::cout<<"File already opened"<<std::endl;
     this->logger->logFiles(2, "File already opened");
   }
+  return *new sop::users::Permissions();
 }

@@ -9,6 +9,7 @@
 #include <map>
 #include "file.h"
 #include "block.h"
+#include <boost\shared_ptr.hpp>
 //#include "filesystem_s.h"
 #include "./sop/logger/logger.h"
 #include "./sop/files/serialize.h"
@@ -48,27 +49,27 @@ namespace sop
       void format();
 
       // Files
-      File* openFile(sop::process::Process* PID, std::vector<std::string> path, std::string openMode);
+      File* openFile(boost::shared_ptr<sop::process::Process> PID, std::vector<std::string> path, std::string openMode);
       std::string readFile(File* fileHandler);
-      void createFile(sop::process::Process* PID, std::vector<std::string> path);
+      void createFile(boost::shared_ptr<sop::process::Process> PID, std::vector<std::string> path);
       void saveFile(File* fileHandler);
       void closeFile(File* fileHandler);
-      void removeFile(sop::process::Process* PID, std::vector<std::string> path);
-      //uint16_t renameFile(sop::process::Process* PID, std::string fileName, std::string newFileName);
-      void moveFile(sop::process::Process* PID, std::string fileName, std::string newDirectory);
+      void removeFile(boost::shared_ptr<sop::process::Process> PID, std::vector<std::string> path);
+      //uint16_t renameFile(boost::shared_ptr<sop::process::Process> PID, std::string fileName, std::string newFileName);
+      void moveFile(boost::shared_ptr<sop::process::Process> PID, std::string fileName, std::string newDirectory);
       void writeToFile(File* fileHandler, std::string data);
-      File* seek(sop::process::Process* PID, std::vector<std::string> path);
+      File* seek(boost::shared_ptr<sop::process::Process> PID, std::vector<std::string> path);
       // Attr* getAttributes(File* fileHandler);
       // uint16_t setAttributes(File* fileHandler, Attr& setData);
 
       // Directories
       std::string getCurrentDir();
       std::string getCurrentPath();
-      void changeDirectory(sop::process::Process* PID, std::vector<std::string> path);
+      void changeDirectory(boost::shared_ptr<sop::process::Process> PID, std::vector<std::string> path);
       void changeDirectoryUp();
-      void createDirectory(sop::process::Process* PID, std::vector<std::string> path);
-      void removeDirectory(sop::process::Process* PID, std::vector<std::string> path);
-      //uint16_t renameDirectory(sop::process::Process* PID, std::string directoryName, std::string newDirectoryName);
+      void createDirectory(boost::shared_ptr<sop::process::Process> PID, std::vector<std::string> path);
+      void removeDirectory(boost::shared_ptr<sop::process::Process> PID, std::vector<std::string> path);
+      //uint16_t renameDirectory(boost::shared_ptr<sop::process::Process> PID, std::string directoryName, std::string newDirectoryName);
 
       // Overall
       std::vector<dirList> list();

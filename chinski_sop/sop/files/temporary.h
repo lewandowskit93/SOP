@@ -2,6 +2,7 @@
 #define _sakdfasdhfkasjfla_
 
 #include <cstdint>
+#include <boost\shared_ptr.hpp>
 #include "./sop/object.h"
 
 namespace sop
@@ -28,8 +29,8 @@ namespace sop
     class PermissionsManager : public Object
     {
     public:
-      bool hasPermission(sop::files::Inode* node, sop::process::Process* process, sop::users::permission_t mode){ return true; }
-      bool isSuperUser(sop::process::Process* process){ return true; }
+      bool hasPermission(sop::files::Inode* node, boost::shared_ptr<sop::process::Process> process, sop::users::permission_t mode){ return true; }
+      bool isSuperUser(boost::shared_ptr<sop::process::Process> process){ return true; }
     };
 
     struct Permissions

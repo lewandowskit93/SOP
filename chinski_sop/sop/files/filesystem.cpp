@@ -6,6 +6,7 @@
 #include <cstdint>
 #include <Windows.h>
 #include <boost\make_shared.hpp>
+#include <boost\make_shared.hpp>
 #include ".\sop\files\filesystem.h"
 #include ".\sop\files\file.h"
 #include ".\sop\files\inode.h"
@@ -77,7 +78,7 @@ sop::files::Filesystem::~Filesystem()
 }
 
 // Files
-sop::files::File* sop::files::Filesystem::openFile(sop::process::Process* PID, std::vector<std::string> path, std::string openMode)
+sop::files::File* sop::files::Filesystem::openFile(boost::shared_ptr<sop::process::Process> PID, std::vector<std::string> path, std::string openMode)
 {
   this->serialize->read();
   // ToDo MODE DEPENDENCY
@@ -183,7 +184,7 @@ std::string sop::files::Filesystem::readFile(File* fileHandler)
   return out;
 }
 
-void sop::files::Filesystem::createFile(sop::process::Process* PID, std::vector<std::string> path)
+void sop::files::Filesystem::createFile(boost::shared_ptr<sop::process::Process> PID, std::vector<std::string> path)
 {
   this->serialize->read();
   this->logger->logFiles(3, "File creation initilized");
@@ -249,7 +250,7 @@ void sop::files::Filesystem::closeFile(File* fileHandler)
   this->serialize->save();
 }
 
-void sop::files::Filesystem::removeFile(sop::process::Process* PID, std::vector<std::string> path)
+void sop::files::Filesystem::removeFile(boost::shared_ptr<sop::process::Process> PID, std::vector<std::string> path)
 {
   try
   {
@@ -299,7 +300,7 @@ void sop::files::Filesystem::removeFile(sop::process::Process* PID, std::vector<
   }
 }
 
-void sop::files::Filesystem::moveFile(sop::process::Process* PID, std::string fileName, std::string newDirectory)
+void sop::files::Filesystem::moveFile(boost::shared_ptr<sop::process::Process> PID, std::string fileName, std::string newDirectory)
 {
   std::cout<<"Not yet implemented"<<std::endl;
 }
@@ -317,7 +318,7 @@ void sop::files::Filesystem::writeToFile(File* fileHandler, std::string data)
   }
 }
 
-sop::files::File* sop::files::Filesystem::seek(sop::process::Process* PID, std::vector<std::string> path)
+sop::files::File* sop::files::Filesystem::seek(boost::shared_ptr<sop::process::Process> PID, std::vector<std::string> path)
 {
   this->serialize->read();
   this->logger->logFiles(3, "Seek initilized");
@@ -406,7 +407,7 @@ std::string sop::files::Filesystem::getCurrentPath()
   return output;
 }
 
-void sop::files::Filesystem::changeDirectory(sop::process::Process* PID, std::vector<std::string> path)
+void sop::files::Filesystem::changeDirectory(boost::shared_ptr<sop::process::Process> PID, std::vector<std::string> path)
 { 
   this->serialize->read();
   uint32_t iter = 0;
@@ -464,7 +465,7 @@ void sop::files::Filesystem::changeDirectoryUp()
   }
 }
 
-void sop::files::Filesystem::createDirectory(sop::process::Process* PID, std::vector<std::string> path) // use temporary current Directory structure
+void sop::files::Filesystem::createDirectory(boost::shared_ptr<sop::process::Process> PID, std::vector<std::string> path) // use temporary current Directory structure
 {
   this->serialize->read();
   this->logger->logFiles(3, "Creating directory initilized");
@@ -519,7 +520,7 @@ void sop::files::Filesystem::createDirectory(sop::process::Process* PID, std::ve
   this->serialize->save();
 }
 
-void sop::files::Filesystem::removeDirectory(sop::process::Process* PID, std::vector<std::string> path)
+void sop::files::Filesystem::removeDirectory(boost::shared_ptr<sop::process::Process> PID, std::vector<std::string> path)
 {
   this->serialize->read();
   this->logger->logFiles(3, "Removing directory initialization");
@@ -616,11 +617,11 @@ void sop::files::Filesystem::changeDirectoryHandler(const std::vector<const std:
     {
       std::vector<std::string> root;
       root.push_back("/");
-      this->changeDirectory(new sop::process::Process(),root); 
+      this->changeDirectory(boost::make_shared<sop::process::Process>(0),root); 
     }
     else
     {
-      this->changeDirectory(new sop::process::Process(), getPathFromParam(params[1])); 
+      this->changeDirectory(boost::make_shared<sop::process::Process>(0), getPathFromParam(params[1])); 
     }
   }
   else
@@ -799,7 +800,7 @@ void sop::files::Filesystem::viHandler(const std::vector<const std::string> & pa
   this->serialize->read();
   if(params.size() == 2)
   {
-    sop::process::Process* PID = 0; // ToDo current pid
+    boost::shared_ptr<sop::process::Process> PID = 0; // ToDo current pid
     sop::files::File* fh = this->openFile(PID, getPathFromParam(params[1]), "w");
     if(fh != 0)
     {
@@ -829,7 +830,7 @@ void sop::files::Filesystem::createFileHandler(const std::vector<const std::stri
     auto path = getPathFromParam(data);
     if(path.size() == 1)
     {
-      sop::process::Process* PID = 0;
+      boost::shared_ptr<sop::process::Process> PID = 0;
       this->createFile(PID, path); // TEST check the pid of actually logged user ToDo
     }
     else
@@ -933,7 +934,7 @@ void sop::files::Filesystem::catHandler(const std::vector< const std::string>& p
     std::cout<<"cat - prints inside of a file"<<std::endl;
     return;
   }
-  sop::process::Process* PID = 0;
+  boost::shared_ptr<sop::process::Process> PID = 0;
   if(params.size()>1)
   {
     for(uint32_t i=1; i<params.size(); i++)

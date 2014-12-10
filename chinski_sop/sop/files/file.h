@@ -4,6 +4,7 @@
 #include <string>
 #include <cstdint>
 #include <vector>
+#include <boost\shared_ptr.hpp>
 #include <array>
 #include "inode.h"
 #include "filesystem.h"
@@ -22,7 +23,7 @@ namespace sop
     class File
     {
     public:
-      File(sop::process::Process* PID, uint32_t parentCatalog, uint32_t blockAddress, std::array<Block*, sop::files::ConstEV::numOfBlocks>* disk, sop::logger::Logger* logger);
+      File(boost::shared_ptr<sop::process::Process> PID, uint32_t parentCatalog, uint32_t blockAddress, std::array<Block*, sop::files::ConstEV::numOfBlocks>* disk, sop::logger::Logger* logger);
       ~File();
 
       uint32_t getBlockAddr();
@@ -37,11 +38,11 @@ namespace sop
       Inode* getInode();
       uint32_t getSize();
       void setFilename(std::string);
-      sop::process::Process* getPID();
+      boost::shared_ptr<sop::process::Process> getPID();
       sop::users::Permissions getPermission();
 
     protected:
-      sop::process::Process* PIDHolder;
+      boost::shared_ptr<sop::process::Process> PIDHolder;
 
     private:
       uint32_t parentCatalogAddress;
