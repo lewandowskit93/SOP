@@ -4,6 +4,7 @@
 #include <string>
 #include ".\sop\system\module.h"
 #include <vector>
+#include <queue>
 #include <boost\shared_ptr.hpp>
 #include ".\sop\processes\class_process.h"
 
@@ -47,13 +48,19 @@ namespace sop
         //funkcja
         void exec();
         //funkcja przypisujaca nowy PID
-        uint16_t getNewPID();
+        uint16_t getNewPID(boost::shared_ptr<sop::process::Process>);
         //funkcja wstrzymujaca proces macierzysty
         void wait(boost::shared_ptr<sop::process::Process>, boost::shared_ptr<sop::process::Process>);
         //funkcja zabijajaca proces
         void kill(boost::shared_ptr<sop::process::Process>);
         //funkcja zamykajaca proces
         void exit(boost::shared_ptr<sop::process::Process>);
+        //definicja kolejki PIDow
+        std::queue <uint16_t> PIDlist;
+        //funkcja wype³niaj¹ca kolejke PIDami
+        void fillQueue();
+
+
       
       protected:
 
