@@ -33,6 +33,8 @@ namespace sop
       uint16_t getProcessIsInScheduler();
       uint16_t getIsActuallyRunning();
       uint16_t getIsTrueProcess();
+      uint16_t getIsKilled();
+      uint8_t setExitCode();
       //setters from protected
       void setPID(uint16_t);
       void setUID(uint16_t);
@@ -55,6 +57,8 @@ namespace sop
       void setProcessIsInScheduler(uint16_t);
       void setIsActuallyRunning(uint16_t);
       void setIsTrueProcess(uint16_t);
+      void setIsKilled(uint16_t);
+      void setExitCode(uint8_t);
     protected:
       //enumeration
       enum TASK_STATUS
@@ -69,7 +73,6 @@ namespace sop
       uint16_t _rejestrA, _rejestrB, _rejestrC, _rejestrD;
       int8_t _exitCode;
       //sop::process::Processor Procesor; //Zmienna dla Krzycha
-      //uint16_t _stack_counter;
       sop::memory::LogicalMemory _array_pages; //typ na luzno wrzucony nie sugerowac sie
 
     private:
@@ -81,7 +84,8 @@ namespace sop
       uint16_t _processIsInScheduler; // flaga ustawiona na 1 jesli proces znajduje sie w schedulerze
       uint16_t _isActuallyRunning;    // flaga ustawiona na 1 jesli proces jest aktualnie wykonywany
       uint16_t _isTrueProcess;        // flaga ustawiona na 1 jesli proces jest prawdziwy
-       
+      uint16_t _isKilled;             // flaga ustawiana na 1 jesli proces zostal zabity
+        
     };
   }
 }

@@ -103,10 +103,13 @@ void sop::processes::Module::cH_exec(const std::vector<const std::string> & para
     std::cout<<"Run file and write code to memory"<<std::endl;
     return; // wyjdzie z tej funkcji, ¿eby nie trzeba by³o robiæ else
   }
-  uint16_t PID = sop::StringConverter::convertStringTo<uint16_t>(params[params.size()-1]);
-  boost::shared_ptr<sop::process::Process> ProcesForExec = sop::processes::Module::findProcess(PID);
-  sop::processes::Module::exec(plik, ProcesForExec);
-  _kernel->getLogger()->logProcesses(sop::logger::Logger::Level::INFO,"Shell command executed: File writted to memory\n");
+  if (params.size()==3)
+  {
+    uint16_t PID = sop::StringConverter::convertStringTo<uint16_t>(params[params.size()-1]);
+    boost::shared_ptr<sop::process::Process> ProcesForExec = sop::processes::Module::findProcess(PID);
+    sop::processes::Module::exec(params[1], ProcesForExec);
+    _kernel->getLogger()->logProcesses(sop::logger::Logger::Level::INFO,"Shell command executed: File writted to memory\n");
+  }
 }
 //funkcja wstawiajaca proces do wektora procesow
 void sop::processes::Module::addToVector(boost::shared_ptr<sop::process::Process> object)
@@ -218,6 +221,10 @@ void sop::processes::Module::fork(boost::shared_ptr<sop::process::Process> Paren
     {
       _kernel->getLogger()->logProcesses(sop::logger::Logger::Level::INFO,"PROCESS GET STATUS: RUNNING");
     }
+    if (Parent->getIsActuallyRunning()==1 && child->getIsActuallyRunning()==1)
+    {
+      sop::processes::Module::wait(Parent, child);
+    }
   }
   
 }
@@ -246,7 +253,7 @@ void sop::processes::Module::exec(std::string filename, boost::shared_ptr<sop::p
   }
   else
   {
-    sop::memory::Module::write(Proces->getArrayPages, sop::file::module::perFile()); //zapisanie kodu z pliku do pamieci
+    _kernel->getMemoryModule()->write(Proces->getArrayPages,  data); //zapisanie kodu z pliku do pamieci
   }
     
     
@@ -257,6 +264,7 @@ void sop::processes::Module::wait(boost::shared_ptr<sop::process::Process> Paren
 {
   Parent->setIsActuallyRunning(0);
   Parent->setProcessIsInScheduler(0);
+  _kernel->getProcessorModule()->removeProcess(Parent, Parent->getPID());
   _kernel->getLogger()->logProcesses(sop::logger::Logger::Level::INFO,"PROCESS GET STATUS: WAITING ON CHILD\n");
 }
 //funkcja zabijajaca proces o podanym PID
@@ -268,6 +276,8 @@ void sop::processes::Module::kill(boost::shared_ptr<sop::process::Process> Proce
   _kernel->getLogger()->logProcesses(sop::logger::Logger::Level::INFO,"Memory deallocated\n");
   sop::processor::Module::removeProces(); //zgranie z Krzysio
   p->setProcessorFlagStatus(0);
+  p->setEndingFlagStatus(1);
+  p->setIsKilled(1);
   _kernel->getLogger()->logProcesses(sop::logger::Logger::Level::INFO,"Process deleted from scheduler\n");
   sop::processes::Module::removeFromVector(p->getPID());
   _kernel->getLogger()->logProcesses(sop::logger::Logger::Level::INFO,"Process deleted from vector of processes\n");
@@ -279,8 +289,10 @@ void sop::processes::Module::exit(boost::shared_ptr<sop::process::Process> Proce
   boost::shared_ptr<sop::process::Process> p = Proces;
   sop::memory::Module::deallocate(rozmiar, p->getPID); //zgranie z Fisza
   _kernel->getLogger()->logProcesses(sop::logger::Logger::Level::INFO,"Memory deallocated\n");
+  Proces->setEndingFlagStatus(1);
   sop::processes::Module::removeFromVector(p->getPID());
   _kernel->getLogger()->logProcesses(sop::logger::Logger::Level::INFO,"Process deleted from vector of processes\n");
+  Proces->
 }
 //funkcja wypelniajaca kolejke pidow
 void sop::processes::Module::fillQueue()

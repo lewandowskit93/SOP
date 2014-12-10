@@ -14,6 +14,9 @@ sop::process::Process::Process():
     _processorFlagStatus(0),
     _endingFlagStatus(0),
     _processIsInScheduler(0),
+    _isActuallyRunning(0),
+    _isTrueProcess(0),
+    _isKilled(0),
     _rejestrA(0),
     _rejestrB(0),
     _rejestrC(0),
@@ -98,6 +101,16 @@ uint16_t sop::process::Process::getIsActuallyRunning()
 uint16_t sop::process::Process::getIsTrueProcess()
 {
   return this->_isTrueProcess;
+}
+
+uint16_t sop::process::Process::getIsKilled()
+{
+  return this->_isKilled;
+}
+
+uint8_t sop::process::Process::setExitCode()
+{
+  return this->_exitCode;
 }
 
 //setters from protected
@@ -204,6 +217,16 @@ void sop::process::Process::setIsActuallyRunning(uint16_t IAR)
 void sop::process::Process::setIsTrueProcess(uint16_t ITP)
 {
   this->_isTrueProcess = ITP;
+}
+
+void sop::process::Process::setIsKilled(uint16_t IK)
+{
+  this->_isKilled = IK;
+}
+
+void sop::process::Process::setExitCode(uint8_t EC)
+{
+  this->_exitCode = EC;
 }
 
     

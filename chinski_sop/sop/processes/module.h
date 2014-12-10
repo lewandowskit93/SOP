@@ -33,7 +33,7 @@ namespace sop
         //definicja wektora
         std::vector <boost::shared_ptr<sop::process::Process>> ProcessVector;        
         //funkcja wstawiajaca proces do wektora procesow
-        void addToVector(boost::shared_ptr<sop::process::Process> objekt);
+        void addToVector(boost::shared_ptr<sop::process::Process> object);
         //funkcja usuwajaca proces z wektora procesow
         void removeFromVector(uint16_t PID);
         //funkcja wyszukujaca proces o podanym PID
@@ -44,8 +44,8 @@ namespace sop
         boost::shared_ptr<sop::process::Process> createNewProcess();
         //funkcja tworzaca nowego potomka
         void fork(boost::shared_ptr<sop::process::Process>);
-        //funkcja
-        void exec(FILENAME, boost::shared_ptr<sop::process::Process>);
+        //funkcja wpisujaca kod programu do pamieci Fiszy
+        void exec(std::string, boost::shared_ptr<sop::process::Process>);
         //funkcja wstrzymujaca proces macierzysty
         void wait(boost::shared_ptr<sop::process::Process>, boost::shared_ptr<sop::process::Process>);
         //funkcja zabijajaca proces
