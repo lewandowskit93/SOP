@@ -52,6 +52,8 @@ void sop::users::Module::initialize()
   getKernel()->getShell()->registerCommand("removeniceentry",&Module::cH_removeniceentry,this);
   getKernel()->getShell()->registerCommand("login",&Module::cH_login,this);
   getKernel()->getShell()->registerCommand("whois",&Module::cH_whois,this);
+  getKernel()->getShell()->registerCommand("access",&Module::cH_whois,this);
+
 }
 
 sop::users::UsersManager* sop::users::Module::getUsersManager()
@@ -78,7 +80,7 @@ void sop::users::Module::cH_useradd(const std::vector<const std::string> & param
   }
   else
   {
-    if(!_permissions_manager.isSuperUser(fakers::getProcess(0).get()))
+    if(!_permissions_manager.isSuperUser(fakers::getProcess(0)))
     {
       std::cout<<"Not a super user."<<std::endl;
       return;
@@ -201,7 +203,7 @@ void sop::users::Module::cH_userdel(const std::vector<const std::string> & param
   {
     // ToDo:
     // save the file
-    if(!_permissions_manager.isSuperUser(fakers::getProcess(0).get()))
+    if(!_permissions_manager.isSuperUser(fakers::getProcess(0)))
     {
       std::cout<<"Not a super user."<<std::endl;
       return;
@@ -289,7 +291,7 @@ void sop::users::Module::cH_groupadd(const std::vector<const std::string> & para
   }
   else
   {
-    if(!_permissions_manager.isSuperUser(fakers::getProcess(0).get()))
+    if(!_permissions_manager.isSuperUser(fakers::getProcess(0)))
     {
       std::cout<<"Not a super user."<<std::endl;
       return;
@@ -348,7 +350,7 @@ void sop::users::Module::cH_groupdel(const std::vector<const std::string> & para
   }
   else
   {
-    if(!_permissions_manager.isSuperUser(fakers::getProcess(0).get()))
+    if(!_permissions_manager.isSuperUser(fakers::getProcess(0)))
     {
       std::cout<<"Not a super user."<<std::endl;
       return;
@@ -415,7 +417,7 @@ void sop::users::Module::cH_groupchange(const std::vector<const std::string> & p
   }
   else
   {
-    if(!_permissions_manager.isSuperUser(fakers::getProcess(0).get()))
+    if(!_permissions_manager.isSuperUser(fakers::getProcess(0)))
     {
       std::cout<<"Not a super user."<<std::endl;
       return;
@@ -456,7 +458,7 @@ void sop::users::Module::cH_nice(const std::vector<const std::string> & params)
 
   if(sop::system::Shell::hasParam(params,"-s"))
   {
-    if(!_permissions_manager.isSuperUser(fakers::getProcess(0).get()))
+    if(!_permissions_manager.isSuperUser(fakers::getProcess(0)))
     {
       std::cout<<"Not a super user."<<std::endl;
       return;
@@ -472,7 +474,7 @@ void sop::users::Module::cH_nice(const std::vector<const std::string> & params)
 
   if(priority<kDefault_priority)
   {
-    if(!_permissions_manager.isSuperUser(fakers::getProcess(0).get()))
+    if(!_permissions_manager.isSuperUser(fakers::getProcess(0)))
     {
       std::cout<<"Not a super user."<<std::endl;
       return;
@@ -545,7 +547,7 @@ void sop::users::Module::cH_login(const std::vector<const std::string> & params)
   if(sop::system::Shell::hasParam(params,"-h") || (params.size()!=2 && params.size()!=4))
   {
     std::cout<<"login [-h] username [-p password]"<<std::endl;
-    std::cout<<"Prints username of currently logged user."<<std::endl;
+    std::cout<<"Logins on user specified by username."<<std::endl;
     return;
   }
   boost::shared_ptr<fakers::pcb> shell_process = fakers::getProcess(0);
@@ -558,5 +560,25 @@ void sop::users::Module::cH_login(const std::vector<const std::string> & params)
   else
   {
     std::cout<<"Logged on"<<std::endl;
+  }
+}
+
+void sop::users::Module::cH_access(const std::vector<const std::string> & params)
+{
+    if(sop::system::Shell::hasParam(params,"-h") || params.size()!=2)
+  {
+    std::cout<<"access [-h] filename mode"<<std::endl;
+    std::cout<<"Shows if current user has access to file/directory."<<std::endl;
+    return;
+  }
+  fakers::inode *file_inode = fakers::getFile(params[1]);
+  boost::shared_ptr<fakers::pcb> shell_process = fakers::getProcess(0);
+  if(_permissions_manager.hasPermission(file_inode,shell_process,PermissionsUtilities::getFromRWXString(params[2])))
+  {
+    std::cout<<"You have permissions to that file."<<std::endl;
+  }
+  else
+  {
+    std::cout<<"You dont have permissions to that file."<<std::endl;
   }
 }

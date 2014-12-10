@@ -37,6 +37,7 @@ namespace sop
         static std::string getRWXString(permission_t permission);
         static std::string getRWXString(permission_t user, permission_t group, permission_t others);
         static std::string getRWXString(Permissions permissions);
+        static permission_t getFromRWXString(std::string permissions_s);
       protected:
       private:
         PermissionsUtilities();

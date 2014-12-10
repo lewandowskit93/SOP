@@ -21,7 +21,7 @@ std::string sop::users::PermissionsManager::getClassName() const
 }
 
 
-bool sop::users::PermissionsManager::hasPermission(fakers::inode *node, fakers::pcb *process, permission_t mode)
+bool sop::users::PermissionsManager::hasPermission(fakers::inode *node, boost::shared_ptr<fakers::pcb> process, permission_t mode)
 {
   _module->getKernel()->getLogger()->logUsers(sop::logger::Logger::Level::INFO,"Checking user permissions.");
   if(!node || !process)return false;
@@ -46,7 +46,7 @@ bool sop::users::PermissionsManager::hasPermission(fakers::inode *node, fakers::
   }
 }
 
-bool sop::users::PermissionsManager::changePermissions(fakers::inode *node, fakers::pcb *process, const Permissions & permissions)
+bool sop::users::PermissionsManager::changePermissions(fakers::inode *node, boost::shared_ptr<fakers::pcb> process, const Permissions & permissions)
 {
   _module->getKernel()->getLogger()->logUsers(sop::logger::Logger::Level::INFO,"Changing inode permissions.");
   if(hasPermission(node,process,Permissions::kW))
@@ -58,7 +58,7 @@ bool sop::users::PermissionsManager::changePermissions(fakers::inode *node, fake
   return false;
 }
 
-bool sop::users::PermissionsManager::changeINodeUserPermission(fakers::inode *node, fakers::pcb *process, permission_t mode)
+bool sop::users::PermissionsManager::changeINodeUserPermission(fakers::inode *node, boost::shared_ptr<fakers::pcb> process, permission_t mode)
 {
   _module->getKernel()->getLogger()->logUsers(sop::logger::Logger::Level::INFO,"Changing inode user permissions.");
   if(hasPermission(node,process,Permissions::kW))
@@ -70,7 +70,7 @@ bool sop::users::PermissionsManager::changeINodeUserPermission(fakers::inode *no
   return false;
 }
 
-bool sop::users::PermissionsManager::changeINodeGroupPermission(fakers::inode *node, fakers::pcb *process, permission_t mode)
+bool sop::users::PermissionsManager::changeINodeGroupPermission(fakers::inode *node, boost::shared_ptr<fakers::pcb> process, permission_t mode)
 {
   _module->getKernel()->getLogger()->logUsers(sop::logger::Logger::Level::INFO,"Changing inode group permissions.");
   if(hasPermission(node,process,Permissions::kW))
@@ -82,7 +82,7 @@ bool sop::users::PermissionsManager::changeINodeGroupPermission(fakers::inode *n
   return false;
 }
 
-bool sop::users::PermissionsManager::changeINodeOthersPermission(fakers::inode *node, fakers::pcb *process, permission_t mode)
+bool sop::users::PermissionsManager::changeINodeOthersPermission(fakers::inode *node, boost::shared_ptr<fakers::pcb> process, permission_t mode)
 {
   _module->getKernel()->getLogger()->logUsers(sop::logger::Logger::Level::INFO,"Changing inode others permissions.");
   if(hasPermission(node,process,Permissions::kW))
@@ -94,7 +94,7 @@ bool sop::users::PermissionsManager::changeINodeOthersPermission(fakers::inode *
   return false;
 }
 
-bool sop::users::PermissionsManager::changeOwner(fakers::inode *node, fakers::pcb *process, uid_t new_uid)
+bool sop::users::PermissionsManager::changeOwner(fakers::inode *node, boost::shared_ptr<fakers::pcb> process, uid_t new_uid)
 {
   _module->getKernel()->getLogger()->logUsers(sop::logger::Logger::Level::INFO,"Changing inode owner.");
   if(hasPermission(node,process,Permissions::kW))
@@ -110,7 +110,7 @@ bool sop::users::PermissionsManager::changeOwner(fakers::inode *node, fakers::pc
   return false;
 }
 
-bool sop::users::PermissionsManager::changeGroup(fakers::inode *node, fakers::pcb *process, uid_t new_gid)
+bool sop::users::PermissionsManager::changeGroup(fakers::inode *node,boost::shared_ptr<fakers::pcb> process, uid_t new_gid)
 {
   _module->getKernel()->getLogger()->logUsers(sop::logger::Logger::Level::INFO,"Trying change group.");
   if(hasPermission(node,process,Permissions::kW))
@@ -129,7 +129,7 @@ bool sop::users::PermissionsManager::changeGroup(fakers::inode *node, fakers::pc
   return false;
 }
 
-bool sop::users::PermissionsManager::isSuperUser(fakers::pcb *process)
+bool sop::users::PermissionsManager::isSuperUser(boost::shared_ptr<fakers::pcb> process)
 {
   _module->getKernel()->getLogger()->logUsers(sop::logger::Logger::Level::INFO,"Checking if super user.");
   if(!process) return false;

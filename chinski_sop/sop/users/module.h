@@ -51,6 +51,7 @@ namespace sop
         void cH_whois(const std::vector<const std::string> & params);
         void cH_login(const std::vector<const std::string> & params);
         
+        void cH_access(const std::vector<const std::string> & params);
 
       protected:
 

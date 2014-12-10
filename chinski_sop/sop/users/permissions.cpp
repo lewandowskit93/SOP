@@ -88,3 +88,15 @@ std::string sop::users::PermissionsUtilities::getRWXString(Permissions permissio
 sop::users::PermissionsUtilities::PermissionsUtilities()
 {
 }
+
+sop::users::permission_t sop::users::PermissionsUtilities::getFromRWXString(std::string permissions_s)
+{
+  if(permissions_s=="rwx")return Permissions::kRWX;
+  if(permissions_s=="rw-")return Permissions::kRW;
+  if(permissions_s=="r-x")return Permissions::kRX;
+  if(permissions_s=="r--")return Permissions::kR;
+  if(permissions_s=="-wx")return Permissions::kWX;
+  if(permissions_s=="-w-")return Permissions::kW;
+  if(permissions_s=="--x")return Permissions::kX;
+  return 0;
+}
