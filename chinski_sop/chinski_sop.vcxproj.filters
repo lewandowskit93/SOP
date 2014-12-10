@@ -189,6 +189,9 @@
     <ClInclude Include="sop\files\filesystem_s.h">
       <Filter>Header Files\sop\files\serialization</Filter>
     </ClInclude>
+    <ClInclude Include="sop\files\temporary.h">
+      <Filter>Header Files\sop\files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="sop\system\shell.cpp">

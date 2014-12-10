@@ -7,6 +7,7 @@
 #include <array>
 #include <map>
 #include "constev.h"
+#include "temporary.h"
 
 namespace sop
 {
@@ -35,6 +36,8 @@ namespace sop
       virtual uint32_t getAddress(std::string name) = 0;
       virtual void removeFile(std::vector<uint32_t>* freeSpace, std::array<Block*, sop::files::ConstEV::numOfBlocks>* drive) = 0;
       virtual void removeDir(std::vector<uint32_t>* freeSpace, std::array<Block*, sop::files::ConstEV::numOfBlocks>* drive) = 0;
+      virtual sop::users::Permissions getPermissions() = 0;
+      virtual bool getLock() = 0;
 
     protected:
 

@@ -35,6 +35,6 @@ void sop::files::Module::initialize()
   //shell->registerCommand("find",&Filesystem::seekHandler,this->fsxxxx);
   //shell->registerCommand("echo",&Filesystem::echoHandler,this->fsxxxx);
   shell->registerCommand("diskstat",&Filesystem::statHandler,this->fsxxxx);
-  shell->registerCommand("test",&Filesystem::test,this->fsxxxx);
+  //shell->registerCommand("test",&Filesystem::test,this->fsxxxx);
   shell->registerCommand("format",&Filesystem::formatHandler,this->fsxxxx);
 }

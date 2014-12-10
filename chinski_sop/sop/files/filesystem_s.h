@@ -21,6 +21,7 @@ namespace sop
 
       void readData(std::vector<std::string>);
       std::vector<std::string> writeData();
+      void formatFS();
 
     protected:
 

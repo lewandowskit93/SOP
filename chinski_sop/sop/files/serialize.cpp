@@ -48,11 +48,29 @@ void sop::files::Serialize::read()
 {
   this->logger->logFiles(6, "Attempting to read hard disk");
   std::fstream fs;
-  fs.open(this->filename, std::fstream::in);
+  try
+  {
+    fs.open(this->filename, std::fstream::in);
+  }
+  catch(...)
+  {
+    this->logger->logFiles(1, "No hard drive detected");
+    std::cout<<"No hard disk detected!"<<std::endl;
+    fs.close();
+    return;
+  }
   std::string tmp;
+  if(!fs.is_open())
+  {
+    this->logger->logFiles(1, "No hard drive detected");
+    std::cout<<"No hard disk detected!"<<std::endl;
+    //fs.open(this->filename, std::fstream::out);
+    //fs.close();
+    return;
+  }
   if(!fs.good())
   {
-    this->logger->logFiles(2, "Hard disk corrupted");
+    this->logger->logFiles(1, "Hard disk corrupted");
     std::cout<<"Hard disk corrupted!"<<std::endl;
     return;
   }

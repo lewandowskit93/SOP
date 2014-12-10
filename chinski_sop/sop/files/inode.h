@@ -10,6 +10,7 @@
 #include "constev.h"
 //#include "filesystem_s.h"
 #include ".\sop\logger\logger.h"
+#include "temporary.h"
 
 namespace sop
 {
@@ -60,6 +61,8 @@ namespace sop
       void removeFile(std::vector<uint32_t>* freeSpace, std::array<Block*, sop::files::ConstEV::numOfBlocks>* drive);
       void removeDir(std::vector<uint32_t>* freeSpace, std::array<Block*, sop::files::ConstEV::numOfBlocks>* drive);
       uint32_t getAddress(std::string name);
+      sop::users::Permissions getPermissions();
+      bool getLock();
 
     protected:
 
@@ -69,6 +72,7 @@ namespace sop
       uint32_t gid;
       dir_u directory;
       file_u file;
+      sop::users::Permissions permissions;
       bool lock;
       sop::logger::Logger* logger;
 

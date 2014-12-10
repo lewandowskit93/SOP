@@ -2,6 +2,7 @@
 #include ".\sop\files\block.h"
 #include ".\sop\files\constev.h"
 #include ".\sop\files\data.h"
+#include ".\sop\files\temporary.h"
 
 #include <vector>
 #include <iostream>
@@ -20,7 +21,8 @@ sop::files::Inode::Inode(bool isDirectory, uid_t UID, gid_t GID, sop::logger::Lo
   uid(UID),
   gid(GID),
   lock(0),
-  logger(logger)
+  logger(logger),
+  permissions(sop::users::Permissions(isDirectory))  // WHAT IF NONE?
 {
   for(uint32_t i=0; i<sop::files::ConstEV::directAddrBlock; i++)
   {
@@ -99,7 +101,7 @@ std::vector<sop::files::dirList> sop::files::Inode::listDir(std::array<Block*, s
           out.drwx = "-";
           out.size = std::to_string(disk->at(x.second)->getSize());
         }
-        out.drwx += "r--r--r--"; //TEST
+        out.drwx += sop::users::PermissionsUtilities::getRWXString(&this->permissions);
         out.name = x.first;
         out.block = x.second;
       }
@@ -357,4 +359,14 @@ uint32_t sop::files::Inode::getSize()
   {
     return 0;
   }
+}
+
+sop::users::Permissions sop::files::Inode::getPermissions()
+{
+  return this->permissions;
+}
+
+bool sop::files::Inode::getLock()
+{
+  return this->lock;
 }

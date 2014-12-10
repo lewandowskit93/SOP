@@ -2,13 +2,13 @@
 #define _SOP_FILES_CONSTEV_H
 
 #include <cstdint>
+#include "./sop/object.h"
 
 namespace sop
 {
   namespace files
   {
-    // Temporary just to maintain compability
-    typedef int pid_t;
+    // Temporary just to maintain compabilitysop::process::Process
     typedef int uid_t;
     typedef int gid_t;
     typedef bool lock_t;

@@ -45,29 +45,30 @@ namespace sop
       std::string writeData(uint32_t);
       void readInode(uint32_t, std::vector<std::string>);
       void readData(uint32_t, std::string);
+      void format();
 
       // Files
-      File* openFile(pid_t* PID, std::vector<std::string> path, std::string openMode);
+      File* openFile(sop::process::Process* PID, std::vector<std::string> path, std::string openMode);
       std::string readFile(File* fileHandler);
-      void createFile(pid_t* PID, std::vector<std::string> path);
+      void createFile(sop::process::Process* PID, std::vector<std::string> path);
       void saveFile(File* fileHandler);
       void closeFile(File* fileHandler);
-      void removeFile(pid_t* PID, std::vector<std::string> path);
-      //uint16_t renameFile(pid_t* PID, std::string fileName, std::string newFileName);
-      void moveFile(pid_t* PID, std::string fileName, std::string newDirectory);
+      void removeFile(sop::process::Process* PID, std::vector<std::string> path);
+      //uint16_t renameFile(sop::process::Process* PID, std::string fileName, std::string newFileName);
+      void moveFile(sop::process::Process* PID, std::string fileName, std::string newDirectory);
       void writeToFile(File* fileHandler, std::string data);
-      File* seek(pid_t* PID, std::vector<std::string> path);
+      File* seek(sop::process::Process* PID, std::vector<std::string> path);
       // Attr* getAttributes(File* fileHandler);
       // uint16_t setAttributes(File* fileHandler, Attr& setData);
 
       // Directories
       std::string getCurrentDir();
       std::string getCurrentPath();
-      void changeDirectory(pid_t* PID, std::vector<std::string> path);
+      void changeDirectory(sop::process::Process* PID, std::vector<std::string> path);
       void changeDirectoryUp();
-      void createDirectory(pid_t* PID, std::vector<std::string> path);
-      void removeDirectory(pid_t* PID, std::vector<std::string> path);
-      //uint16_t renameDirectory(pid_t* PID, std::string directoryName, std::string newDirectoryName);
+      void createDirectory(sop::process::Process* PID, std::vector<std::string> path);
+      void removeDirectory(sop::process::Process* PID, std::vector<std::string> path);
+      //uint16_t renameDirectory(sop::process::Process* PID, std::string directoryName, std::string newDirectoryName);
 
       // Overall
       std::vector<dirList> list();
@@ -77,6 +78,7 @@ namespace sop
       void diskTree(uint32_t depth, std::vector<sop::files::dirList> root, std::string prelimiter);
       void printDataBlock(uint32_t block);
       void printInodeBlock(uint32_t block);
+      void writeToFileP(File* file_ptr, std::string input);
 
       // Handlers
       void changeDirectoryHandler(const std::vector<const std::string> & params);

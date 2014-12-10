@@ -2,7 +2,7 @@
 #include ".\sop\files\filesystem.h"
 #include <algorithm>
 
-sop::files::File::File(pid_t* PID, uint32_t parentCatalog, uint32_t blockAddress, std::array<sop::files::Block*, sop::files::ConstEV::numOfBlocks>* disk, sop::logger::Logger* logger) : 
+sop::files::File::File(sop::process::Process* PID, uint32_t parentCatalog, uint32_t blockAddress, std::array<sop::files::Block*, sop::files::ConstEV::numOfBlocks>* disk, sop::logger::Logger* logger) : 
   PIDHolder(PID),
   parentCatalogAddress(parentCatalog),
   blockAddress(blockAddress),
@@ -15,7 +15,16 @@ sop::files::File::File(pid_t* PID, uint32_t parentCatalog, uint32_t blockAddress
   logger(logger)
 {
   this->logger->logFiles(6, "File initialization");
-  disk->at(blockAddress)->toggleLock();
+  if(disk->at(blockAddress)->getLock())
+  {
+    std::cout<<"File already opened by somebody!"<<std::endl;
+    this->logger->logFiles(2, "File already opened");
+    drive = nullptr;
+  }
+  else
+  {
+    disk->at(blockAddress)->toggleLock();
+  }
 }
 
 sop::files::File::~File()
@@ -80,17 +89,34 @@ void sop::files::File::loadData()
 
 void sop::files::File::writeToFile(std::string text, std::vector<uint32_t>* freeSpace)
 {
-  this->logger->logFiles(6, "File: writing to file");
-  this->drive->at(this->blockAddress)->writeToFile(text, freeSpace, this->drive);
+  if(this->drive !=0 )
+  {
+    this->logger->logFiles(6, "File: writing to file");
+    this->drive->at(this->blockAddress)->writeToFile(text, freeSpace, this->drive);
+  }
+  else
+  {
+    std::cout<<"File already open!"<<std::endl;
+    this->logger->logFiles(2, "File already opened");
+    return;
+  }
 }
 
 void sop::files::File::removeFile(std::vector<uint32_t>* freeSpace)
 {
-  this->logger->logFiles(6, "File: removing file");
-  this->drive->at(this->blockAddress)->removeFile(freeSpace, this->drive);
-  this->drive->at(this->blockAddress) = 0;
-  freeSpace->push_back(this->blockAddress);
-  std::sort(freeSpace->begin(), freeSpace->end());
+  if(this->drive != 0)
+  {
+    this->logger->logFiles(6, "File: removing file");
+    this->drive->at(this->blockAddress)->removeFile(freeSpace, this->drive);
+    this->drive->at(this->blockAddress) = 0;
+    freeSpace->push_back(this->blockAddress);
+    std::sort(freeSpace->begin(), freeSpace->end());
+  }
+  else
+  {
+    std::cout<<"File already opened"<<std::endl;
+    this->logger->logFiles(2, "File already opened");
+  }
 }
 
 void sop::files::File::setMode(char mode)
@@ -99,7 +125,17 @@ void sop::files::File::setMode(char mode)
   // TEST if permissions are valid
   if(mode == 'w' || mode == 'x')
   {
-    // ToDo test for permission
+    sop::users::PermissionsManager pm;
+    if(mode == 'w')
+    {
+     if(pm.hasPermission(this->getInode(), this->PIDHolder, 2))
+       this->openMode = mode;
+    }
+    if(mode == 'x')
+    {
+      if(pm.hasPermission(this->getInode(), this->PIDHolder, 1))
+        this->openMode = mode;
+    }
   }
   else
   {
@@ -123,9 +159,28 @@ void sop::files::File::setFilename(std::string filename)
 
 sop::files::Inode* sop::files::File::getInode()
 {
-  if(this->blockAddress >= 0 && this->blockAddress < sop::files::ConstEV::numOfBlocks)
+  if(this->drive !=0 && this->blockAddress >= 0 && this->blockAddress < sop::files::ConstEV::numOfBlocks)
   {
     return new Inode(*dynamic_cast<sop::files::Inode*>(this->drive->at(this->blockAddress)));
   }
   return nullptr;
+}
+
+sop::process::Process* sop::files::File::getPID()
+{
+  return this->PIDHolder;
+}
+
+sop::users::Permissions sop::files::File::getPermission()
+{
+  if(this->drive != 0)
+  {
+    auto x = this->drive->at(this->blockAddress)->getPermissions();
+    return this->drive->at(this->blockAddress)->getPermissions();
+  }
+  else
+  {
+    std::cout<<"File already opened"<<std::endl;
+    this->logger->logFiles(2, "File already opened");
+  }
 }

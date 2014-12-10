@@ -12,6 +12,7 @@
 #include ".\sop\files\data.h"
 #include ".\sop\logger\logger.h"
 #include ".\sop\files\serialize.h"
+#include "temporary.h"
 
 void clearConsole()
 {
@@ -45,28 +46,12 @@ std::vector<std::string> getPathFromParam(std::string path)
   outPath.push_back(path);
   return outPath;
 }
-/*
-sop::files::Filesystem::Filesystem(sop::logger::Logger* logger) :
-  logger(logger),
-  serialize(0)
-{
-  this->logger->logFiles(5, "Initilizing filesystem");
-  this->logger->logFiles(4, "Setting free spaces and inicilizing structures");
-  for(uint32_t i=1; i < sop::files::ConstEV::numOfBlocks; i++)
-  {
-    this->freeSpace.push_back(i);
-    this->dataBlocks[i] = 0;
-  }
-  std::sort(this->freeSpace.begin(), this->freeSpace.end());
-  this->dataBlocks[0] = new sop::files::Inode(true, 0,0, this->logger);
-  this->logger->logFiles(6, "Filesystem initialization successful");
-}*/
 
 sop::files::Filesystem::Filesystem(sop::logger::Logger* logger, std::string diskFileName) :
   logger(logger)
 {
   this->logger->logFiles(6, "Initilizing filesystem");
-  this->logger->logFiles(6, "Restore filesystem initilized");
+  this->logger->logFiles(3, "Restore filesystem initilized");
   for(uint32_t i=0; i < sop::files::ConstEV::numOfBlocks; i++)
   {
     //this->freeSpace.push_back(i);
@@ -74,6 +59,15 @@ sop::files::Filesystem::Filesystem(sop::logger::Logger* logger, std::string disk
   }
   this->serialize = new sop::files::Serialize(this, diskFileName, this->logger);
   this->serialize->read();
+  if(this->dataBlocks[0] == 0)
+  {
+    this->logger->logFiles(1, "Filesystem corrupted");
+    std::cout<<"[######] Filesystem corrupted"<<std::endl<<"Press a key to exit . . ."<<std::endl;
+    this->format();
+    this->serialize->save();
+    _getch();
+    exit(-1);
+  }
 }
 
 sop::files::Filesystem::~Filesystem()
@@ -83,11 +77,10 @@ sop::files::Filesystem::~Filesystem()
 }
 
 // Files
-sop::files::File* sop::files::Filesystem::openFile(pid_t* PID, std::vector<std::string> path, std::string openMode)
+sop::files::File* sop::files::Filesystem::openFile(sop::process::Process* PID, std::vector<std::string> path, std::string openMode)
 {
   this->serialize->read();
   // ToDo MODE DEPENDENCY
-  // MULTIDIR
   if(path.size()>1)
   {
     std::vector<uint32_t> currentDirBlocks;
@@ -108,7 +101,21 @@ sop::files::File* sop::files::Filesystem::openFile(pid_t* PID, std::vector<std::
     tmp.pop_back();
     this->changeDirectory(PID, tmp);
     File* out = this->seek(PID, path);
-    if(out != 0)
+    sop::users::PermissionsManager pm;
+    sop::users::permission_t perm;
+    switch(openMode[0])
+    {
+    case 'w':
+      perm = 2;
+      break;
+    case 'r':
+      perm = 4;
+      break;
+    case 'x':
+      perm = 1;
+      break;
+    }
+    if(out != 0 && pm.hasPermission(out->getInode(), PID, perm))
     {
       out->setMode((char)openMode[0]);
       out->setFilename(path.at(path.size()-1));
@@ -127,7 +134,21 @@ sop::files::File* sop::files::Filesystem::openFile(pid_t* PID, std::vector<std::
   if(path.size() == 1)
   {
     File* out = this->seek(PID, path);
-    if(out != 0)
+    sop::users::PermissionsManager pm;
+    sop::users::permission_t perm;
+    switch(openMode[0])
+    {
+    case 'w':
+      perm = 2;
+      break;
+    case 'r':
+      perm = 4;
+      break;
+    case 'x':
+      perm = 1;
+      break;
+    }
+    if(out != 0 && pm.hasPermission(out->getInode(),PID, perm))
     {
       out->setMode((char)openMode[0]);
       out->setFilename(path.at(path.size()-1));
@@ -162,7 +183,7 @@ std::string sop::files::Filesystem::readFile(File* fileHandler)
   return out;
 }
 
-void sop::files::Filesystem::createFile(pid_t* PID, std::vector<std::string> path)
+void sop::files::Filesystem::createFile(sop::process::Process* PID, std::vector<std::string> path)
 {
   this->serialize->read();
   this->logger->logFiles(3, "File creation initilized");
@@ -192,7 +213,8 @@ void sop::files::Filesystem::createFile(pid_t* PID, std::vector<std::string> pat
   this->logger->logFiles(3, "Setting initial params");
   uid_t uid = this->dataBlocks[iterator]->getUID();
   gid_t gid = this->dataBlocks[iterator]->getGID();
-  bool writePermission = 1; // sop::user::ask for write permission
+  sop::users::PermissionsManager pm;
+  bool writePermission = pm.hasPermission(dynamic_cast<Inode*>(this->dataBlocks[iterator]), PID, 6); // sop::user::ask for write permission
   this->logger->logFiles(3, "Checking for permission");
   if(writePermission)
   {
@@ -227,7 +249,7 @@ void sop::files::Filesystem::closeFile(File* fileHandler)
   this->serialize->save();
 }
 
-void sop::files::Filesystem::removeFile(pid_t* PID, std::vector<std::string> path)
+void sop::files::Filesystem::removeFile(sop::process::Process* PID, std::vector<std::string> path)
 {
   try
   {
@@ -237,26 +259,39 @@ void sop::files::Filesystem::removeFile(pid_t* PID, std::vector<std::string> pat
     std::vector<std::string> tmp(path);
     tmp.pop_back();  
     this->logger->logFiles(3, "Removing file");
-    if(!fh->getInode()->getIsDirectory())
+    sop::users::PermissionsManager pm;
+    if(fh != 0 && !fh->getInode()->getIsDirectory())
     {
-      fh->removeFile(&this->freeSpace);
-      if(tmp.size())
+      if(pm.hasPermission(fh->getInode(), PID, 6))
       {
-        fh = seek(0, tmp);
-        this->dataBlocks.at(fh->getBlockAddr())->removeFromDir(path.back());
+        fh->removeFile(&this->freeSpace);
+        if(tmp.size())
+        {
+          fh = seek(0, tmp);
+          this->dataBlocks.at(fh->getBlockAddr())->removeFromDir(path.back());
+        }
+        else
+        {
+          uint32_t tmp = this->getCurrentPathIterator();
+          if(tmp >= 0 && tmp<sop::files::ConstEV::numOfBlocks && this->dataBlocks[tmp] != 0)
+          {
+            this->dataBlocks.at(this->getCurrentPathIterator())->removeFromDir(path.at(0));
+          }
+        }
+        this->logger->logFiles(3, "File removed");
+        this->serialize->save();
       }
       else
       {
-        uint32_t test = this->getCurrentPathIterator();
-        this->dataBlocks.at(this->getCurrentPathIterator())->removeFromDir(path.at(0));
+        std::cout<<"No permission!"<<std::endl;
+        this->logger->logFiles(3, "No permission to remove file");
+        return;
       }
-      this->logger->logFiles(3, "File removed");
-      this->serialize->save();
     }
     else
     {
-      std::cout<<"Is a directory!"<<std::endl;
-      this->logger->logFiles(3, "rm: Is a directory");
+      std::cout<<"Is a directory or doesn't exist!"<<std::endl;
+      this->logger->logFiles(3, "rm: Is a directory or doesn't exist");
     }
   }
   catch(...)
@@ -264,21 +299,25 @@ void sop::files::Filesystem::removeFile(pid_t* PID, std::vector<std::string> pat
   }
 }
 
-void sop::files::Filesystem::moveFile(pid_t* PID, std::string fileName, std::string newDirectory)
+void sop::files::Filesystem::moveFile(sop::process::Process* PID, std::string fileName, std::string newDirectory)
 {
   std::cout<<"Not yet implemented"<<std::endl;
 }
 
 void sop::files::Filesystem::writeToFile(File* fileHandler, std::string data)
 {
-  this->serialize->read();
-  this->logger->logFiles(3, "Write to file initilized");
-  this->dataBlocks[fileHandler->getBlockAddr()]->writeToFile(data, &this->freeSpace, &this->dataBlocks);
-  this->logger->logFiles(3, "File written");
-  this->serialize->save();
+  sop::users::PermissionsManager pm;
+  if(pm.hasPermission(fileHandler->getInode(), fileHandler->getPID(), 6))
+  {
+    this->serialize->read();
+    this->logger->logFiles(3, "Write to file initilized");
+    this->dataBlocks[fileHandler->getBlockAddr()]->writeToFile(data, &this->freeSpace, &this->dataBlocks);
+    this->logger->logFiles(3, "File written");
+    this->serialize->save();
+  }
 }
 
-sop::files::File* sop::files::Filesystem::seek(pid_t* PID, std::vector<std::string> path)
+sop::files::File* sop::files::Filesystem::seek(sop::process::Process* PID, std::vector<std::string> path)
 {
   this->serialize->read();
   this->logger->logFiles(3, "Seek initilized");
@@ -324,7 +363,7 @@ sop::files::File* sop::files::Filesystem::seek(pid_t* PID, std::vector<std::stri
       return 0;
     }
   }
-  if(this->dataBlocks.at(currentDir)->getAddress(filename))
+  if(this->dataBlocks[currentDir] != 0 && this->dataBlocks.at(currentDir)->getAddress(filename))
   {
     this->logger->logFiles(3, "Seek: was found");
     this->logger->logFiles(3, "Search successful");
@@ -367,12 +406,12 @@ std::string sop::files::Filesystem::getCurrentPath()
   return output;
 }
 
-void sop::files::Filesystem::changeDirectory(pid_t* PID, std::vector<std::string> path)
+void sop::files::Filesystem::changeDirectory(sop::process::Process* PID, std::vector<std::string> path)
 { 
   this->serialize->read();
   uint32_t iter = 0;
   this->logger->logFiles(3, "Changing directory initilized");
-  if(path[0] == "")
+  if(path[0] == "/")
   {
     this->logger->logFiles(3, "Cd: root tree found");
     this->currentDir.blockRoute.clear();
@@ -412,23 +451,6 @@ void sop::files::Filesystem::changeDirectory(pid_t* PID, std::vector<std::string
       this->changeDirectory(PID, tmpPath);
       tmpPath.pop_back();
     }
-    /*
-    sop::files::File* fh;
-    for(uint32_t i = iter; i<path.size()-1; i++)
-    {
-      std::vector<std::string> tmp(path.begin(), path.begin()+i);
-      fh = seek(0, tmp);
-      if(fh)
-      {
-        this->currentDir.blockRoute.push_back(fh->getBlockAddr());
-        this->currentDir.path.push_back(path[i]);
-      }
-      else
-      {
-        this->logger->logFiles(2, "Cd: Not found");
-        std::cout<<"Directory not found!"<<std::endl;
-        break;
-      }*/
   }
 }
 
@@ -442,7 +464,7 @@ void sop::files::Filesystem::changeDirectoryUp()
   }
 }
 
-void sop::files::Filesystem::createDirectory(pid_t* PID, std::vector<std::string> path) // use temporary current Directory structure
+void sop::files::Filesystem::createDirectory(sop::process::Process* PID, std::vector<std::string> path) // use temporary current Directory structure
 {
   this->serialize->read();
   this->logger->logFiles(3, "Creating directory initilized");
@@ -472,8 +494,8 @@ void sop::files::Filesystem::createDirectory(pid_t* PID, std::vector<std::string
   this->logger->logFiles(3, "Setting values");
   uid_t uid = this->dataBlocks[iterator]->getUID();
   gid_t gid = this->dataBlocks[iterator]->getGID();
-  bool writePermission = 1; // sop::user::ask for write permission
-  if(writePermission)
+  sop::users::PermissionsManager pm;
+  if(pm.hasPermission(dynamic_cast<Inode*>(this->dataBlocks[iterator]), PID, 6))
   {
     if(this->freeSpace.size() < 1)
     {
@@ -488,8 +510,8 @@ void sop::files::Filesystem::createDirectory(pid_t* PID, std::vector<std::string
   }
   else
   {
-    this->logger->logFiles(2, "Cannot create directory");
-    std::cout<<"mkdir: cannot create "<<path.at(path.size()-1)<<std::endl;
+    this->logger->logFiles(2, "No permission!");
+    std::cout<<"mkdir: no permission"<<std::endl;
     return;
   }
   this->logger->logFiles(6, "Creating directory successful");
@@ -497,7 +519,7 @@ void sop::files::Filesystem::createDirectory(pid_t* PID, std::vector<std::string
   this->serialize->save();
 }
 
-void sop::files::Filesystem::removeDirectory(pid_t* PID, std::vector<std::string> path)
+void sop::files::Filesystem::removeDirectory(sop::process::Process* PID, std::vector<std::string> path)
 {
   this->serialize->read();
   this->logger->logFiles(3, "Removing directory initialization");
@@ -518,9 +540,8 @@ void sop::files::Filesystem::removeDirectory(pid_t* PID, std::vector<std::string
     }
     iterator = returned->getBlockAddr();
   }
-  bool writePermission = 1; // sop::user::ask for write permission
-  this->logger->logFiles(3, "Asking for permission");
-  if(writePermission)
+  sop::users::PermissionsManager pm;
+  if(pm.hasPermission(dynamic_cast<Inode*>(this->dataBlocks[iterator]), PID, 6))
   {
     if(this->dataBlocks[iterator]->getIsDirectory())
     {
@@ -567,7 +588,11 @@ std::vector<sop::files::dirList> sop::files::Filesystem::list()
     iterator = this->currentDir.blockRoute.back();
   }
   this->logger->logFiles(6, "Listing successful");
-  return this->dataBlocks[iterator]->listDir(&this->dataBlocks);
+  if(this->dataBlocks[iterator] != 0)
+  {
+    return this->dataBlocks[iterator]->listDir(&this->dataBlocks);
+  }
+  return *new std::vector<sop::files::dirList>;
 }
 
 /*
@@ -591,11 +616,11 @@ void sop::files::Filesystem::changeDirectoryHandler(const std::vector<const std:
     {
       std::vector<std::string> root;
       root.push_back("/");
-      this->changeDirectory(new pid_t(0),root); 
+      this->changeDirectory(new sop::process::Process(),root); 
     }
     else
     {
-      this->changeDirectory(new pid_t(0), getPathFromParam(params[1])); 
+      this->changeDirectory(new sop::process::Process(), getPathFromParam(params[1])); 
     }
   }
   else
@@ -605,7 +630,7 @@ void sop::files::Filesystem::changeDirectoryHandler(const std::vector<const std:
   }
 }
 
-// WRITE ToDo
+// WRITE
 void sop::files::Filesystem::moveHandler(const std::vector<const std::string> & params)
 {
   if(params.size()>1 && params[1] == "-h")
@@ -635,7 +660,7 @@ void sop::files::Filesystem::removeFileHandler(const std::vector<const std::stri
     }
     else
     {
-      this->removeFile(0, path); //TEST get current pid
+      this->removeFile(0, path); //TEST get current pid ToDo
     }
   }
 }
@@ -774,7 +799,7 @@ void sop::files::Filesystem::viHandler(const std::vector<const std::string> & pa
   this->serialize->read();
   if(params.size() == 2)
   {
-    pid_t* PID = 0;
+    sop::process::Process* PID = 0; // ToDo current pid
     sop::files::File* fh = this->openFile(PID, getPathFromParam(params[1]), "w");
     if(fh != 0)
     {
@@ -782,7 +807,7 @@ void sop::files::Filesystem::viHandler(const std::vector<const std::string> & pa
       this->closeFile(fh);
     }
   }
-  this->serialize->save();
+  //this->serialize->save();
 }
 
 void sop::files::Filesystem::createFileHandler(const std::vector<const std::string> & params)
@@ -804,8 +829,8 @@ void sop::files::Filesystem::createFileHandler(const std::vector<const std::stri
     auto path = getPathFromParam(data);
     if(path.size() == 1)
     {
-      pid_t* PID = 0;
-      this->createFile(PID, path); // TEST check the pid of actually logged user
+      sop::process::Process* PID = 0;
+      this->createFile(PID, path); // TEST check the pid of actually logged user ToDo
     }
     else
     {
@@ -908,7 +933,7 @@ void sop::files::Filesystem::catHandler(const std::vector< const std::string>& p
     std::cout<<"cat - prints inside of a file"<<std::endl;
     return;
   }
-  pid_t* PID = 0;
+  sop::process::Process* PID = 0;
   if(params.size()>1)
   {
     for(uint32_t i=1; i<params.size(); i++)
@@ -1052,6 +1077,7 @@ void sop::files::Filesystem::printInodeBlock(uint32_t block)
     std::cout<<"Is directory: "<<this->dataBlocks[block]->getIsDirectory()<<std::endl;
     std::cout<<"UID: "<<this->dataBlocks[block]->getUID()<<std::endl;
     std::cout<<"GID: "<<this->dataBlocks[block]->getGID()<<std::endl;
+    std::cout<<"RWX: "<<this->dataBlocks[block]->getPermissions().user<<this->dataBlocks[block]->getPermissions().group<<this->dataBlocks[block]->getPermissions().others<<std::endl;
     std::cout<<"Size: ";
     if(this->dataBlocks[block]->getIsDirectory())
     {
@@ -1240,7 +1266,11 @@ void sop::files::Filesystem::echoHandler(const std::vector<const std::string> & 
 
 void sop::files::Filesystem::test(const std::vector<const std::string> & params)
 {
-  std::cout<<"Currently no pending tests"<<std::endl;
+  std::vector<std::string> test;
+  test.push_back("abc");
+  File* one = this->openFile(0, test, "w");
+  File* two = this->openFile(0, test, "w");
+  //std::cout<<"Currently no pending tests"<<std::endl;
 }
 
 uint32_t sop::files::Filesystem::getCurrentPathIterator()
@@ -1257,6 +1287,7 @@ std::string sop::files::Filesystem::writeInode(uint32_t addr)
   std::string output = "dir="+std::to_string((uint32_t)this->dataBlocks[addr]->getIsDirectory())+"\n";
   output += "uid="+std::to_string(this->dataBlocks[addr]->getUID())+"\n";
   output += "gid="+std::to_string(this->dataBlocks[addr]->getGID())+"\n";
+  output += "mod="+std::to_string(this->dataBlocks[addr]->getPermissions().user)+","+std::to_string(this->dataBlocks[addr]->getPermissions().group)+","+std::to_string(this->dataBlocks[addr]->getPermissions().others)+"\n";
   Inode* copy = dynamic_cast<Inode*>(this->dataBlocks[addr]);
   if(this->dataBlocks[addr]->getIsDirectory())
   {
@@ -1325,12 +1356,22 @@ void sop::files::Filesystem::readInode(uint32_t addr,  std::vector<std::string> 
   {
     return;
   }
+  uint8_t puser, pgroup, pothers;
+  if(data[3].find("mod=") != std::string::npos)
+  {
+    data[3].erase(data[3].begin(), data[3].begin()+4);
+    puser = atoi(data[3].substr(0,1).c_str());
+    data[3].erase(data[3].begin(), data[3].begin()+2);
+    pgroup = atoi(data[3].substr(0,1).c_str());
+    data[3].erase(data[3].begin(), data[3].begin()+2);
+    pothers = atoi(data[3].substr(0,1).c_str());
+  }
   if(isDir)
   {
-    for(uint32_t i=3; i<data.size(); i++)
+    for(uint32_t i=4; i<data.size(); i++)
     {
       std::string a = data[i].substr(0, data[i].find("\t"));
-      data[i].erase(0, data[i].find("\t"));
+      data[i].erase(0, data[i].find("\t")+1);
       std::string b = data[i];
       if(a != "")
       {
@@ -1340,20 +1381,20 @@ void sop::files::Filesystem::readInode(uint32_t addr,  std::vector<std::string> 
   }
   else
   {
-    data[3].erase(data[3].find("direct="), 7);
-    while(data[3].size())
-    {
-      direct.push_back(atoi(data[3].substr(0, data[3].find(",")).c_str()));
-      data[3].erase(0, data[3].find(",")+1);
-    }
-    data[4].erase(data[4].find("indirect="), 9);
+    data[4].erase(data[4].find("direct="), 7);
     while(data[4].size())
     {
-      indirect.push_back(atoi(data[4].substr(0, data[4].find(",")).c_str()));
+      direct.push_back(atoi(data[4].substr(0, data[4].find(",")).c_str()));
       data[4].erase(0, data[4].find(",")+1);
     }
-    data[5].erase(data[5].find("size="), 5);
-    size = atoi(data[5].c_str());
+    data[5].erase(data[5].find("indirect="), 9);
+    while(data[5].size())
+    {
+      indirect.push_back(atoi(data[4].substr(0, data[5].find(",")).c_str()));
+      data[5].erase(0, data[5].find(",")+1);
+    }
+    data[6].erase(data[6].find("size="), 5);
+    size = atoi(data[6].c_str());
   }
 
   //save
@@ -1400,37 +1441,48 @@ void sop::files::Filesystem::readData(uint32_t addr, std::string data)
 
 void sop::files::Filesystem::formatHandler(const std::vector<const std::string> & params)
 {
-  if(params.size() > 1)
+  if(params.size() == 1)
   {
-    if(params[1] == "--yes")
+    sop::users::PermissionsManager pm;
+    if(pm.isSuperUser(0))//permission check (root) ToDo current PID
     {
-      this->serialize->read();
-      this->logger->logFiles(5, "Formating filesystem");
-      this->logger->logFiles(4, "Setting free spaces and presetting structures");
-      this->freeSpace.clear();
-      for(uint32_t i=0; i < sop::files::ConstEV::numOfBlocks; i++)
-      {
-        this->freeSpace.push_back(i);
-        if(this->dataBlocks[i] != 0)
-        {
-          delete this->dataBlocks[i];
-        }
-        this->dataBlocks[i] = 0;
-      }
-      std::sort(this->freeSpace.begin(), this->freeSpace.end());
-      this->dataBlocks[0] = new sop::files::Inode(true, 0,0, this->logger);
-      this->freeSpace.erase(this->freeSpace.begin());
-      this->serialize->save();
-      std::cout<<"Format successful"<<std::endl;
-      this->logger->logFiles(6, "Filesystem format successful");
+      this->format();
     }
     else
     {
-      std::cout<<"format - reset disk to 0 state in format of EXT-like filesystem"<<std::endl;
+      std::cout<<"No permission to format"<<std::endl;
     }
   }
   else
   {
     std::cout<<"format - reset disk to 0 state in format of EXT-like filesystem"<<std::endl;
   }
+}
+
+void sop::files::Filesystem::format()
+{
+  this->serialize->read();
+  this->logger->logFiles(5, "Formating filesystem");
+  this->logger->logFiles(4, "Setting free spaces and presetting structures");
+  this->freeSpace.clear();
+  for(uint32_t i=0; i < sop::files::ConstEV::numOfBlocks; i++)
+  {
+    this->freeSpace.push_back(i);
+    if(this->dataBlocks[i] != 0)
+    {
+      delete this->dataBlocks[i];
+    }
+    this->dataBlocks[i] = 0;
+  }
+  std::sort(this->freeSpace.begin(), this->freeSpace.end());
+  this->dataBlocks[0] = new sop::files::Inode(true, 0,0, this->logger);
+  this->freeSpace.erase(this->freeSpace.begin());
+  this->serialize->save();
+  std::cout<<"Format successful"<<std::endl;
+  this->logger->logFiles(6, "Filesystem format successful");
+}
+
+void sop::files::Filesystem::writeToFileP(sop::files::File* file_ptr, std::string input)
+{
+  file_ptr->writeToFile(input, &this->freeSpace);
 }

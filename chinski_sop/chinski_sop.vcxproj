@@ -19,6 +19,7 @@
     <ClInclude Include="sop\files\filesystem_s.h" />
     <ClInclude Include="sop\files\inode.h" />
     <ClInclude Include="sop\files\serialize.h" />
+    <ClInclude Include="sop\files\temporary.h" />
     <ClInclude Include="sop\initializable.h" />
     <ClInclude Include="sop\exception.h" />
     <ClInclude Include="sop\files\exceptions\module_exception.h" />
