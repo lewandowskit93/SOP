@@ -1,5 +1,8 @@
 #include ".\sop\memory\module.h"
-#include <math.h>
+#include ".\sop\system\kernel.h"
+#include ".\sop\logger\logger.h"
+
+
 
 sop::memory::Module::Module(sop::system::Kernel *kernel):
   sop::system::Module(kernel),physical_drive(4096,32),swap_drive(4096,32)//stworzenie pamiêci fizycznej i pliku wymiany
@@ -19,7 +22,8 @@ std::string sop::memory::Module::getClassName() const
 
 void sop::memory::Module::initialize()
 {
-  
+  _kernel->getLogger()->logMemory(sop::logger::Logger::Level::INFO,"it work");
+ 
 }
 
 uint8_t sop::memory::Module::calculatePages(uint16_t program_size)

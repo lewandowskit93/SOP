@@ -2,10 +2,13 @@
 #define _SOP_MEMORY_MODULE_H_
 
 #include <string>
+#include <math.h>
+#include <iostream>
 #include ".\sop\system\module.h"
 #include ".\sop\memory\logical_memory.h"
 #include ".\sop\memory\physical_memory.h"
 #include ".\sop\memory\swap.h"
+
 
 namespace sop
 {
@@ -21,6 +24,7 @@ namespace sop
         virtual ~Module();
         virtual std::string getClassName() const;
         virtual void initialize();
+
         LogicalMemory allocate(uint16_t program_size,uint16_t pid);//przydzia³ ramek stronom, zwraca wskaznik na tabelê stron
         void deallocate(LogicalMemory* page_table);//zwalnianie pamiêci
         char read(LogicalMemory page_table, uint16_t byte_number);//zczytanie bajtu z pamiêci
@@ -38,3 +42,5 @@ namespace sop
 }
 
 #endif
+
+
