@@ -52,8 +52,11 @@ void sop::users::Module::initialize()
   getKernel()->getShell()->registerCommand("removeniceentry",&Module::cH_removeniceentry,this);
   getKernel()->getShell()->registerCommand("login",&Module::cH_login,this);
   getKernel()->getShell()->registerCommand("whois",&Module::cH_whois,this);
-  getKernel()->getShell()->registerCommand("access",&Module::cH_whois,this);
+  getKernel()->getShell()->registerCommand("access",&Module::cH_access,this);
 
+  getKernel()->getShell()->registerCommand("chmod",&Module::cH_chmod,this);
+  getKernel()->getShell()->registerCommand("chown",&Module::cH_chown,this);
+  getKernel()->getShell()->registerCommand("chgrp",&Module::cH_chgrp,this);
 }
 
 sop::users::UsersManager* sop::users::Module::getUsersManager()
@@ -565,7 +568,7 @@ void sop::users::Module::cH_login(const std::vector<const std::string> & params)
 
 void sop::users::Module::cH_access(const std::vector<const std::string> & params)
 {
-    if(sop::system::Shell::hasParam(params,"-h") || params.size()!=2)
+    if(sop::system::Shell::hasParam(params,"-h") || params.size()!=3)
   {
     std::cout<<"access [-h] filename mode"<<std::endl;
     std::cout<<"Shows if current user has access to file/directory."<<std::endl;
@@ -580,5 +583,69 @@ void sop::users::Module::cH_access(const std::vector<const std::string> & params
   else
   {
     std::cout<<"You dont have permissions to that file."<<std::endl;
+  }
+}
+
+void sop::users::Module::cH_chmod(const std::vector<const std::string> & params)
+{
+    if(sop::system::Shell::hasParam(params,"-h") || params.size()!=5)
+  {
+    std::cout<<"chmod [-h] filename user_mode group_mode others_mode"<<std::endl;
+    std::cout<<"Changes permissions to a file."<<std::endl;
+    return;
+  }
+  fakers::inode *file_inode = fakers::getFile(params[1]);
+  boost::shared_ptr<fakers::pcb> shell_process = fakers::getProcess(0);
+  Permissions permissions;
+  permissions.user=PermissionsUtilities::getFromRWXString(params[2]);
+  permissions.group=PermissionsUtilities::getFromRWXString(params[3]);
+  permissions.others=PermissionsUtilities::getFromRWXString(params[4]);
+  if(_permissions_manager.changePermissions(file_inode,shell_process,permissions))
+  {
+    std::cout<<"Mods changed."<<std::endl;
+  }
+  else
+  {
+    std::cout<<"Mods not changed."<<std::endl;
+  }
+}
+
+void sop::users::Module::cH_chown(const std::vector<const std::string> & params)
+{
+    if(sop::system::Shell::hasParam(params,"-h") || params.size()!=3)
+  {
+    std::cout<<"chown [-h] filename uid"<<std::endl;
+    std::cout<<"Changes file owner."<<std::endl;
+    return;
+  }
+  fakers::inode *file_inode = fakers::getFile(params[1]);
+  boost::shared_ptr<fakers::pcb> shell_process = fakers::getProcess(0);
+  if(_permissions_manager.changeOwner(file_inode,shell_process,StringConverter::convertStringTo<uid_t>(params[2])))
+  {
+    std::cout<<"Owner changed."<<std::endl;
+  }
+  else
+  {
+    std::cout<<"Owner not changed."<<std::endl;
+  }
+}
+
+void sop::users::Module::cH_chgrp(const std::vector<const std::string> & params)
+{
+    if(sop::system::Shell::hasParam(params,"-h") || params.size()!=3)
+  {
+    std::cout<<"chgrp [-h] filename gid"<<std::endl;
+    std::cout<<"Changes filename group owner."<<std::endl;
+    return;
+  }
+  fakers::inode *file_inode = fakers::getFile(params[1]);
+  boost::shared_ptr<fakers::pcb> shell_process = fakers::getProcess(0);
+  if(_permissions_manager.changeGroup(file_inode,shell_process,StringConverter::convertStringTo<gid_t>(params[2])))
+  {
+    std::cout<<"Group changed."<<std::endl;
+  }
+  else
+  {
+    std::cout<<"Group not changed."<<std::endl;
   }
 }

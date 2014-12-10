@@ -53,6 +53,11 @@ namespace sop
         
         void cH_access(const std::vector<const std::string> & params);
 
+
+        void cH_chmod(const std::vector<const std::string> & params);
+        void cH_chown(const std::vector<const std::string> & params);
+        void cH_chgrp(const std::vector<const std::string> & params);
+
       protected:
 
       private:
