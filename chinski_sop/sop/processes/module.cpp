@@ -7,7 +7,7 @@
 sop::processes::Module::Module(sop::system::Kernel *kernel):
   sop::system::Module(kernel)
 {
-
+  
 }
 
 sop::processes::Module::~Module()
@@ -28,6 +28,7 @@ void sop::processes::Module::initialize()
   _kernel->getShell()->registerCommand("fork",&sop::processes::Module::cH_fork,this); //zarejestrowanie komendy fork
   _kernel->getShell()->registerCommand("exec",&sop::processes::Module::cH_exec,this); //zarejestrowanie komendy exec
   sop::processes::Module::CreateShellInit();
+  fillQueue();
 }
 //polecenie shelllowskie wypisujace na ekran informacje o procesie
 void sop::processes::Module::cH_showprocess(const std::vector<const std::string> & params)
