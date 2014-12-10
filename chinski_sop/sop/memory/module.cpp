@@ -5,7 +5,7 @@
 
 
 sop::memory::Module::Module(sop::system::Kernel *kernel):
-  sop::system::Module(kernel),physical_drive(4096,32),swap_drive(4096,32)//stworzenie pamiêci fizycznej i pliku wymiany
+  sop::system::Module(kernel),physical_drive(4096,32),swap_drive(4096,32)//stworzenie pamiêci fizycznej i pliku wymiany o rozmiarze ca³kowitym, rozmairze 1 ramki
 {
 
 }

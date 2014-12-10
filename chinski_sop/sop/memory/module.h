@@ -28,7 +28,7 @@ namespace sop
         LogicalMemory allocate(uint16_t program_size,uint16_t pid);//przydzia³ ramek stronom, zwraca wskaznik na tabelê stron
         void deallocate(LogicalMemory* page_table);//zwalnianie pamiêci
         char read(LogicalMemory page_table, uint16_t byte_number);//zczytanie bajtu z pamiêci
-        void write(LogicalMemory page_table, std::string code);
+        void write(LogicalMemory page_table, std::string code);//wpisanie do pamieci ca³ego kodu w postaci stringa
 
       protected:
 

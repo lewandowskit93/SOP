@@ -37,7 +37,7 @@ public:
   void popFrontListOfFreeFrames();//usuwa ramke bedaca z przodu listy wolnych ramek
   void pushEndListOfFreeFrames(uint16_t frame_nr);//wstawia na koniec listy nr wolnej ramki
   void FindAndEraseFromDeque(uint16_t frame_nr);//usuniêcie ramki z kolejki ramek
-  void write(char data_block[32] ,LogicalMemory page_table,uint8_t page_nr);
+  
 protected:
   
 private:
