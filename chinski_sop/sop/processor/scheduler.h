@@ -16,6 +16,7 @@ namespace sop
     public:
       sop::process::Process *getHighestPriorityProcess(); // takes the highest priority process to execute
       static void addProcess(sop::process::Process *p, sop::processor::Scheduler *sched);
+      static void removeProcess(sop::process::Process *p, sop::processor::Scheduler *sched);
       uint8_t getUserPriority(sop::process::Process *p); // from Tomeks layer i'll load nice parameter
       void calculatePriority(); // will calculate priorities for all tasks in both vectors
       void addToUnactiveTaskArray(sop::process::Process *p); // adding to unactive task array

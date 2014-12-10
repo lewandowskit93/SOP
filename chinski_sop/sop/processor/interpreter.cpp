@@ -3,6 +3,7 @@
 char sop::interpreter::InterpreterHandler::getByteFromMemory(sop::process::Process *p)
 {
   //char x = sop::memory::.. pobranie byte'u danych od Fiszera  
+  //char x = sop::memory::LogicalMemory::read(
   //return x;
   return '0';
 }
@@ -14,7 +15,7 @@ std::string sop::interpreter::InterpreterHandler::interpretLine(sop::process::Pr
   pickCommandPart(_program_line);
   if (_program_line.size() > 3)
     pickDataPart(_program_line);
-  p->procek.ip += _program_line.size();
+  p->procek.ip += _program_line.size()+1;
   if (_command_part == "ADD")
   {
     char src = _data_part[0];
@@ -25,7 +26,7 @@ std::string sop::interpreter::InterpreterHandler::interpretLine(sop::process::Pr
   {
     char reg = _data_part[0];
     std::string s_value = _data_part.substr(2);
-    uint16_t value = sop::StringConverter::convertStringTo<uint16_t>(s_value);
+    uint16_t value = sop::StringConverter::convertStringToHex<uint16_t>(s_value);
     sop::processor::ProcessorHandler::registerIncrementByValue(&p->procek,reg,value);
   }
   else if (_command_part == "SUB")
@@ -38,7 +39,7 @@ std::string sop::interpreter::InterpreterHandler::interpretLine(sop::process::Pr
   {
     char reg = _data_part[0];
     std::string s_value = _data_part.substr(2);
-    uint16_t value = sop::StringConverter::convertStringTo<uint16_t>(s_value);
+    uint16_t value = sop::StringConverter::convertStringToHex<uint16_t>(s_value);
     sop::processor::ProcessorHandler::registerDecrementByValue(&p->procek,reg,value);   
     
   }
@@ -68,33 +69,38 @@ std::string sop::interpreter::InterpreterHandler::interpretLine(sop::process::Pr
   }
   else if (_command_part == "OR")
   {
-
+    char first = _data_part[0];
+    char second = _data_part[2];
+    sop::processor::ProcessorHandler::bitwiseOR(&p->procek,first,second);  
   }
   else if (_command_part == "AND")
   {
-
+    char first = _data_part[0];
+    char second = _data_part[2];
+    sop::processor::ProcessorHandler::bitwiseAND(&p->procek,first,second); 
   }
   else if (_command_part == "XOR")
   {
-
+    /////////// narazie nie
   }
   else if (_command_part == "NEG")
   {
-
+    char first = _data_part[0];
+    sop::processor::ProcessorHandler::bitNEG(&p->procek,first); 
   }
   else if (_command_part == "SHR")
   {
-
+    /////////// narazie nie
   }
   else if (_command_part == "SHL")
   {
-
+    /////////// narazie nie
   }
   else if (_command_part == "MOV")
   {
     char reg = _data_part[0];
     std::string s_value = _data_part.substr(2);
-    uint16_t value = sop::StringConverter::convertStringTo<uint16_t>(s_value);
+    uint16_t value = sop::StringConverter::convertStringToHex<uint16_t>(s_value);
     sop::processor::ProcessorHandler::setRegisterField(&p->procek,reg,value);
   }
   else if (_command_part == "MOR")
@@ -110,7 +116,7 @@ std::string sop::interpreter::InterpreterHandler::interpretLine(sop::process::Pr
   }
   else if (_command_part == "PUSF")
   {
-
+    //////////narazie nie
   }
   else if (_command_part == "POP")
   {
@@ -119,53 +125,99 @@ std::string sop::interpreter::InterpreterHandler::interpretLine(sop::process::Pr
   }
   else if (_command_part == "POF")
   {
-
+    ////narazie nie
+  }
+  else if (_command_part == "MOM")
+  {
+    //MOM rejestr, offset - zapisuje zawartoœæ pamiêci spod adresu offset do rejestru rejestr
+    //funkcja fiszerowa
+  }
+  else if (_command_part == "CPY")
+  {
+    //CPY offset, rejestr - kopiuje zawartoœæ rejestru rejestr do pamiêci pod adres offset 
+    //funkcja fiszerowa
   }
   else if (_command_part == "EXT")
   {
-    return "EXT";
+    return "EXT"; // dodaæ wartoœæ z jak¹ siê program zakonczyl 
+    //pobraæ wartosc zakocnzenie programu od Michala
   }
   else if (_command_part == "CAL")
   {
-
+    //////narazie nie
   }
   else if (_command_part == "RET")
   {
-
+    //////narazie nie
   }
   else if (_command_part == "JMP")
   {
-
+    std::string s_value = _data_part.substr(0);
+    sop::processor::ProcessorHandler::doJMP(&p->procek,sop::StringConverter::convertStringToHex<uint16_t>(s_value));
   }
   else if (_command_part == "JIZ")
   {
-
+    std::string s_value = _data_part.substr(0);
+    sop::processor::ProcessorHandler::doJIZ(&p->procek,sop::StringConverter::convertStringToHex<uint16_t>(s_value));
   }
   else if (_command_part == "JNZ")
   {
-
+    std::string s_value = _data_part.substr(0);
+    sop::processor::ProcessorHandler::doJNZ(&p->procek,sop::StringConverter::convertStringToHex<uint16_t>(s_value));
   }
+  else if (_command_part == "JIA")
+  {
+    std::string s_value = _data_part.substr(0);
+    sop::processor::ProcessorHandler::doJIA(&p->procek,sop::StringConverter::convertStringToHex<uint16_t>(s_value));
+  }
+  else if (_command_part == "JAE")
+  {
+    std::string s_value = _data_part.substr(0);
+    sop::processor::ProcessorHandler::doJAE(&p->procek,sop::StringConverter::convertStringToHex<uint16_t>(s_value));
+  }
+  else if (_command_part == "JIB")
+  {
+    std::string s_value = _data_part.substr(0);
+    sop::processor::ProcessorHandler::doJIB(&p->procek,sop::StringConverter::convertStringToHex<uint16_t>(s_value));
+  }
+  
+  else if (_command_part == "JBE")
+  {
+    std::string s_value = _data_part.substr(0);
+    sop::processor::ProcessorHandler::doJNZ(&p->procek,sop::StringConverter::convertStringToHex<uint16_t>(s_value));
+  }
+
   else if (_command_part == "REB")
   {
-
+    sop::processor::ProcessorHandler::readOneByteFromInputAndSavesItOnYoungestByte(&p->procek);
   }
   else if (_command_part == "WRB")
   {
-
+    sop::processor::ProcessorHandler::printsOutYoungestByte(&p->procek);
   }
   else if (_command_part == "WRC")
   {
-
+    sop::processor::ProcessorHandler::printsOutYoungestByteAsASCII(&p->procek);
   }
   else if (_command_part == "WRI")
   {
-
+    sop::processor::ProcessorHandler::printsOutRegisterWithSign(&p->procek);
   }
   else if (_command_part == "WRU")
   {
-
+    sop::processor::ProcessorHandler::printsOutRegisterWithoutSign(&p->procek);
   }
-  //etc..
+  //FRK wywolywane od M. Pietrzaka, 0 gdy potomek, PID potomka gdy dziecko
+  //
+
+  //EXC otwiera plik o nazwie zapisanej w pamieci pod adresem pam w rej B
+  //w rejestr C 0- nie udalo sie albo 1  - udalo
+
+
+  //WAT czeka na zakonczenie procesu potomka o PID zap w rej A.
+  //Pietrzak w tym momencie przeszuka ziomka o podanym PID, jezeli go nei znajdzie -> kill him, albo nie bedzie potomkiem -> kill him
+  //w przeciwnim razie czekam az Michal mi go wrzuci spowrotem
+  //na WAT wyrzucam z schedulera tak jak EXT
   _program_line = "";
   return "";
 }
@@ -210,7 +262,7 @@ void sop::interpreter::InterpreterHandler::buildProgramLine(sop::process::Proces
     //getChar = getByteFromMemory(..)
     //program_line+ = getChar;
   }
-  _program_line = "ADD A,B";
+  _program_line = "REB";
 }
   
 void sop::interpreter::InterpreterHandler::interpreterReset()

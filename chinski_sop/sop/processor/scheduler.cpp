@@ -18,6 +18,11 @@ void sop::processor::Scheduler::addProcess(sop::process::Process *p, sop::proces
   sched->addToActiveTaskArray(p);
 }
 
+void sop::processor::Scheduler::removeProcess(sop::process::Process *p, sop::processor::Scheduler *sched)
+{
+
+}
+
 sop::process::Process *sop::processor::Scheduler::getHighestPriorityProcess()
 {
   if (firstIsActive())

@@ -5,18 +5,19 @@
 #include <iostream>
 sop::processor::ExecutiveUnit::ExecutiveUnit(sop::logger::Logger* logger):
   logger(logger),
-  _standardQuantTime(3)
+  _standardQuantTime(1)
   {
     this->logger->logProcessor(3,"Initializing processing unit.");
     this->logger->logProcessor(3,"Looking for errors...");
     resetQuantTime();
     this->logger->logProcessor(3,"Initialization done.");
+    testerMethod();
   }
 
 void sop::processor::ExecutiveUnit::testerMethod()
 {
   sop::process::Process *test = new sop::process::Process();
-  test->procek.b = 2;
+  test->procek.a = 65535;
   scheduler.addToActiveTaskArray(test);
 }
 
