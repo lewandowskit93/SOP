@@ -17,10 +17,20 @@ namespace sop
   {
 
     class Module;
+    class Encryptor;
+
+    namespace fakers
+    {
+      struct pcb;
+      struct inode;
+    }
 
     class UsersManager : public Object
     {
       public:
+        static const boost::regex username_regex;
+        static const boost::regex password_regex;
+
         explicit UsersManager(Module *module);
         virtual ~UsersManager();
         virtual std::string getClassName() const;
@@ -36,11 +46,15 @@ namespace sop
         void loadUsersFromFile(const std::string & filename);
         void saveUsersToFile(const std::string & filename);
         static bool isUsernameValid(const std::string & username);
-        static const boost::regex username_regex;
+        static bool checkPasswordFormat(const std::string & password);
+        bool isPasswordValid(boost::shared_ptr<User> user, const std::string & password);
+        boost::shared_ptr<Encryptor> getEncryptor();
+        bool login(boost::shared_ptr<fakers::pcb> process, const std::string & username, const std::string & password);
 
       protected:
 
         Module *_module;
+        boost::shared_ptr<Encryptor> _encryptor;
         std::list<boost::shared_ptr<User>> _users_list;
       private:
         

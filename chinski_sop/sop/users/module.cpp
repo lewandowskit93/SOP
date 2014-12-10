@@ -6,6 +6,7 @@
 #include ".\sop\system\shell.h"
 #include ".\sop\string_converter.h"
 #include ".\sop\users\fakers.h"
+#include ".\sop\users\encryptors.h"
 
 sop::users::Module::Module(sop::system::Kernel *kernel):
   sop::system::Module(kernel),
@@ -49,6 +50,8 @@ void sop::users::Module::initialize()
   getKernel()->getShell()->registerCommand("nice",&Module::cH_nice,this);
   getKernel()->getShell()->registerCommand("shownice",&Module::cH_shownice,this);
   getKernel()->getShell()->registerCommand("removeniceentry",&Module::cH_removeniceentry,this);
+  getKernel()->getShell()->registerCommand("login",&Module::cH_login,this);
+  getKernel()->getShell()->registerCommand("whois",&Module::cH_whois,this);
 }
 
 sop::users::UsersManager* sop::users::Module::getUsersManager()
@@ -110,8 +113,13 @@ void sop::users::Module::cH_useradd(const std::vector<const std::string> & param
 
     if(sop::system::Shell::hasParam(params, "-p"))
     {
-      // ToDo: encrypt password
       user.password = sop::system::Shell::getParamValue(params,"-p");
+      if(!sop::users::UsersManager::checkPasswordFormat(user.password))
+      {
+        std::cout<<"Invalid password format."<<std::endl;
+        return;
+      }
+      user.password = _users_manager.getEncryptor()->encrypt(user.password);
     }
     
     if(sop::system::Shell::hasParam(params,"-c"))
@@ -173,8 +181,8 @@ void sop::users::Module::cH_userfind(const std::vector<const std::string> & para
 
   if(user)
   {
-    std::cout<<"UID\t|LOGIN\t|GID\t|INFO\t|HOME DIR\t|PASSWORD PROTECTION"<<std::endl;
-    std::cout<<user->uid<<"\t|"<<user->username<<"\t|"<<user->gid<<"\t|"<<user->info<<"\t|"<<user->home_dir<<"\t|"<<(user->password==""? "N":"Y")<<std::endl;
+    std::cout<<"UID\t|LOGIN\t|GID\t|INFO\t|HOME DIR\t|ENCRYPTED_PASSWORD"<<std::endl;
+    std::cout<<user->uid<<"\t|"<<user->username<<"\t|"<<user->gid<<"\t|"<<user->info<<"\t|"<<user->home_dir<<"\t|"<<user->password<<std::endl;
   }
   else
   {
@@ -249,16 +257,22 @@ void sop::users::Module::cH_chpasswd(const std::vector<const std::string> & para
     std::string new_pass = "";
     if(sop::system::Shell::hasParam(params, "-o"))
     {
-      old_pass=sop::system::Shell::getParamValue(params, "-o"); // ToDo: encrypt password
+      old_pass=sop::system::Shell::getParamValue(params, "-o");
     }
     if(sop::system::Shell::hasParam(params, "-n"))
     {
-      new_pass=sop::system::Shell::getParamValue(params, "-n"); // ToDo: encrypt password
+      new_pass=sop::system::Shell::getParamValue(params, "-n");
+      if(!sop::users::UsersManager::checkPasswordFormat(new_pass))
+      {
+        std::cout<<"Invalid password format."<<std::endl;
+        return;
+      }
+      new_pass = _users_manager.getEncryptor()->encrypt(new_pass);
     }
 
     if(user)
     {
-      if(user->password==old_pass)user->password=new_pass; // ToDo: save file
+      if(_users_manager.isPasswordValid(user,old_pass))user->password=new_pass; // ToDo: save file
       else std::cout<<"Wrong password."<<std::endl;
     }
     else std::cout<<"Invalid user."<<std::endl;
@@ -499,4 +513,50 @@ void sop::users::Module::cH_removeniceentry(const std::vector<const std::string>
     return;
   }
   _priority_manager.removeGroupPriorityEntry(sop::StringConverter::convertStringTo<gid_t>(params[params.size()-1]));
+}
+
+void sop::users::Module::cH_whois(const std::vector<const std::string> & params)
+{
+  if(params.size()>1)
+  {
+    std::cout<<"whois [-h]"<<std::endl;
+    std::cout<<"Prints username of currently logged user."<<std::endl;
+    return;
+  }
+  boost::shared_ptr<fakers::pcb> shell_process = fakers::getProcess(0);
+  if(!shell_process)
+  {
+    std::cout<<"No shell process?!"<<std::endl;
+    return;
+  }
+  boost::shared_ptr<User> user = _users_manager.findUser(shell_process->uid);
+  if(!user)
+  {
+    std::cout<<"User not found."<<std::endl;
+  }
+  else
+  {
+    std::cout<<user->username<<std::endl;
+  }
+}
+
+void sop::users::Module::cH_login(const std::vector<const std::string> & params)
+{
+  if(sop::system::Shell::hasParam(params,"-h") || (params.size()!=2 && params.size()!=4))
+  {
+    std::cout<<"login [-h] username [-p password]"<<std::endl;
+    std::cout<<"Prints username of currently logged user."<<std::endl;
+    return;
+  }
+  boost::shared_ptr<fakers::pcb> shell_process = fakers::getProcess(0);
+  std::string password="";
+  if(sop::system::Shell::hasParam(params,"-p"))password=sop::system::Shell::getParamValue(params,"-p");
+  if(!_users_manager.login(shell_process,params[1],password))
+  {
+    std::cout<<"Logging  failed"<<std::endl;
+  }
+  else
+  {
+    std::cout<<"Logged on"<<std::endl;
+  }
 }

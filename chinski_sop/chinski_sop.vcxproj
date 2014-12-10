@@ -30,6 +30,7 @@
     <ClInclude Include="sop\system\module.h" />
     <ClInclude Include="sop\system\shell.h" />
     <ClInclude Include="sop\system\kernel.h" />
+    <ClInclude Include="sop\users\encryptors.h" />
     <ClInclude Include="sop\users\exceptions\module_exception.h" />
     <ClInclude Include="sop\users\fakers.h" />
     <ClInclude Include="sop\users\group.h" />
@@ -63,6 +64,7 @@
     <ClCompile Include="sop\system\module.cpp" />
     <ClCompile Include="sop\system\shell.cpp" />
     <ClCompile Include="sop\system\kernel.cpp" />
+    <ClCompile Include="sop\users\encryptors.cpp" />
     <ClCompile Include="sop\users\exceptions\module_exception.cpp" />
     <ClCompile Include="sop\users\fakers.cpp" />
     <ClCompile Include="sop\users\group.cpp" />

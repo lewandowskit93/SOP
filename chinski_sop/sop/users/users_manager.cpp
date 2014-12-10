@@ -5,12 +5,16 @@
 #include ".\sop\system\shell.h"
 #include ".\sop\logger\logger.h"
 #include ".\sop\string_converter.h"
+#include ".\sop\users\encryptors.h"
+#include ".\sop\users\fakers.h"
 
 const boost::regex sop::users::UsersManager::username_regex = boost::regex("^[a-zA-Z][0-9a-zA-Z_]*$");
+const boost::regex sop::users::UsersManager::password_regex = boost::regex("^(([a-zA-Z]([a-zA-Z0-9!@#$%^&*_]){2,}))?$");
 
 sop::users::UsersManager::UsersManager(Module *module):
   sop::Object(),
-  _module(module)  
+  _module(module),
+  _encryptor(boost::shared_ptr<CaesarEncryptor>(new CaesarEncryptor(13))) //ROT13
 {
   _users_list.push_back(nobody);
 }
@@ -95,15 +99,21 @@ bool sop::users::UsersManager::deleteUser(const std::string & username)
 
 boost::shared_ptr<sop::users::User> sop::users::UsersManager::findUser(uid_t uid)
 {
+  _module->getKernel()->getLogger()->logUsers(sop::logger::Logger::Level::INFO,"Looking for user.");
   boost::shared_ptr<User> user_found;
   std::list<boost::shared_ptr<User>>::iterator it;
   for(it=_users_list.begin();it!=_users_list.end();++it)
   {
     if((*it)->uid == uid)
     {
+      _module->getKernel()->getLogger()->logUsers(sop::logger::Logger::Level::FINEST,"User found.");
       user_found=(*it);
       break;
     }
+  }
+  if(!user_found)
+  {
+    _module->getKernel()->getLogger()->logUsers(sop::logger::Logger::Level::FINEST,"User not fount.");
   }
   return user_found;
 }
@@ -246,4 +256,48 @@ std::list<boost::shared_ptr<sop::users::User>> sop::users::UsersManager::getUser
 bool sop::users::UsersManager::isUsernameValid(const std::string & username)
 {
   return boost::regex_match(username,username_regex);
+}
+
+bool sop::users::UsersManager::checkPasswordFormat(const std::string & password)
+{
+  return boost::regex_match(password,password_regex);
+}
+
+bool sop::users::UsersManager::isPasswordValid(boost::shared_ptr<User> user, const std::string & password)
+{
+  _module->getKernel()->getLogger()->logUsers(sop::logger::Logger::Level::INFO,"Validating password.");
+  if(!user){
+    _module->getKernel()->getLogger()->logUsers(sop::logger::Logger::Level::FINE,"Invalid user.");
+    return false;
+  }
+  if(!checkPasswordFormat(password))
+  {
+    _module->getKernel()->getLogger()->logUsers(sop::logger::Logger::Level::FINEST,"Invalid password format.");
+    return false;
+  }
+  std::string enc_password = _encryptor->encrypt(password);
+  return user->password==enc_password;
+}
+
+boost::shared_ptr<sop::users::Encryptor> sop::users::UsersManager::getEncryptor()
+{
+  return _encryptor;
+}
+
+bool sop::users::UsersManager::login(boost::shared_ptr<fakers::pcb> process, const std::string & username, const std::string & password)
+{
+  _module->getKernel()->getLogger()->logUsers(sop::logger::Logger::Level::INFO,"Trying to log.");
+  if(!process){
+    _module->getKernel()->getLogger()->logUsers(sop::logger::Logger::Level::SEVERE,"No shell process?!");
+    return false;
+  }
+  boost::shared_ptr<User> user = findUser(username);
+  if(!isPasswordValid(user,password)){
+    _module->getKernel()->getLogger()->logUsers(sop::logger::Logger::Level::FINE,"Invalid password.");
+    return false;
+  }
+  _module->getKernel()->getLogger()->logUsers(sop::logger::Logger::Level::INFO,"Logged on.");
+  process->uid=user->uid;
+  process->gid=user->gid;
+  return true;
 }

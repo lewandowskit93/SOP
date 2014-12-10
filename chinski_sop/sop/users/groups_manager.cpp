@@ -115,16 +115,19 @@ boost::shared_ptr<sop::users::Group> sop::users::GroupsManager::findGroup(gid_t 
 
 boost::shared_ptr<sop::users::Group> sop::users::GroupsManager::findGroup(const std::string & group_name)
 {
+  _module->getKernel()->getLogger()->logUsers(sop::logger::Logger::Level::INFO,"Looking for group.");
   boost::shared_ptr<Group> group_found;
   std::list<boost::shared_ptr<Group>>::iterator it;
   for(it=_groups_list.begin();it!=_groups_list.end();++it)
   {
     if((*it)->group_name == group_name)
     {
+      _module->getKernel()->getLogger()->logUsers(sop::logger::Logger::Level::FINEST,"Group found.");
       group_found=(*it);
       break;
     }
   }
+  if(!group_found)_module->getKernel()->getLogger()->logUsers(sop::logger::Logger::Level::FINEST,"Group not found.");
   return group_found;
 }
 
