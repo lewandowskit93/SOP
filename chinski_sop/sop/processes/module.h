@@ -22,7 +22,6 @@ namespace sop
         virtual ~Module();
         virtual std::string getClassName() const;
         virtual void initialize();
-
         //polecenie shelllowskie wypisujace na ekran informacje o procesie
         void cH_showprocess(const std::vector<const std::string> & params);
         //polecenie shellowskie zabijajace proces o podanym PID
@@ -47,8 +46,6 @@ namespace sop
         void fork(boost::shared_ptr<sop::process::Process>);
         //funkcja
         void exec();
-        //funkcja przypisujaca nowy PID
-        uint16_t getNewPID(boost::shared_ptr<sop::process::Process>);
         //funkcja wstrzymujaca proces macierzysty
         void wait(boost::shared_ptr<sop::process::Process>, boost::shared_ptr<sop::process::Process>);
         //funkcja zabijajaca proces
@@ -59,6 +56,8 @@ namespace sop
         std::queue <uint16_t> PIDlist;
         //funkcja wype³niaj¹ca kolejke PIDami
         void fillQueue();
+        //funkcja ustawiajaca element zwrocy z kolejki
+        uint16_t getPIDfromList();
 
 
       

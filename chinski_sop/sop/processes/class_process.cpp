@@ -4,7 +4,6 @@
 //public
 
     //construtor
-
 sop::process::Process::Process():
     _PID(0),
     _UID(0),
@@ -14,16 +13,17 @@ sop::process::Process::Process():
     _memoryFlagStatus(0),
     _processorFlagStatus(0),
     _endingFlagStatus(0),
-    _processIsInScheduler(0){}
-
+    _processIsInScheduler(0),
+    _rejestrA(0),
+    _rejestrB(0),
+    _rejestrC(0),
+    _rejestrD(0)
+{}
     //destructor
-
 sop::process::Process::~Process()
 {
 }
-
     //getters from protected
-
 uint16_t sop::process::Process::getPID()
 {
   return this->_PID;
@@ -65,7 +65,6 @@ uint16_t sop::process::Process::getRejestrD()
 }
 
     //getters from private
-
 uint16_t sop::process::Process::getPPID()
 {
   return this->_PPID;
@@ -102,7 +101,6 @@ uint16_t sop::process::Process::getIsTrueProcess()
 }
 
 //setters from protected
-
 void sop::process::Process::setPID(uint16_t PID)
 {
   this->_PID = PID;
@@ -144,7 +142,6 @@ void sop::process::Process::setRejestrD(uint16_t D)
 }
 
 //set enums from private
-
 uint16_t sop::process::Process::setStatusNew() //ustawia status na nowy
 {
   TASK_STATUS status;
@@ -174,7 +171,6 @@ uint16_t sop::process::Process::setStatusExecuted() //ustawia status na wykonany
 }
 
     //setters from private
-
 void sop::process::Process::setPPID(uint16_t PPID)
 {
   this->_PPID = PPID;
