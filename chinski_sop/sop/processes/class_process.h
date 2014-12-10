@@ -70,7 +70,7 @@ namespace sop
       int8_t _exitCode;
       //sop::process::Processor Procesor; //Zmienna dla Krzycha
       //uint16_t _stack_counter;
-      uint16_t _array_pages; //typ na luzno wrzucony nie sugerowac sie
+      sop::memory::LogicalMemory _array_pages; //typ na luzno wrzucony nie sugerowac sie
 
     private:
       //variables

@@ -45,7 +45,7 @@ namespace sop
         //funkcja tworzaca nowego potomka
         void fork(boost::shared_ptr<sop::process::Process>);
         //funkcja
-        void exec();
+        void exec(FILENAME, boost::shared_ptr<sop::process::Process>);
         //funkcja wstrzymujaca proces macierzysty
         void wait(boost::shared_ptr<sop::process::Process>, boost::shared_ptr<sop::process::Process>);
         //funkcja zabijajaca proces
@@ -56,7 +56,7 @@ namespace sop
         std::queue <uint16_t> PIDlist;
         //funkcja wype³niaj¹ca kolejke PIDami
         void fillQueue();
-        //funkcja ustawiajaca element zwrocy z kolejki
+        //funkcja ustawiajaca element pierwszy z kolejki
         uint16_t getPIDfromList();
 
 
