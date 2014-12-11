@@ -102,6 +102,7 @@ void sop::memory::Module::deallocate(sop::memory::LogicalMemory* page_table)
 
 char sop::memory::Module::read(LogicalMemory page_table, uint16_t byte_number)
 {
+  //czy swap czy physical
   uint8_t page_nr=byte_number/physical_drive.getFrameSize();//obliczenie ktora strona jest podaba przez byte
   uint16_t reference=page_table.getFrameNr(byte_number)*physical_drive.getFrameSize();//ustawienie która komórkê zczytaæ
   char byte= physical_drive.getStorage()[reference];
@@ -120,15 +121,12 @@ void sop::memory::Module::write(LogicalMemory page_table, std::string code)
   
   for(int i=0;i<code.size();++i)
   {
-    reference =page_table.getFrameNr(i/physical_drive.getFrameSize());
-    physical_drive.getStorage()[];
+    reference =page_table.getFrameNr(i/physical_drive.getFrameSize());//zwraca na której stronie aktualnie operujemy
+    reference=reference*physical_drive.getFrameSize();//adres pocz¹tkowy komórki w tablicy fizycznej
+    physical_drive.getStorage()[reference+i]=code.at(i);//wpisanie do pamiêci
   }
   
-   // for(uint8_t j=0;j<physical_drive.getFrameSize(),j<code.size();++j)
-  //  {
-  //    physical_drive.getStorage()[page_table.getFrameNr(i/physical_drive.getFrameSize())*physical_drive.getFrameSize()+j]=code.at(j);
-  //  }
-  
+    
   for(int i=0;i<page_table.getPageTableSize();++i)
   {
     page_table.setBitBalidInvalid(i,1);
@@ -252,8 +250,9 @@ void sop::memory::Module::cH_readFrame(const std::vector<const std::string> & pa
     return; // wyjdzie z tej funkcji, ¿eby nie trzeba by³o robiæ else
   }
   std::string txt="";
+  
   int16_t reference =(sop::StringConverter::convertStringTo<uint16_t>(params[1]) * this->physical_drive.getFrameSize());
-  for(int i =0;i<this->physical_drive.getFrameSize();++i)
+  for(int i =reference;i<(reference+ this->physical_drive.getFrameSize());++i)
   {
     txt=txt.append(sop::StringConverter::convertToString(this->physical_drive.getStorage()[reference+i]));
   }
