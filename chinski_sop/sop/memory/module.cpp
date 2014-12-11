@@ -32,7 +32,8 @@ void sop::memory::Module::initialize()
   _kernel->getShell()->registerCommand("allocate",&sop::memory::Module::cH_allocate,this);
   _kernel->getShell()->registerCommand("lsFrames",&sop::memory::Module::cH_showFrames,this);
   _kernel->getShell()->registerCommand("lsFramesSwap",&sop::memory::Module::cH_showFramesSwap,this);
-
+  _kernel->getShell()->registerCommand("writeToMemory",&sop::memory::Module::cH_writeToMemory,this);
+   _kernel->getShell()->registerCommand("readFrame",&sop::memory::Module::cH_readFrame,this);
 }
 
 uint8_t sop::memory::Module::calculatePages(uint16_t program_size)
@@ -113,20 +114,28 @@ void sop::memory::Module::write(LogicalMemory page_table, std::string code)
   //if(code.empty()==true)
   //error
   //return
-  for(uint16_t i=0;i<code.length();++i)
+
+
+  uint16_t reference;
+  
+  for(int i=0;i<code.size();++i)
   {
-    for(uint8_t j=0;j<physical_drive.getFrameSize();++j)
-    {
-      physical_drive.getStorage()[page_table.getFrameNr(i/physical_drive.getFrameSize())*physical_drive.getFrameSize()+j]=code.at(i);
-    }
+    reference =page_table.getFrameNr(i/physical_drive.getFrameSize());
+    physical_drive.getStorage()[];
   }
+  
+   // for(uint8_t j=0;j<physical_drive.getFrameSize(),j<code.size();++j)
+  //  {
+  //    physical_drive.getStorage()[page_table.getFrameNr(i/physical_drive.getFrameSize())*physical_drive.getFrameSize()+j]=code.at(j);
+  //  }
+  
   for(int i=0;i<page_table.getPageTableSize();++i)
   {
     page_table.setBitBalidInvalid(i,1);
   }
   _kernel->getLogger()->logMemory(sop::logger::Logger::Level::INFO,"Program has been loaded to memory");
 
-  //bit valid na 1
+ 
 }
 
 //kody komend
@@ -216,5 +225,38 @@ void sop::memory::Module::cH_showFramesSwap(const std::vector<const std::string>
   std::cout<<std::endl;
 }
 
+void sop::memory::Module::cH_writeToMemory(const std::vector<const std::string> & params)
+{
+  if(sop::system::Shell::hasParam(params,"-h" )|| params.size()!=3)
+  {
+     std::cout<<"readFrame [-h] string PID"<<std::endl;
+    std::cout<<"Write string of PID to memory"<<std::endl;
+    return; // wyjdzie z tej funkcji, ¿eby nie trzeba by³o robiæ else
+    
+  }
+  LogicalMemory tabelka_stron=allocate(params[1].size(),sop::StringConverter::convertStringTo<uint16_t>(params[2]));
+  write(tabelka_stron,params[1]);
+   for(int i=0;i<tabelka_stron.getPageTableSize();++i)
+  {
+    std::cout<<"Page: "+sop::StringConverter::convertToString<uint16_t>(i)+" assigned to frame: "+sop::StringConverter::convertToString<uint16_t>(tabelka_stron.getPage(i)->frame_number) +" bit valid: "+sop::StringConverter::convertToString<uint16_t>(tabelka_stron.getPage(i)->valid_invalid);
+    std::cout<<std::endl;
+  }
+  }
 
+void sop::memory::Module::cH_readFrame(const std::vector<const std::string> & params)
+{
+  if(sop::system::Shell::hasParam(params,"-h" )|| params.size()!=2)
+  {
+    std::cout<<"writeToMemory [-h] frame_nr"<<std::endl;
+    std::cout<<"Read specified frame from physical memory"<<std::endl;
+    return; // wyjdzie z tej funkcji, ¿eby nie trzeba by³o robiæ else
+  }
+  std::string txt="";
+  int16_t reference =(sop::StringConverter::convertStringTo<uint16_t>(params[1]) * this->physical_drive.getFrameSize());
+  for(int i =0;i<this->physical_drive.getFrameSize();++i)
+  {
+    txt=txt.append(sop::StringConverter::convertToString(this->physical_drive.getStorage()[reference+i]));
+  }
+  std::cout<<std::endl<<"Frame: "<<sop::StringConverter::convertToString(params[1])<<" contain: "<<std::endl<<txt<<std::endl;
+}
 

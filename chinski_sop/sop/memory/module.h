@@ -42,6 +42,8 @@ namespace sop
       void cH_allocate(const std::vector<const std::string> & params); //definicja polecenia do shella odpowidzialnej za przydzielenie pamiêci
       void cH_showFrames(const std::vector<const std::string> & params);
       void cH_showFramesSwap(const std::vector<const std::string> & params);
+      void cH_writeToMemory(const std::vector<const std::string> & params);
+      void cH_readFrame(const std::vector<const std::string> & params);
     };
   }
 }
