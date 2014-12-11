@@ -33,7 +33,8 @@ void sop::memory::Module::initialize()
   _kernel->getShell()->registerCommand("lsFrames",&sop::memory::Module::cH_showFrames,this);
   _kernel->getShell()->registerCommand("lsFramesSwap",&sop::memory::Module::cH_showFramesSwap,this);
   _kernel->getShell()->registerCommand("writeToMemory",&sop::memory::Module::cH_writeToMemory,this);
-   _kernel->getShell()->registerCommand("readFrame",&sop::memory::Module::cH_readFrame,this);
+  _kernel->getShell()->registerCommand("readFrame",&sop::memory::Module::cH_readFrame,this);
+  _kernel->getShell()->registerCommand("readByte",&sop::memory::Module::cH_readByte,this);
 }
 
 uint8_t sop::memory::Module::calculatePages(uint16_t program_size)
@@ -104,8 +105,8 @@ char sop::memory::Module::read(LogicalMemory page_table, uint16_t byte_number)
 {
   //czy swap czy physical
   uint8_t page_nr=byte_number/physical_drive.getFrameSize();//obliczenie ktora strona jest podaba przez byte
-  uint16_t reference=page_table.getFrameNr(byte_number)*physical_drive.getFrameSize();//ustawienie która komórkê zczytaæ
-  char byte= physical_drive.getStorage()[reference];
+  uint16_t reference=page_table.getFrameNr(page_nr)*physical_drive.getFrameSize();//ustawienie która komórkê zczytaæ
+  char byte= physical_drive.getStorage()[reference+byte_number];
 
   return byte;
 }
@@ -257,5 +258,24 @@ void sop::memory::Module::cH_readFrame(const std::vector<const std::string> & pa
     txt=txt.append(sop::StringConverter::convertToString(this->physical_drive.getStorage()[reference+i]));
   }
   std::cout<<std::endl<<"Frame: "<<sop::StringConverter::convertToString(params[1])<<" contain: "<<std::endl<<txt<<std::endl;
+}
+
+void sop::memory::Module::cH_readByte(const std::vector<const std::string> & params)
+{
+  if(sop::system::Shell::hasParam(params,"-h" )|| params.size()!=4)
+  {
+    std::cout<<"readByte [-h] string PID offset"<<std::endl;
+    std::cout<<"Read specified byte, based on program offset, string is program code"<<std::endl;
+    return; // wyjdzie z tej funkcji, ¿eby nie trzeba by³o robiæ else
+  }
+  LogicalMemory tabelka_stron=allocate(params[1].size(),sop::StringConverter::convertStringTo<uint16_t>(params[2]));
+  write(tabelka_stron,params[1]);
+   for(int i=0;i<tabelka_stron.getPageTableSize();++i)
+  {
+    std::cout<<"Page: "+sop::StringConverter::convertToString<uint16_t>(i)+" assigned to frame: "+sop::StringConverter::convertToString<uint16_t>(tabelka_stron.getPage(i)->frame_number) +" bit valid: "+sop::StringConverter::convertToString<uint16_t>(tabelka_stron.getPage(i)->valid_invalid);
+    std::cout<<std::endl;
+  }
+
+   std::cout<<"Byte: "<<sop::StringConverter::convertToString(params[3])<<" is "<< sop::StringConverter::convertToString(read(tabelka_stron,sop::StringConverter::convertStringTo<uint16_t>(params[3])))<<std::endl;
 }
 

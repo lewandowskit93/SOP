@@ -44,6 +44,7 @@ namespace sop
       void cH_showFramesSwap(const std::vector<const std::string> & params);
       void cH_writeToMemory(const std::vector<const std::string> & params);
       void cH_readFrame(const std::vector<const std::string> & params);
+      void cH_readByte(const std::vector<const std::string> & params);
     };
   }
 }
