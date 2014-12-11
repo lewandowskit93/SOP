@@ -34,6 +34,7 @@ void sop::memory::Module::initialize()
   _kernel->getShell()->registerCommand("lsFramesSwap",&sop::memory::Module::cH_showFramesSwap,this);
   _kernel->getShell()->registerCommand("writeToMemory",&sop::memory::Module::cH_writeToMemory,this);
   _kernel->getShell()->registerCommand("readFrame",&sop::memory::Module::cH_readFrame,this);
+  _kernel->getShell()->registerCommand("readFrameSwap",&sop::memory::Module::cH_readFrameSwap,this);
   _kernel->getShell()->registerCommand("readByte",&sop::memory::Module::cH_readByte,this);
 }
 
@@ -103,11 +104,20 @@ void sop::memory::Module::deallocate(sop::memory::LogicalMemory* page_table)
 
 char sop::memory::Module::read(LogicalMemory page_table, uint16_t byte_number)
 {
-  //czy swap czy physical
+
+  char byte;
+  if(page_table.getBitValidInvalid(byte_number/physical_drive.getFrameSize())==1)  //czy swap czy physical
+  {
   uint8_t page_nr=byte_number/physical_drive.getFrameSize();//obliczenie ktora strona jest podaba przez byte
   uint16_t reference=page_table.getFrameNr(page_nr)*physical_drive.getFrameSize();//ustawienie która komórkê zczytaæ
-  char byte= physical_drive.getStorage()[reference+byte_number];
-
+  byte= physical_drive.getStorage()[reference+byte_number];
+  }
+  if(page_table.getBitValidInvalid(byte_number/swap_drive.getSwapFrameSize())==0)
+  {
+  uint8_t page_nr=byte_number/swap_drive.getSwapFrameSize();//obliczenie ktora strona jest podaba przez byte
+  uint16_t reference=page_table.getFrameNr(page_nr)*swap_drive.getSwapFrameSize();//ustawienie która komórkê zczytaæ
+  byte= swap_drive.getSwap()[reference+byte_number];
+  }
   return byte;
 }
 
@@ -256,6 +266,24 @@ void sop::memory::Module::cH_readFrame(const std::vector<const std::string> & pa
   for(int i =reference;i<(reference+ this->physical_drive.getFrameSize());++i)
   {
     txt=txt.append(sop::StringConverter::convertToString(this->physical_drive.getStorage()[reference+i]));
+  }
+  std::cout<<std::endl<<"Frame: "<<sop::StringConverter::convertToString(params[1])<<" contain: "<<std::endl<<txt<<std::endl;
+}
+
+void sop::memory::Module::cH_readFrameSwap(const std::vector<const std::string> & params)
+{
+  if(sop::system::Shell::hasParam(params,"-h" )|| params.size()!=2)
+  {
+    std::cout<<"writeToMemory [-h] frame_nr"<<std::endl;
+    std::cout<<"Read specified frame from swap file"<<std::endl;
+    return; // wyjdzie z tej funkcji, ¿eby nie trzeba by³o robiæ else
+  }
+  std::string txt="";
+  
+  int16_t reference =(sop::StringConverter::convertStringTo<uint16_t>(params[1]) * this->swap_drive.getSwapFrameSize());
+  for(int i =reference;i<(reference+ this->swap_drive.getSwapFrameSize());++i)
+  {
+    txt=txt.append(sop::StringConverter::convertToString(this->swap_drive.getSwap()[reference+i]));
   }
   std::cout<<std::endl<<"Frame: "<<sop::StringConverter::convertToString(params[1])<<" contain: "<<std::endl<<txt<<std::endl;
 }

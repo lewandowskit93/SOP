@@ -40,11 +40,12 @@ namespace sop
       SwapFile swap_drive;
       //komendy
       void cH_allocate(const std::vector<const std::string> & params); //definicja polecenia do shella odpowidzialnej za przydzielenie pamiêci
-      void cH_showFrames(const std::vector<const std::string> & params);
-      void cH_showFramesSwap(const std::vector<const std::string> & params);
-      void cH_writeToMemory(const std::vector<const std::string> & params);
-      void cH_readFrame(const std::vector<const std::string> & params);
-      void cH_readByte(const std::vector<const std::string> & params);
+      void cH_showFrames(const std::vector<const std::string> & params);//pokazuje statystki dla tabeli ramek pamiêci fizycznej
+      void cH_showFramesSwap(const std::vector<const std::string> & params);//pokazuje statystki dla tabeli ramek swapa
+      void cH_writeToMemory(const std::vector<const std::string> & params);//zapisuje podany string i odpowiednio PID do pamiêci fizycznej
+      void cH_readFrame(const std::vector<const std::string> & params);//odczytuje wskazan¹ ramkê z pamiêci fizycznej
+      void cH_readFrameSwap(const std::vector<const std::string> & params);//odczytuje wskazan¹ ramkê ze swapa
+      void cH_readByte(const std::vector<const std::string> & params);//odczytuje wskzany bit ze swapa/pamiêci fizycznej
     };
   }
 }

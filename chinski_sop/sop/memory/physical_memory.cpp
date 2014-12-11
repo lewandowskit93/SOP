@@ -1,5 +1,6 @@
 //klasa odpowiedzialna za obs³ugê pamiêci fizycznej
 #include ".\sop\memory\physical_memory.h"
+#include ".\sop\string_converter.h"
 
 sop::memory::PhysicalMemory::PhysicalMemory(uint16_t storage_size,uint8_t frame_size,sop::logger::Logger* log):
   loggg(log)
@@ -130,8 +131,10 @@ void sop::memory::PhysicalMemory::swap(SwapFile* file_swap,LogicalMemory* page_t
   {
     file_swap->getSwap()[j]=this->getStorage()[i];
   }
+  
   page_table->setPage(file_swap->getFreeFrame(),0,victim_page);//numer ramki w tablicy stron ustawiony na numer ramki ze swapa valid na 0
   file_swap->setSwapFrame(this->getFrame(frame)->pid,victim_page,file_swap->getFreeFrame());//zapisanie informacji o ramce na swapie w tabeli ramek, 
+  this->loggg->logMemory(sop::logger::Logger::Level::INFO,"Page: "+sop::StringConverter::convertToString(victim_page)+" is loacted in swap in frame: "+sop::StringConverter::convertToString(file_swap->getFreeFrame())+"and bit valid is: "+ sop::StringConverter::convertToString(page_table->getBitValidInvalid(victim_page)));
   this->setFrame(0,0,frame);//czyscimy ramke przerzucon¹ na swapa
   file_swap->popFrontListOfFreeSwapFrames();//usuniecie ramki z listy wolnych ramek w swapie
   file_swap->setNubmerOfFreeSwapFrames(file_swap->getNumberOfFreeSwapFrames()-1);//zmniejsza liczbe wolnych ramek w swapie
@@ -147,15 +150,15 @@ uint8_t sop::memory::PhysicalMemory::getFreeFrames(uint8_t pages_needed,sop::mem
     if(file_swap->getIsThereAnyFrameValue()==true)//sprawdzenie czy swap nie jest zapchany
     {
 
-      // find(this->frame_table[this->assigned_frames_deque.front()].pid); //funkcja find ma zwrocic tabele stron/proces ktorego ramka jest na 1. miesjscu w kolejce, na podstawie PID
+      //LogicalMemory victim_page_table = find(this->frame_table[this->assigned_frames_deque.front()].pid); //funkcja find ma zwrocic tabele stron/proces ktorego ramka jest na 1. miesjscu w kolejce, na podstawie PID
       //majac proces/jego tabele stron szukamy tej strony, ktora ma ta ramke:
-      // for(int i=0;i<tabelaProcesu.getPageTableSize();++i)
+      // for(int i=0;i<victim_page_table.getPageTableSize();++i)
       // {
-      //   if(tabelaProcesu->getPage(i)->frame_number == this->assigned_frames_deque.front())
+      //   if(victim_page_table->getPage(i)->frame_number == this->assigned_frames_deque.front())
       //     victim_page=i;
       // } 
       
-
+      //table_of_pages podmienic na victim_page_table
       swap(file_swap,table_of_pages,victim_page,this->assigned_frames_deque.front());//przerzucenie zawartosci struktury ramka do swapa
       this->setNubmerOfFreeFrames(this->getNumberOfFreeFrames()+1);//zwiêkszenie liczby wolnych ramek
       this->setNumberOfNotFreeFrames(this->getNumberOfFrames() - this->getNumberOfFreeFrames());//zmniejszenie liczby zajêtych ramek
