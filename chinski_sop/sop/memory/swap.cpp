@@ -58,7 +58,7 @@ void sop::memory::SwapFile::setSwapFrame(uint16_t pid,uint8_t page_number,uint16
 
 bool sop::memory::SwapFile::isThereAnyFrame()
 {
-  if(getNumberOfFreeSwapFrames()>0) 
+  if(getNumberOfFreeSwapFrames()>1) 
     return true;
   else return false;
 }
@@ -74,9 +74,9 @@ uint8_t sop::memory::SwapFile::getFreeFrame()
 }
 
 void sop::memory::SwapFile::popFrontListOfFreeSwapFrames()
-  {
-    this->list_of_free__swap_frames.pop_front();
-  }
+{
+  this->list_of_free__swap_frames.pop_front();
+}
 
 void::sop::memory::SwapFile::pushEndListOfFreeSwapFrames(uint16_t frame_nr)
 {
@@ -86,4 +86,9 @@ void::sop::memory::SwapFile::pushEndListOfFreeSwapFrames(uint16_t frame_nr)
 uint16_t sop::memory::SwapFile::getSwapSize()
 {
   return this->swap_size;
+}
+
+std::list <uint16_t> sop::memory::SwapFile::getListForFreeSwapFrames()
+{
+  return this->list_of_free__swap_frames;
 }

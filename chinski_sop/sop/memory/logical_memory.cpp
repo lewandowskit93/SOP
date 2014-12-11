@@ -6,7 +6,7 @@ sop::memory::LogicalMemory::LogicalMemory(uint8_t number_of_page, sop::logger::L
 {
   setPageTableSize(number_of_page);
   page_table = boost::shared_ptr<page[]>(new page[page_table_size]);
- 
+
 }
 
 sop::memory::LogicalMemory::~LogicalMemory()

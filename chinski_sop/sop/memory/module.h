@@ -17,30 +17,31 @@ namespace sop
   namespace memory
   {
     /*
-      Memory module class.
+    Memory module class.
     */
     class Module : public sop::system::Module
     {
-      public:
-        explicit Module(sop::system::Kernel *kernel);
-        virtual ~Module();
-        virtual std::string getClassName() const;
-        virtual void initialize();
+    public:
+      explicit Module(sop::system::Kernel *kernel);
+      virtual ~Module();
+      virtual std::string getClassName() const;
+      virtual void initialize();
 
-        LogicalMemory allocate(uint16_t program_size,uint16_t pid);//przydzia³ ramek stronom, zwraca wskaznik na tabelê stron
-        void deallocate(LogicalMemory* page_table);//zwalnianie pamiêci
-        char read(LogicalMemory page_table, uint16_t byte_number);//zczytanie bajtu z pamiêci
-        void write(LogicalMemory page_table, std::string code);//wpisanie do pamieci ca³ego kodu w postaci stringa
+      LogicalMemory allocate(uint16_t program_size,uint16_t pid);//przydzia³ ramek stronom, zwraca wskaznik na tabelê stron
+      void deallocate(LogicalMemory* page_table);//zwalnianie pamiêci
+      char read(LogicalMemory page_table, uint16_t byte_number);//zczytanie bajtu z pamiêci
+      void write(LogicalMemory page_table, std::string code);//wpisanie do pamieci ca³ego kodu w postaci stringa
 
-      protected:
+    protected:
 
-      private:
-        PhysicalMemory physical_drive;//nasza pamiêæ fizyczna, pierwszy argument to rozmair w bajtach, a drugi rozmiar ramki
-        uint8_t calculatePages(uint16_t program_size); //zwraca liczbê stron niezbêdn¹ dla danego programu
-        SwapFile swap_drive;
-        //komendy
-        void cH_allocate(const std::vector<const std::string> & params); //definicja polecenia do shella odpowidzialnej za przydzielenie pamiêci
-        void cH_showFrames(const std::vector<const std::string> & params);
+    private:
+      PhysicalMemory physical_drive;//nasza pamiêæ fizyczna, pierwszy argument to rozmair w bajtach, a drugi rozmiar ramki
+      uint8_t calculatePages(uint16_t program_size); //zwraca liczbê stron niezbêdn¹ dla danego programu
+      SwapFile swap_drive;
+      //komendy
+      void cH_allocate(const std::vector<const std::string> & params); //definicja polecenia do shella odpowidzialnej za przydzielenie pamiêci
+      void cH_showFrames(const std::vector<const std::string> & params);
+      void cH_showFramesSwap(const std::vector<const std::string> & params);
     };
   }
 }

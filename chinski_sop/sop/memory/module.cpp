@@ -6,7 +6,7 @@
 
 
 sop::memory::Module::Module(sop::system::Kernel *kernel):
-  sop::system::Module(kernel),physical_drive(1024,32,_kernel->getLogger()),swap_drive(1024,32,_kernel->getLogger())//stworzenie pamiêci fizycznej i pliku wymiany o rozmiarze ca³kowitym, rozmairze 1 ramki
+  sop::system::Module(kernel),physical_drive(4096,32,_kernel->getLogger()),swap_drive(4096,32,_kernel->getLogger())//stworzenie pamiêci fizycznej i pliku wymiany o rozmiarze ca³kowitym, rozmairze 1 ramki
 {
 
 }
@@ -28,31 +28,53 @@ void sop::memory::Module::initialize()
   _kernel->getLogger()->logMemory(sop::logger::Logger::Level::INFO,"Physical memory size:"+sop::StringConverter::convertToString<uint16_t>(physical_drive.getStorageSize()));
   _kernel->getLogger()->logMemory(sop::logger::Logger::Level::INFO,"Swap file size:"+sop::StringConverter::convertToString<uint16_t>(swap_drive.getSwapSize()));
   //inicjalizacja komend
-  
+
   _kernel->getShell()->registerCommand("allocate",&sop::memory::Module::cH_allocate,this);
   _kernel->getShell()->registerCommand("lsFrames",&sop::memory::Module::cH_showFrames,this);
- 
+  _kernel->getShell()->registerCommand("lsFramesSwap",&sop::memory::Module::cH_showFramesSwap,this);
+
 }
 
 uint8_t sop::memory::Module::calculatePages(uint16_t program_size)
 {
   float number_of_pages=(float)physical_drive.getFrameSize();
   number_of_pages=ceil(((float)program_size/number_of_pages));
-  
+
   return (uint8_t)number_of_pages;
 }
 
 sop::memory::LogicalMemory sop::memory::Module::allocate(uint16_t program_size,uint16_t pid)
 {
+  if(calculatePages(program_size)>=this->physical_drive.getListForFreeFrames().size() && physical_drive.getDequeFrames().size()==0)
+  {
+    _kernel->getLogger()->logMemory(sop::logger::Logger::Level::WARNING,"Cannot load program into memory");
+    LogicalMemory table_of_pages(0,_kernel->getLogger());
+    return table_of_pages;//zwraca pust¹ tablice, gdy program jest za duzy, trzeba dalej spradzic po pageTableSize
+  }
+  if(this->swap_drive.getIsThereAnyFrameValue()==false)
+   {
+     LogicalMemory table_of_pages(0,_kernel->getLogger());
+     _kernel->getLogger()->logMemory(sop::logger::Logger::Level::SEVERE,"END of memory");
+    return table_of_pages;//zwraca pust¹ tablice gdy zabrak³o pamiêci
+  }
+  
   LogicalMemory table_of_pages(calculatePages(program_size),_kernel->getLogger());//tworzenie tabeli stron dla procesu, o okreœlonej liczbie stron
-  physical_drive.getFreeFrames(table_of_pages.getPageTableSize(),&table_of_pages,pid,&swap_drive);//wywo³anie funkcji przydzielaj¹cej ramki stronom na podstawie liczby stron w tabeli stron
-  _kernel->getLogger()->logMemory(sop::logger::Logger::Level::INFO,"Page table for process with pid: "+sop::StringConverter::convertToString(pid)+" has beem created");
-   return table_of_pages;
+   uint8_t temp=physical_drive.getFreeFrames(table_of_pages.getPageTableSize(),&table_of_pages,pid,&swap_drive);//wywo³anie funkcji przydzielaj¹cej ramki stronom na podstawie liczby stron w tabeli stron
+ if(temp==1)
+   _kernel->getLogger()->logMemory(sop::logger::Logger::Level::INFO,"Page table for process with pid: "+sop::StringConverter::convertToString(pid)+" has beem created");
+ else
+ {
+   _kernel->getLogger()->logMemory(sop::logger::Logger::Level::SEVERE,"END of memory");
+   LogicalMemory table_of_pages(0,_kernel->getLogger());
+    return table_of_pages;
+ }
+ 
+  return table_of_pages;
 }
 
 void sop::memory::Module::deallocate(sop::memory::LogicalMemory* page_table)
 {
-   //wyczyscic pamie fizyzna, nadpisac zeraami//ew swapa i odpowiendio tabela ramek swapa OPCJONALNIE
+  //wyczyscic pamie fizyzna, nadpisac zeraami//ew swapa i odpowiendio tabela ramek swapa OPCJONALNIE
   for(int i=0;i<page_table->getPageTableSize();++i)//odpowiada za zmiane danych w tabeli ramek pamiêci fizycznje/swapa na podstawie ka¿dej ze stron
   {
     if(page_table->getBitValidInvalid(i)==1)
@@ -68,12 +90,12 @@ void sop::memory::Module::deallocate(sop::memory::LogicalMemory* page_table)
       this->swap_drive.setSwapFrame(0,0,i);//zmiana w tabeli ramek swapa
       this->swap_drive.pushEndListOfFreeSwapFrames(page_table->getFrameNr(i));//wrzucenie danej ramki do listy wolnych ramek
       this->swap_drive.setNubmerOfFreeSwapFrames(this->swap_drive.getNumberOfFreeSwapFrames()+1);//zwiekszenie liczby wolnych ramek
-      
+
     }
   }
-  
 
-  
+
+
 
 }
 
@@ -89,7 +111,7 @@ char sop::memory::Module::read(LogicalMemory page_table, uint16_t byte_number)
 void sop::memory::Module::write(LogicalMemory page_table, std::string code)
 {
   //if(code.empty()==true)
-    //error
+  //error
   //return
   for(uint16_t i=0;i<code.length();++i)
   {
@@ -102,9 +124,9 @@ void sop::memory::Module::write(LogicalMemory page_table, std::string code)
   {
     page_table.setBitBalidInvalid(i,1);
   }
-   _kernel->getLogger()->logMemory(sop::logger::Logger::Level::INFO,"Program has been loaded to memory");
+  _kernel->getLogger()->logMemory(sop::logger::Logger::Level::INFO,"Program has been loaded to memory");
 
-   //bit valid na 1
+  //bit valid na 1
 }
 
 //kody komend
@@ -118,8 +140,8 @@ void sop::memory::Module::cH_allocate(const std::vector<const std::string> & par
     return; // wyjdzie z tej funkcji, ¿eby nie trzeba by³o robiæ else
   }
   LogicalMemory tabelka_stron=allocate(sop::StringConverter::convertStringTo<uint16_t>(params[1]),sop::StringConverter::convertStringTo<uint16_t>(params[2]));
- // std::cout<<"program size:"<<sop::StringConverter::convertToString(params[1]);
-  
+  // std::cout<<"program size:"<<sop::StringConverter::convertToString(params[1]);
+
   std::cout<<"This number of pages has been created: "<<sop::StringConverter::convertToString<uint16_t>(tabelka_stron.getPageTableSize())<<std::endl;
   for(int i=0;i<tabelka_stron.getPageTableSize();++i)
   {
@@ -133,11 +155,11 @@ void sop::memory::Module::cH_showFrames(const std::vector<const std::string> & p
   if(sop::system::Shell::hasParam(params,"-h" )|| params.size()>1)
   {
     std::cout<<"lsFrames [-h] "<<std::endl;
-    std::cout<<"Display a frames statistics"<<std::endl;
+    std::cout<<"Display a frames statistics for physical memory"<<std::endl;
     return; // wyjdzie z tej funkcji, ¿eby nie trzeba by³o robiæ else
   }
   std::list<uint16_t> mylist=physical_drive.getListForFreeFrames();
-  std::cout<<"List of free frames:"<<std::endl;
+  std::cout<<"List of free frames on physical drive:"<<std::endl;
   uint16_t counter=1;
   for (std::list<uint16_t>::iterator it=mylist.begin(); it != mylist.end(); ++it)
   {
@@ -147,23 +169,51 @@ void sop::memory::Module::cH_showFrames(const std::vector<const std::string> & p
     counter++;
   }
   std::cout<<std::endl;
-  std::cout<<"Number free frames: ";
+  std::cout<<"Number free frames on physical drive: ";
   std::cout << sop::StringConverter::convertToString<uint16_t>(physical_drive.getNumberOfFreeFrames());
-   std::cout<<std::endl;
-  std::cout<<"Number of taken frames: ";
+  std::cout<<std::endl;
+  std::cout<<"Number of taken frames on physical drive: ";
   std::cout << sop::StringConverter::convertToString<uint16_t>(physical_drive.getNumberOfNotFreeFrames());
   std::cout<<std::endl;
   std::cout<<"Deque of taken frames - FIFO: "<<std::endl;
   std::deque<uint16_t> mydeque=physical_drive.getDequeFrames();
   counter=1;
-   for (std::deque<uint16_t>::iterator it=mydeque.begin(); it != mydeque.end(); ++it)
+  for (std::deque<uint16_t>::iterator it=mydeque.begin(); it != mydeque.end(); ++it)
   {
     std::cout << ' ' << sop::StringConverter::convertToString<uint16_t>(*it);
     if(counter%16==0)
       std::cout<<std::endl;
     counter++;
   }
-    std::cout<<std::endl;
+  std::cout<<std::endl;
+}
+
+void sop::memory::Module::cH_showFramesSwap(const std::vector<const std::string> & params)
+{
+  if(sop::system::Shell::hasParam(params,"-h" )|| params.size()>1)
+  {
+    std::cout<<"lsFramesSwap [-h] "<<std::endl;
+    std::cout<<"Display a frames statistics for swap file"<<std::endl;
+    return; // wyjdzie z tej funkcji, ¿eby nie trzeba by³o robiæ else
+  }
+  std::list<uint16_t> mylist=swap_drive.getListForFreeSwapFrames();
+  std::cout<<"List of free frames on swap:"<<std::endl;
+  uint16_t counter=1;
+  for (std::list<uint16_t>::iterator it=mylist.begin(); it != mylist.end(); ++it)
+  {
+    std::cout << ' ' << sop::StringConverter::convertToString<uint16_t>(*it);
+    if(counter%16==0)
+      std::cout<<std::endl;
+    counter++;
+  }
+  std::cout<<std::endl;
+  std::cout<<"Number free frames on swap: ";
+  std::cout << sop::StringConverter::convertToString<uint16_t>(swap_drive.getNumberOfFreeSwapFrames());
+  std::cout<<std::endl;
+
+  std::cout<<"Is there any space on swap file? ";
+  std::cout << sop::StringConverter::convertToString<bool>(swap_drive.getIsThereAnyFrameValue());
+  std::cout<<std::endl;
 }
 
 
