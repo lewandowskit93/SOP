@@ -5,7 +5,7 @@
 sop::files::Module::Module(sop::system::Kernel *kernel):
   sop::system::Module(kernel)
 {
-  this->fsxxxx = new Filesystem(kernel->getLogger(), kernel, "disk.txt");
+  this->fsxxxx = new Filesystem(kernel->getLogger(), "disk.txt");
 }
 
 sop::files::Module::~Module()

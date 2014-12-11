@@ -1122,12 +1122,12 @@ void sop::files::Filesystem::statHandler(const std::vector<const std::string> & 
       if(param[i] == "-h")
       {
         std::cout<<"DiskStat - prints disk based statistics"<<std::endl;
-        std::cout<<"   -d <blockNr>\t prints data block if available"<<std::endl;
-        std::cout<<"   -i <blockNr>\t prints inode data if available"<<std::endl;
-        std::cout<<"   -s \t\t prints opened files, free spaces, current path..."<<std::endl;
-        std::cout<<"   -t <depth>\t prints disk tree"<<std::endl;
-        std::cout<<"   -f \t\t prints free spaces"<<std::endl;
-        std::cout<<"   --disk \t prints disk blocks summary"<<std::endl;
+        std::cout<<"   -d <blockNr>\t    prints data block if available"<<std::endl;
+        std::cout<<"   -i <blockNr>\t    prints inode data if available"<<std::endl;
+        std::cout<<"   -s \t\t    prints    opened files, free spaces, current path..."<<std::endl;
+        std::cout<<"   -t <depth>\t    prints disk tree"<<std::endl;
+        std::cout<<"   -f \t\t    prints free spaces"<<std::endl;
+        std::cout<<"   --disk <rows>    prints disk blocks summary"<<std::endl;
         return;
       } 
       if(param[i] == "--disk")

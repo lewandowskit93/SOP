@@ -35,7 +35,7 @@ namespace sop
       static const uint32_t blockSize = 32;
 
       // Sets number of blocks on drive
-      static const uint32_t numOfBlocks = 64;
+      static const uint32_t numOfBlocks = 256;
 
     protected:
 
