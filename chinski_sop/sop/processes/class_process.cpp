@@ -8,7 +8,7 @@ sop::process::Process::Process():
     _PID(0),
     _UID(0),
     _GID(0),
-    //_array_pages(0),
+    _array_pages(0), //zmienic przy dograniu
     _PPID(0),
     _memoryFlagStatus(0),
     _processorFlagStatus(0),

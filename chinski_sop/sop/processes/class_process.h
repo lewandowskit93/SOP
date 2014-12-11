@@ -72,7 +72,7 @@ namespace sop
       uint16_t _PID, _UID, _GID;
       uint16_t _rejestrA, _rejestrB, _rejestrC, _rejestrD;
       int8_t _exitCode;
-      uint16_t /*sop::memory::LogicalMemory*/ _array_pages; //typ na luzno wrzucony nie sugerowac sie /*for tests*/
+      uint16_t /*sop::memory::LogicalMemory*/ _array_pages; //typ na luzno wrzucony dla testow, nie sugerowac sie i zmienic /*for tests*/
       
     private:
       //variables
