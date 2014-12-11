@@ -27,8 +27,8 @@ void sop::processes::Module::initialize()
   _kernel->getShell()->registerCommand("kill",&sop::processes::Module::cH_kill,this); //zarejestrowanie komendy kill
   _kernel->getShell()->registerCommand("fork",&sop::processes::Module::cH_fork,this); //zarejestrowanie komendy fork
   _kernel->getShell()->registerCommand("exec",&sop::processes::Module::cH_exec,this); //zarejestrowanie komendy exec
-  sop::processes::Module::CreateShellInit();
-  fillQueue();
+  sop::processes::Module::CreateShellInit(); //zainicjowanie stworzenia procesu INIT
+  fillQueue(); //wypelnienie kolejki z PID'ami
 }
 //polecenie shelllowskie wypisujace na ekran informacje o procesie
 void sop::processes::Module::cH_showprocess(const std::vector<const std::string> & params)
@@ -39,7 +39,6 @@ void sop::processes::Module::cH_showprocess(const std::vector<const std::string>
     std::cout<<"Displays informations about process"<<std::endl;
     return; // wyjdzie z tej funkcji, ¿eby nie trzeba by³o robiæ else
   }
-
   uint16_t PID = sop::StringConverter::convertStringTo<uint16_t>(params[params.size()-1]);
   boost::shared_ptr<sop::process::Process> ProcesToShow = sop::processes::Module::findProcess(PID);
   if(ProcesToShow)
@@ -73,11 +72,11 @@ void sop::processes::Module::cH_kill(const std::vector<const std::string> & para
   if (ProcesToKill->getPID() != 0)
   {
   sop::processes::Module::kill(ProcesToKill);
-  _kernel->getLogger()->logProcesses(sop::logger::Logger::Level::INFO,"Shell command executed: Process killed\n");
+  _kernel->getLogger()->logProcesses(sop::logger::Logger::Level::INFO,"Shell command executed: Process killed");
   }
   else
   {
-    _kernel->getLogger()->logProcesses(sop::logger::Logger::Level::INFO,"Shell command executed: Init process cannot be killed\n");
+    _kernel->getLogger()->logProcesses(sop::logger::Logger::Level::INFO,"Shell command executed: Init process cannot be killed");
   }
 }
 //polecenie shellowskie tworzocy proces potomka
@@ -92,7 +91,7 @@ void sop::processes::Module::cH_fork(const std::vector<const std::string> & para
   uint16_t PID = sop::StringConverter::convertStringTo<uint16_t>(params[params.size()-1]);
   boost::shared_ptr<sop::process::Process> ProcesToFork = sop::processes::Module::findProcess(PID);
   sop::processes::Module::fork(ProcesToFork);
-  _kernel->getLogger()->logProcesses(sop::logger::Logger::Level::INFO,"Shell command executed: Child process created\n");
+  _kernel->getLogger()->logProcesses(sop::logger::Logger::Level::INFO,"Shell command executed: Child process created");
 }
 //polecenie wywolujace funkcje exec
 void sop::processes::Module::cH_exec(const std::vector<const std::string> & params)
@@ -108,14 +107,14 @@ void sop::processes::Module::cH_exec(const std::vector<const std::string> & para
     uint16_t PID = sop::StringConverter::convertStringTo<uint16_t>(params[params.size()-1]);
     boost::shared_ptr<sop::process::Process> ProcesForExec = sop::processes::Module::findProcess(PID);
     sop::processes::Module::exec(params[1], ProcesForExec);
-    _kernel->getLogger()->logProcesses(sop::logger::Logger::Level::INFO,"Shell command executed: File writted to memory\n");
+    _kernel->getLogger()->logProcesses(sop::logger::Logger::Level::INFO,"Shell command executed: File writted to memory");
   }
 }
 //funkcja wstawiajaca proces do wektora procesow
 void sop::processes::Module::addToVector(boost::shared_ptr<sop::process::Process> object)
 {
   sop::processes::Module::ProcessVector.push_back(object);
-  _kernel->getLogger()->logProcesses(sop::logger::Logger::Level::INFO,"Process added to vector of processes\n");
+  _kernel->getLogger()->logProcesses(sop::logger::Logger::Level::INFO,"Process added to vector of processes");
 }
 //funkcja usuwajaca proces z wektora procesow
 void sop::processes::Module::removeFromVector(uint16_t PID)
@@ -128,11 +127,11 @@ void sop::processes::Module::removeFromVector(uint16_t PID)
   if(it!=ProcessVector.end())
   {
     ProcessVector.erase(it);
-    _kernel->getLogger()->logProcesses(sop::logger::Logger::Level::INFO,"Process deleted\n");
+    _kernel->getLogger()->logProcesses(sop::logger::Logger::Level::INFO,"Process deleted");
   }
   else
   {
-    _kernel->getLogger()->logProcesses(sop::logger::Logger::Level::INFO,"Process not found so i don't know what to delete\n");
+    _kernel->getLogger()->logProcesses(sop::logger::Logger::Level::INFO,"Process not found so i don't know what to delete");
   }
 }
 //funkcja wyszukujaca proces o podanym PID
@@ -145,7 +144,7 @@ boost::shared_ptr<sop::process::Process> sop::processes::Module::findProcess(uin
     if ((*it)->getPID() == PID)
     {
       process_found = (*it);
-      _kernel->getLogger()->logProcesses(sop::logger::Logger::Level::INFO,"Process found\n");
+      _kernel->getLogger()->logProcesses(sop::logger::Logger::Level::INFO,"Process found");
       break;
     }
   }
@@ -165,7 +164,7 @@ void sop::processes::Module::CreateShellInit()
   Procesik->setProcessIsInScheduler(0);
   Procesik->setIsActuallyRunning(1);
   sop::processes::Module::addToVector(Procesik);
-  _kernel->getLogger()->logProcesses(sop::logger::Logger::Level::INFO,"INIT created and added to vector of processes\n");
+  _kernel->getLogger()->logProcesses(sop::logger::Logger::Level::INFO,"INIT created and added to vector of processes");
 }
 //funkcja tworzaca nowy proces
 boost::shared_ptr<sop::process::Process> sop::processes::Module::createNewProcess()
@@ -181,7 +180,7 @@ boost::shared_ptr<sop::process::Process> sop::processes::Module::createNewProces
   Procesik->setProcessIsInScheduler(0);
   Procesik->setIsActuallyRunning(0);
   sop::processes::Module::addToVector(Procesik);
-  _kernel->getLogger()->logProcesses(sop::logger::Logger::Level::INFO,"New process created and added to vector of processes\n");
+  _kernel->getLogger()->logProcesses(sop::logger::Logger::Level::INFO,"New process created and added to vector of processes");
   return Procesik;
 }
 //funkcja tworzaca nowego potomka
@@ -200,64 +199,73 @@ void sop::processes::Module::fork(boost::shared_ptr<sop::process::Process> Paren
   child->setMemoryFlagStatus(0);
   child->setProcessorFlagStatus(0);
   child->setProcessIsInScheduler(0);
-  _kernel->getLogger()->logProcesses(sop::logger::Logger::Level::INFO,"New child process created\n");
-  _kernel->getLogger()->logProcesses(sop::logger::Logger::Level::INFO,"PROCESS GET STATUS NEW\n");
+  _kernel->getLogger()->logProcesses(sop::logger::Logger::Level::INFO,"New child process created");
+  _kernel->getLogger()->logProcesses(sop::logger::Logger::Level::INFO,"PROCESS GET STATUS NEW");
   if (Parent->getIsTrueProcess() == 0)
   {    
     return;
   } 
   else if (Parent->getIsTrueProcess() == 1)
   {
-    child->setArrayPages(allocate(rozmiar, child->getPID())); //zgranie z Fisza
+    child->setArrayPages(allocate(Parent->getArrayPages(), child->getPID())); //zgranie z Fisza
     if (child->getArrayPages().getPageTableSize() > 0) //zgranie z Fisza
     {
       child->setMemoryFlagStatus(1);
       _kernel->getLogger()->logProcesses(sop::logger::Logger::Level::INFO,"Memory allocated");
     }
-    sop::processor::Module::addProcess(child); //zgranie z Krzysio
+    _kernel->getProcessorModule()->addProcess(child); //zgranie z Krzysio
     _kernel->getLogger()->logProcesses(sop::logger::Logger::Level::INFO,"Process added to scheduler");
     _kernel->getLogger()->logProcesses(sop::logger::Logger::Level::INFO,"PROCESS GET STATUS: WAITING");
     if (child->getIsActuallyRunning() == 1)
     {
       _kernel->getLogger()->logProcesses(sop::logger::Logger::Level::INFO,"PROCESS GET STATUS: RUNNING");
     }
-    if (Parent->getIsActuallyRunning()==1 && child->getIsActuallyRunning()==1)
+    if (Parent->getIsActuallyRunning()==1 && child->getIsActuallyRunning()==1) //jesli paren jak i potomek flagi running ustawione na 1 to wywoluje wait
     {
-      sop::processes::Module::wait(Parent, child);
+      sop::processes::Module::wait(Parent, child); //wywolanie wait
+      if (child->getEndingFlagStatus()==1 || child->getIsKilled()==1) //jesli potomek zostal wykonany standardowo albo zostal zabity ponownie alokuje pamiec dla parenta i wrzuca go do schedulera
+      {
+        Parent->setArrayPages(allocate(Parent->getArrayPages(), Parent->getPID())); //zgranie z Fisza
+        if (Parent->getArrayPages().getPageTableSize() > 0) //zgranie z Fisza
+        {
+          Parent->setMemoryFlagStatus(1);
+          _kernel->getLogger()->logProcesses(sop::logger::Logger::Level::INFO,"Memory allocated again to Parent process");
+        }
+        _kernel->getProcessorModule()->addproces(Parent);
+        _kernel->getLogger()->logProcesses(sop::logger::Logger::Level::INFO,"parent process added to scheduler again");
+      }
     }
-  }
-  
+  }  
 }
 //funkcja wpisujaca kod programu do wykonania
 void sop::processes::Module::exec(std::string filename, boost::shared_ptr<sop::process::Process> Proces)
 {
-  sop::files:File* filepointer = sop::files::Filesystem::openFile(Proces, getPathFromParam(filename), "x");
+  sop::files::File* filepointer = sop::files::Filesystem::openFile(Proces, getPathFromParam(filename), "x");
   std::string data = _kernel->getFilesModule()->readFile(filepointer);
   _kernel->getFilesModule()->closeFile(filepointer);
   delete filepointer;
   if (Proces->getArrayPages().getPageTableSize()*Physical_drive.getFrameSize() < data.size()) //porownuje czy rozmiar pliku jest mniejszy od zaalokowanej juz pamieci
   {
     _kernel->getMemoryModule()->deallocate(Proces->getArrayPages()); //dealokacja juz przypisanej pamieci
-    _kernel->getMemoryModule()->allocate(data.size(), Proces->getPID); //alokacja ponownie pamieci
+    _kernel->getMemoryModule()->allocate(data.size(), Proces->getPID()); //alokacja ponownie pamieci
     Proces->setArrayPages( _kernel->getMemoryModule()->allocate(data.size(), Proces->getPID())); //zgranie z Fisza
-    if (child->getArrayPages().getPageTableSize() > 0) //zgranie z Fisza
+    if (Proces->getArrayPages().getPageTableSize() > 0) //zgranie z Fisza
     {
-      child->setMemoryFlagStatus(1);
+      Proces->setMemoryFlagStatus(1);
       _kernel->getLogger()->logProcesses(sop::logger::Logger::Level::INFO,"Memory allocated");
-      _kernel->getMemoryModule()->write(Proces->getArrayPages,  data); //zapisanie kodu z pliku do pamieci
+      _kernel->getMemoryModule()->write(Proces->getArrayPages(),  data); //zapisanie kodu z pliku do pamieci
+      Proces->setIsTrueProcess(1); //proces dostal kod wiec ustwiamy flage ze jest prawdziwy
     }
     else
     {
-      child->setMemoryFlagStatus(0);
+      Proces->setMemoryFlagStatus(0);
     }
   }
   else
   {
-    _kernel->getMemoryModule()->write(Proces->getArrayPages,  data); //zapisanie kodu z pliku do pamieci
-  }
-    
-    
-  
+    _kernel->getMemoryModule()->write(Proces->getArrayPages(), data); //zapisanie kodu z pliku do pamieci
+    Proces->setIsTrueProcess(1); //proces dostal kod wiec ustwiamy flage ze jest prawdziwy
+  }  
 }
 //funkcja wstrzymujaca proces macierzysty
 void sop::processes::Module::wait(boost::shared_ptr<sop::process::Process> Parent, boost::shared_ptr<sop::process::Process> Child)
@@ -265,34 +273,34 @@ void sop::processes::Module::wait(boost::shared_ptr<sop::process::Process> Paren
   Parent->setIsActuallyRunning(0);
   Parent->setProcessIsInScheduler(0);
   _kernel->getProcessorModule()->removeProcess(Parent, Parent->getPID());
-  _kernel->getLogger()->logProcesses(sop::logger::Logger::Level::INFO,"PROCESS GET STATUS: WAITING ON CHILD\n");
+  _kernel->getLogger()->logProcesses(sop::logger::Logger::Level::INFO,"PROCESS GET STATUS: WAITING ON CHILD");
 }
 //funkcja zabijajaca proces o podanym PID
 void sop::processes::Module::kill(boost::shared_ptr<sop::process::Process> Proces)
 {
   boost::shared_ptr<sop::process::Process> p = Proces;
-  sop::memory::Module::deallocate(rozmiar, p->getPID()); //zgranie z Fisza  
+  _kernel->getMemoryModule()->deallocate(p->getArrayPages()); //zgranie z Fisza  
   p->setMemoryFlagStatus(0);
-  _kernel->getLogger()->logProcesses(sop::logger::Logger::Level::INFO,"Memory deallocated\n");
-  sop::processor::Module::removeProces(); //zgranie z Krzysio
+  _kernel->getLogger()->logProcesses(sop::logger::Logger::Level::INFO,"Memory deallocated");
+  _kernel->getProcessorModule()->removeProces(); //zgranie z Krzysio
   p->setProcessorFlagStatus(0);
   p->setEndingFlagStatus(1);
   p->setIsKilled(1);
-  _kernel->getLogger()->logProcesses(sop::logger::Logger::Level::INFO,"Process deleted from scheduler\n");
+  _kernel->getLogger()->logProcesses(sop::logger::Logger::Level::INFO,"Process deleted from scheduler");
   sop::processes::Module::removeFromVector(p->getPID());
-  _kernel->getLogger()->logProcesses(sop::logger::Logger::Level::INFO,"Process deleted from vector of processes\n");
+  _kernel->getLogger()->logProcesses(sop::logger::Logger::Level::INFO,"Process deleted from vector of processes");
 }
 //funkcja zamykajaca proces
 void sop::processes::Module::exit(boost::shared_ptr<sop::process::Process> Proces)
 {
-  _kernel->getLogger()->logProcesses(sop::logger::Logger::Level::INFO,"PROCESS GET STATUS EXECUTED\n");
+  _kernel->getLogger()->logProcesses(sop::logger::Logger::Level::INFO,"PROCESS GET STATUS EXECUTED");
   boost::shared_ptr<sop::process::Process> p = Proces;
-  sop::memory::Module::deallocate(rozmiar, p->getPID); //zgranie z Fisza
-  _kernel->getLogger()->logProcesses(sop::logger::Logger::Level::INFO,"Memory deallocated\n");
+  _kernel->getMemoryModule()->deallocate(p->getArrayPages()); //zgranie z Fisza
+  _kernel->getLogger()->logProcesses(sop::logger::Logger::Level::INFO,"Memory deallocated");
   Proces->setEndingFlagStatus(1);
   sop::processes::Module::removeFromVector(p->getPID());
-  _kernel->getLogger()->logProcesses(sop::logger::Logger::Level::INFO,"Process deleted from vector of processes\n");
-  Proces->
+  _kernel->getLogger()->logProcesses(sop::logger::Logger::Level::INFO,"Process deleted from vector of processes");
+  //Proces->setExitCode(/*??*/);
 }
 //funkcja wypelniajaca kolejke pidow
 void sop::processes::Module::fillQueue()

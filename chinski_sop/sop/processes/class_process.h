@@ -34,7 +34,7 @@ namespace sop
       uint16_t getIsActuallyRunning();
       uint16_t getIsTrueProcess();
       uint16_t getIsKilled();
-      uint8_t setExitCode();
+      uint8_t getExitCode();
       //setters from protected
       void setPID(uint16_t);
       void setUID(uint16_t);
@@ -72,9 +72,8 @@ namespace sop
       uint16_t _PID, _UID, _GID;
       uint16_t _rejestrA, _rejestrB, _rejestrC, _rejestrD;
       int8_t _exitCode;
-      //sop::process::Processor Procesor; //Zmienna dla Krzycha
-      sop::memory::LogicalMemory _array_pages; //typ na luzno wrzucony nie sugerowac sie
-
+      uint16_t /*sop::memory::LogicalMemory*/ _array_pages; //typ na luzno wrzucony nie sugerowac sie /*for tests*/
+      
     private:
       //variables
       uint16_t _PPID;

@@ -8,7 +8,7 @@ sop::process::Process::Process():
     _PID(0),
     _UID(0),
     _GID(0),
-    _array_pages(0),
+    //_array_pages(0),
     _PPID(0),
     _memoryFlagStatus(0),
     _processorFlagStatus(0),
@@ -108,7 +108,7 @@ uint16_t sop::process::Process::getIsKilled()
   return this->_isKilled;
 }
 
-uint8_t sop::process::Process::setExitCode()
+uint8_t sop::process::Process::getExitCode()
 {
   return this->_exitCode;
 }
