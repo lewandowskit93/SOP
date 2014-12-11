@@ -48,12 +48,12 @@ namespace sop
 
       static void doJMP(processor *proc, uint16_t offset); // sets offset to given offset value
       // I decided first number means register A and second B
-      static void doJIZ(processor *proc, uint16_t offset); // sets offset to given offset value if flag zero is active
-      static void doJNZ(processor *proc, uint16_t offset); // sets offset to given offset value if flag zero is not active
-      static void doJIA(processor *proc, uint16_t offset); // sets offset to given offset value if first number is gr8r than second
-      static void doJAE(processor *proc, uint16_t offset); // sets offset to given offset value if first number is gr8r or equal to second
-      static void doJIB(processor *proc, uint16_t offset); // sets offset to given offset value if first nubmer is lower than second
-      static void doJBE(processor *proc, uint16_t offset); // sets offset to given offset value if first nubmer is lower or equals to second
+      static void doJIZ(processor *proc); // sets offset to given offset value if flag zero is active
+      static void doJNZ(processor *proc); // sets offset to given offset value if flag zero is not active
+      static void doJIA(processor *proc); // sets offset to given offset value if first number is gr8r than second
+      static void doJAE(processor *proc); // sets offset to given offset value if first number is gr8r or equal to second
+      static void doJIB(processor *proc); // sets offset to given offset value if first nubmer is lower than second
+      static void doJBE(processor *proc); // sets offset to given offset value if first nubmer is lower or equals to second
 
       static void printOutProcessorState(processor *proc); // prints out all processor fields
       static void clearProcessor(processor *proc); //sets default(starting) values

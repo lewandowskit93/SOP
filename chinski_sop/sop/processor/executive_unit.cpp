@@ -26,6 +26,7 @@ sop::processor::ExecutiveUnit::~ExecutiveUnit(){
 void sop::processor::ExecutiveUnit::activateProcessor()
 {
   _runningProcess = scheduler.getHighestPriorityProcess();
+  // if _runningProcess.isKilled then cout<<...
   _lastUsedProcess = _runningProcess;
 }
 short sop::processor::ExecutiveUnit::getQuantTimeLeft()
@@ -54,6 +55,8 @@ void sop::processor::ExecutiveUnit::mainExecutiveLoop()
     {
       return;
     }
+    //
+    //
     i--;
   }
   scheduler.addToUnactiveTaskArray(_runningProcess);
@@ -110,7 +113,11 @@ void sop::processor::ExecutiveUnit::cH_showActualProcessorState(const std::vecto
 {
    if (!sop::system::Shell::hasParam(params,"-h"))
    {
-     ProcessorHandler::printOutProcessorState(&_lastUsedProcess->procek);
+     if (_lastUsedProcess!=0)
+     {
+       //if(_lastUsedProcess) 
+        ProcessorHandler::printOutProcessorState(&_lastUsedProcess->procek);
+     }
    }
    else if(sop::system::Shell::hasParam(params,"-h") || params.size()==1)
    {

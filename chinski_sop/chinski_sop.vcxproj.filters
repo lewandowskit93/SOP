@@ -171,11 +171,11 @@
     <ClInclude Include="sop\processor\executive_unit.h">
       <Filter>Header Files\sop\processor</Filter>
     </ClInclude>
-    <ClInclude Include="sop\processes\class_process.h">
-      <Filter>Header Files\sop\processes</Filter>
-    </ClInclude>
     <ClInclude Include="sop\string_converter.h">
       <Filter>Header Files\sop</Filter>
+    </ClInclude>
+    <ClInclude Include="class_process.h">
+      <Filter>Header Files\sop\processes</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

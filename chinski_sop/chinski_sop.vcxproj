@@ -11,6 +11,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="class_process.h" />
     <ClInclude Include="sop\initializable.h" />
     <ClInclude Include="sop\exception.h" />
     <ClInclude Include="sop\files\exceptions\module_exception.h" />
@@ -20,7 +21,6 @@
     <ClInclude Include="sop\memory\exceptions\module_exception.h" />
     <ClInclude Include="sop\memory\module.h" />
     <ClInclude Include="sop\object.h" />
-    <ClInclude Include="sop\processes\class_process.h" />
     <ClInclude Include="sop\processes\exceptions\module_exception.h" />
     <ClInclude Include="sop\processes\module.h" />
     <ClInclude Include="sop\processor\exceptions\module_exception.h" />

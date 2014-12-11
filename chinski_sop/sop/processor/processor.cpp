@@ -1,12 +1,12 @@
 #include "./sop/processor/processor.h"
 sop::processor::processor::processor():
-        a(0x0000), 
-        b(0x0000), 
-        c(0x0000), 
-        d(0x0000), 
-        ip(0x0000),
-        sign_flag(0x0000),
-        zero_flag(0x0000)
+        a(0), 
+        b(0), 
+        c(0), 
+        d(0), 
+        ip(0),
+        sign_flag(0),
+        zero_flag(0)
 {
 }
         
@@ -18,12 +18,20 @@ sop::processor::processor::~processor()
 void sop::processor::ProcessorHandler::multipliesAandB(sop::processor::processor *proc)
 {
   proc->c = proc->a * proc->b;
+  if (proc->c == 0)
+  {
+    ProcessorHandler::setZeroFlag(proc);
+  }
+  else
+    ProcessorHandler::unsetZeroFlag(proc);
 }
 
 void sop::processor::ProcessorHandler::dividesAandB(sop::processor::processor *proc)
 {
   proc->c = proc->a / proc->b;
   proc->d = proc->a % proc->b;
+  if (proc->c == 0) ProcessorHandler::setZeroFlag(proc);
+  else ProcessorHandler::unsetZeroFlag(proc);
 }
 
 void sop::processor::ProcessorHandler::printOutProcessorState(sop::processor::processor *proc)
@@ -49,16 +57,16 @@ void sop::processor::ProcessorHandler::printOutProcessorState(sop::processor::pr
 
 void sop::processor::ProcessorHandler::clearProcessor(sop::processor::processor *proc)
 {
-  proc->a = 0x0000;
-  proc->b = 0x0000;
-  proc->c = 0x0000;
-  proc->d = 0x0000;
-  proc->cs = 0x0000;
-  proc->ip = 0x0000;
+  proc->a = 0;
+  proc->b = 0;
+  proc->c = 0;
+  proc->d = 0;
+  proc->cs = 0;
+  proc->ip = 0;
   ProcessorHandler::clearStack(proc);
   //proc->quant_time = 3;//Moved to executive_unit
-  proc->sign_flag = 0x0000;
-  proc->zero_flag = 0x0000;
+  proc->sign_flag = 0;
+  proc->zero_flag = 0;
 }
 uint16_t sop::processor::ProcessorHandler::softCharRegisterHandler(sop::processor::processor *proc, char processor_register)
 {
@@ -104,28 +112,45 @@ void sop::processor::ProcessorHandler::registerIncrement(sop::processor::process
 {
   uint16_t* reg = ProcessorHandler::charRegisterHandler(proc, processor_register);
   ++(*reg);
-  if (*reg == 0x0000) ProcessorHandler::setZeroFlag(proc);
+  if (*reg == 0) ProcessorHandler::setZeroFlag(proc);
+  else ProcessorHandler::unsetZeroFlag(proc);
 }
 
 void sop::processor::ProcessorHandler::registerDecrement(sop::processor::processor *proc, char processor_register)
 {
   uint16_t* reg = ProcessorHandler::charRegisterHandler(proc, processor_register);
   --(*reg);
-  if (*reg == 0x0000) ProcessorHandler::setZeroFlag(proc);
+  if (*reg == 0) ProcessorHandler::setZeroFlag(proc);
+  else ProcessorHandler::unsetZeroFlag(proc);
 }
 
 void sop::processor::ProcessorHandler::registerIncrementByValue(sop::processor::processor *proc, char processor_register, uint16_t value)
 {
   uint16_t* reg = ProcessorHandler::charRegisterHandler(proc, processor_register);
   (*reg) += value;
+  if (*reg == 0) ProcessorHandler::setZeroFlag(proc);
+  else ProcessorHandler::unsetZeroFlag(proc)
 }
 
 void sop::processor::ProcessorHandler::registerDecrementByValue(sop::processor::processor *proc, char processor_register, uint16_t value)
 {
   uint16_t* reg = ProcessorHandler::charRegisterHandler(proc, processor_register);
+  if (*reg == value)
+  {
+    ProcessorHandler::setZeroFlag(proc);
+    ProcessorHandler::unsetSignFlag(proc);
+  }
+  else if (*reg < value)
+  {
+    ProcessorHandler::setSignFlag(proc);
+    ProcessorHandler::unsetZeroFlag(proc);
+  }
+  else 
+  {
+    ProcessorHandler::unsetSignFlag(proc);
+    ProcessorHandler::unsetZeroFlag(proc);
+  }
   (*reg) -= value;
-  if (*reg == 0x0000)
-    sop::processor::ProcessorHandler::setZeroFlag(proc);
 }
 
 void sop::processor::ProcessorHandler::setRegisterField(sop::processor::processor *proc, char processor_register, uint16_t value)
@@ -135,9 +160,21 @@ void sop::processor::ProcessorHandler::setRegisterField(sop::processor::processo
 }
 void sop::processor::ProcessorHandler::compareRegisters(sop::processor::processor *proc, char one, char two)
 {
-  if (ProcessorHandler::charRegisterHandler(proc,one) == ProcessorHandler::charRegisterHandler(proc,two)) ProcessorHandler::setZeroFlag(proc);
-  else if (one < two) ProcessorHandler::setSignFlag(proc);
-  else {
+  uint16_t *reg_one = ProcessorHandler::charRegisterHandler(proc,one);
+  uint16_t *reg_two = ProcessorHandler::charRegisterHandler(proc,two);
+  
+  if (one == two)
+  {
+    ProcessorHandler::setZeroFlag(proc);
+    ProcessorHandler::unsetSignFlag(proc);
+  }
+  else if (one < two)
+  {
+    ProcessorHandler::setSignFlag(proc);
+    ProcessorHandler::unsetZeroFlag(proc);
+  }
+  else 
+  {
     ProcessorHandler::unsetSignFlag(proc);
     ProcessorHandler::unsetZeroFlag(proc);
   }
@@ -236,6 +273,7 @@ void sop::processor::ProcessorHandler::bitwiseAND(sop::processor::processor *pro
   uint16_t *reg_nd = charRegisterHandler(proc,reg_two);
   *reg_st = *reg_st & *reg_nd; 
   if (*reg_st == 0) setZeroFlag(proc);
+  else unsetZeroFlag(proc);
 }
 
 void sop::processor::ProcessorHandler::bitwiseOR(sop::processor::processor *proc, char reg_one, char reg_two)
@@ -244,6 +282,7 @@ void sop::processor::ProcessorHandler::bitwiseOR(sop::processor::processor *proc
   uint16_t *reg_nd = charRegisterHandler(proc,reg_two);
   *reg_st = *reg_st | *reg_nd; 
   if (*reg_st == 0) setZeroFlag(proc);
+  else unsetZeroFlag(proc);
 }
 
 void sop::processor::ProcessorHandler::bitNEG(sop::processor::processor *proc, char reg)
@@ -251,46 +290,54 @@ void sop::processor::ProcessorHandler::bitNEG(sop::processor::processor *proc, c
   uint16_t *reg_t = charRegisterHandler(proc,reg);
   *reg_t = ~*reg_t;
   if (*reg_t == 0) setZeroFlag(proc);
+  else unsetZeroFlag(proc);
 }
 
-void sop::processor::ProcessorHandler::doJMP(processor *proc, uint16_t offset)
+void sop::processor::ProcessorHandler::doJMP(processor *proc)
 {
+  uint16_t offset = proc->d;
   proc->ip = offset;
 }
-void sop::processor::ProcessorHandler::doJIZ(processor *proc, uint16_t offset)
+void sop::processor::ProcessorHandler::doJIZ(processor *proc)
 {
+  uint16_t offset = proc->d;
   if (proc->zero_flag)
     proc->ip = offset;
 }
-void sop::processor::ProcessorHandler::doJNZ(processor *proc, uint16_t offset)
+void sop::processor::ProcessorHandler::doJNZ(processor *proc)
 {
+  uint16_t offset = proc->d;
   if (!proc->zero_flag)
     proc->ip = offset;
 }
-void sop::processor::ProcessorHandler::doJIA(processor *proc, uint16_t offset)
+void sop::processor::ProcessorHandler::doJIA(processor *proc)
 {
- if (proc->a > proc->b)
+  uint16_t offset = proc->d;
+  if (!proc->sign_flag)
     proc->ip = offset; 
 }
-void sop::processor::ProcessorHandler::doJAE(processor *proc, uint16_t offset)
+void sop::processor::ProcessorHandler::doJAE(processor *proc)
 {
-  if (proc->a >= proc->b)
+  uint16_t offset = proc->d;
+  if (!proc->sign_flag || proc->zero_flag)
     proc->ip = offset;
 }
-void sop::processor::ProcessorHandler::doJIB(processor *proc, uint16_t offset)
+void sop::processor::ProcessorHandler::doJIB(processor *proc)
 {
-  if (proc->a < proc->b)
+  uint16_t offset = proc->d;
+  if (proc->sign_flag)
     proc->ip = offset; 
 }
-void sop::processor::ProcessorHandler::doJBE(processor *proc, uint16_t offset)
+void sop::processor::ProcessorHandler::doJBE(processor *proc)
 {
-  if (proc->a <= proc->b)
+  uint16_t offset = proc->d;
+  if (proc->sign_flag || proc->zero_flag)
     proc->ip = offset; 
 }
 void sop::processor::ProcessorHandler::saveOnYoungestByte(processor *proc, uint16_t byte)
 {
   //uint8_t value_to_be_set = sop::StringConverter::convertStringToHex<uint8_t>(byte);
-  uint16_t *ptr = &proc->a;
+  uint16_t *ptr = &proc->b;
   uint8_t *wskByte = (uint8_t*) ptr;
   wskByte[0] = (uint8_t) byte;
 }
@@ -307,21 +354,21 @@ void sop::processor::ProcessorHandler::readOneByteFromInputAndSavesItOnYoungestB
 }
 void sop::processor::ProcessorHandler::printsOutYoungestByte(processor *proc)
 {
-  uint16_t *ptr = &proc->a;
+  uint16_t *ptr = &proc->b;
   uint8_t *wskByte = (uint8_t*) ptr;
   std::cout << (uint16_t) wskByte[0] << std::endl;
 }
 void sop::processor::ProcessorHandler::printsOutYoungestByteAsASCII(processor *proc)
 {
-  uint16_t *ptr = &proc->a;
+  uint16_t *ptr = &proc->b;
   uint8_t *wskByte = (uint8_t*) ptr;
   std::cout << wskByte[0] << std::endl;
 }
 void sop::processor::ProcessorHandler::printsOutRegisterWithoutSign(processor *proc)
 {
-  std::cout << proc->a << std::endl;
+  std::cout << proc->b << std::endl;
 }
 void sop::processor::ProcessorHandler::printsOutRegisterWithSign(processor *proc)
 {
-  std :: cout << (int16_t) proc->a << std::endl;
+  std :: cout << (int16_t) proc->b << std::endl;
 }

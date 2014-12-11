@@ -64,7 +64,7 @@ std::string sop::interpreter::InterpreterHandler::interpretLine(boost::shared_pt
   else if (_command_part == "CMP")
   {
     char src = _data_part[0];
-    char dst = _data_part[2];
+    char dst = _data_part[2]; //todo
     sop::processor::ProcessorHandler::compareRegisters(&p->procek,src,dst);    
   }
   else if (_command_part == "OR")
@@ -109,7 +109,7 @@ std::string sop::interpreter::InterpreterHandler::interpretLine(boost::shared_pt
     char dst = _data_part[2];
     sop::processor::ProcessorHandler::copySourceRegisterToDestinationRegister(&p->procek,dst,src);
   }
-  else if (_command_part == "PUSH")
+  else if (_command_part == "PUS")
   {
     char reg = _data_part[0];
     sop::processor::ProcessorHandler::addRegisterToStack(&p->procek,reg);
@@ -129,17 +129,17 @@ std::string sop::interpreter::InterpreterHandler::interpretLine(boost::shared_pt
   }
   else if (_command_part == "MOM")
   {
-    //MOM rejestr, offset - zapisuje zawartoœæ pamiêci spod adresu offset do rejestru rejestr
+    //MOM - wczytuje zaw. z pamieci pod rej. D do rej. C
     //funkcja fiszerowa
   }
   else if (_command_part == "CPY")
   {
-    //CPY offset, rejestr - kopiuje zawartoœæ rejestru rejestr do pamiêci pod adres offset 
+    //CPY  - kopiuje zaw. rej. C pod adres wskazany pod rej. D
     //funkcja fiszerowa
   }
   else if (_command_part == "EXT")
   {
-    return "EXT"; // dodaæ wartoœæ z jak¹ siê program zakonczyl 
+    return "EXT";//+value // dodaæ wartoœæ z jak¹ siê program zakonczyl 
     //pobraæ wartosc zakocnzenie programu od Michala
   }
   else if (_command_part == "CAL")
@@ -153,38 +153,38 @@ std::string sop::interpreter::InterpreterHandler::interpretLine(boost::shared_pt
   else if (_command_part == "JMP")
   {
     std::string s_value = _data_part.substr(0);
-    sop::processor::ProcessorHandler::doJMP(&p->procek,sop::StringConverter::convertStringToHex<uint16_t>(s_value));
+    sop::processor::ProcessorHandler::doJMP(&p->procek);
   }
   else if (_command_part == "JIZ")
   {
     std::string s_value = _data_part.substr(0);
-    sop::processor::ProcessorHandler::doJIZ(&p->procek,sop::StringConverter::convertStringToHex<uint16_t>(s_value));
+    sop::processor::ProcessorHandler::doJIZ(&p->procek);
   }
   else if (_command_part == "JNZ")
   {
     std::string s_value = _data_part.substr(0);
-    sop::processor::ProcessorHandler::doJNZ(&p->procek,sop::StringConverter::convertStringToHex<uint16_t>(s_value));
+    sop::processor::ProcessorHandler::doJNZ(&p->procek);
   }
   else if (_command_part == "JIA")
   {
     std::string s_value = _data_part.substr(0);
-    sop::processor::ProcessorHandler::doJIA(&p->procek,sop::StringConverter::convertStringToHex<uint16_t>(s_value));
+    sop::processor::ProcessorHandler::doJIA(&p->procek);
   }
   else if (_command_part == "JAE")
   {
     std::string s_value = _data_part.substr(0);
-    sop::processor::ProcessorHandler::doJAE(&p->procek,sop::StringConverter::convertStringToHex<uint16_t>(s_value));
+    sop::processor::ProcessorHandler::doJAE(&p->procek);
   }
   else if (_command_part == "JIB")
   {
     std::string s_value = _data_part.substr(0);
-    sop::processor::ProcessorHandler::doJIB(&p->procek,sop::StringConverter::convertStringToHex<uint16_t>(s_value));
+    sop::processor::ProcessorHandler::doJIB(&p->procek);
   }
   
   else if (_command_part == "JBE")
   {
     std::string s_value = _data_part.substr(0);
-    sop::processor::ProcessorHandler::doJNZ(&p->procek,sop::StringConverter::convertStringToHex<uint16_t>(s_value));
+    sop::processor::ProcessorHandler::doJNZ(&p->procek);
   }
 
   else if (_command_part == "REB")
@@ -207,8 +207,20 @@ std::string sop::interpreter::InterpreterHandler::interpretLine(boost::shared_pt
   {
     sop::processor::ProcessorHandler::printsOutRegisterWithoutSign(&p->procek);
   }
+  else if (_command_part == "FRK")
+  {
+
+  }
+  else if (_command_part == "EXC")
+  {
+
+  }
+  else if (_command_part == "WAT")
+  {
+
+  }
   //FRK wywolywane od M. Pietrzaka, 0 gdy potomek, PID potomka gdy dziecko
-  //
+  //PID do rej A
 
   //EXC otwiera plik o nazwie zapisanej w pamieci pod adresem pam w rej B
   //w rejestr C 0- nie udalo sie albo 1  - udalo

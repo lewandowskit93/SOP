@@ -20,7 +20,7 @@ void sop::processor::Scheduler::addProcess(boost::shared_ptr<sop::process::Proce
 
 void sop::processor::Scheduler::removeProcess(boost::shared_ptr<sop::process::Process> p, sop::processor::Scheduler *sched)
 {
-
+  
 }
 
 boost::shared_ptr<sop::process::Process> sop::processor::Scheduler::getHighestPriorityProcess()
