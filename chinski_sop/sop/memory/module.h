@@ -46,6 +46,7 @@ namespace sop
       void cH_readFrame(const std::vector<const std::string> & params);//odczytuje wskazan¹ ramkê z pamiêci fizycznej
       void cH_readFrameSwap(const std::vector<const std::string> & params);//odczytuje wskazan¹ ramkê ze swapa
       void cH_readByte(const std::vector<const std::string> & params);//odczytuje wskzany bit ze swapa/pamiêci fizycznej
+      void cH_deallocate(const std::vector<const std::string> & params);//stworzy 2 tablice stron i usunie pierwszy z nich
     };
   }
 }

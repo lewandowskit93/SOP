@@ -37,6 +37,7 @@ void sop::memory::Module::initialize()
   _kernel->getShell()->registerCommand("readFrame",&sop::memory::Module::cH_readFrame,this);
   _kernel->getShell()->registerCommand("readFrameSwap",&sop::memory::Module::cH_readFrameSwap,this);
   _kernel->getShell()->registerCommand("readByte",&sop::memory::Module::cH_readByte,this);
+  _kernel->getShell()->registerCommand("deallocate",&sop::memory::Module::cH_deallocate,this);
 }
 
 uint8_t sop::memory::Module::calculatePages(uint16_t program_size)
@@ -51,7 +52,7 @@ sop::memory::LogicalMemory sop::memory::Module::allocate(uint16_t program_size,u
 {
   if(calculatePages(program_size)>=this->physical_drive.getListForFreeFrames().size() && physical_drive.getDequeFrames().size()==0)
   {
-    _kernel->getLogger()->logMemory(sop::logger::Logger::Level::WARNING,"Cannot load program into memory");
+    _kernel->getLogger()->logMemory(sop::logger::Logger::Level::WARNING,"Cannot load program into memory,too big");
     LogicalMemory table_of_pages(0,_kernel->getLogger());
     return table_of_pages;//zwraca pust¹ tablice, gdy program jest za duzy, trzeba dalej spradzic po pageTableSize
   }
@@ -79,6 +80,19 @@ sop::memory::LogicalMemory sop::memory::Module::allocate(uint16_t program_size,u
 void sop::memory::Module::deallocate(sop::memory::LogicalMemory* page_table)
 {
   //wyczyscic pamie fizyzna, nadpisac zeraami//ew swapa i odpowiendio tabela ramek swapa OPCJONALNIE
+  uint16_t reference;
+  char zerowanie='0';
+  for(int i=0,j=0;i<page_table->getPageTableSize()* physical_drive.getFrameSize();++i,++j)
+  {
+     
+    if( j==32)
+      j=0;
+      
+
+    reference =page_table->getFrameNr(i/physical_drive.getFrameSize());//zwraca na której stronie aktualnie operujemy
+    reference=reference*physical_drive.getFrameSize();//adres pocz¹tkowy komórki w tablicy fizycznej
+    physical_drive.getStorage()[reference+j]=zerowanie;//wpisanie do pamiêci
+  }
   for(int i=0;i<page_table->getPageTableSize();++i)//odpowiada za zmiane danych w tabeli ramek pamiêci fizycznje/swapa na podstawie ka¿dej ze stron
   {
     if(page_table->getBitValidInvalid(i)==1)
@@ -124,21 +138,42 @@ char sop::memory::Module::read(LogicalMemory page_table, uint16_t byte_number)
 
 void sop::memory::Module::write(LogicalMemory page_table, std::string code)
 {
-  //if(code.empty()==true)
-  //error
-  //return
-
 
   uint16_t reference;
   
-  for(int i=0;i<code.size();++i)
+  for(int i=0,j=0;i<code.size();++i,++j)
   {
+     
+    if( j==32)
+      j=0;
+      
+
     reference =page_table.getFrameNr(i/physical_drive.getFrameSize());//zwraca na której stronie aktualnie operujemy
     reference=reference*physical_drive.getFrameSize();//adres pocz¹tkowy komórki w tablicy fizycznej
-    physical_drive.getStorage()[reference+i]=code.at(i);//wpisanie do pamiêci
+    physical_drive.getStorage()[reference+j]=code.at(i);//wpisanie do pamiêci
   }
+  //if(code.empty()==true)
+  //error
+  //return
+  //code size=35
+ // uint16_t frame_nr=page_table.getFrameNr(0)* physical_drive.getFrameSize(); //1*32
+  //for(int i=frame_nr,j=0;i<code.size();++i,++j)//i=32,i=33 j=1
+ // {
+  //  physical_drive.getStorage()[i]=code.at(j);//32 at(0),33 at(1)
+   // frame_nr=page_table.getFrameNr(j/physical_drive.getFrameSize());//0
+ // }
   
-    
+      //  adres poczatku=nr ramki +(reference*rozmiarstrony) +i
+    //adres strony 
+
+     
+    //reference =page_table.getFrameNr(i/physical_drive.getFrameSize());//zwraca na której stronie aktualnie operujemy
+    //reference=reference+physical_drive.getFrameSize();//adres pocz¹tkowy komórki w tablicy fizycznej
+   // physical_drive.getStorage()[reference+i]=code.at(i);//wpisanie do pamiêci
+  
+   
+  
+      
   for(int i=0;i<page_table.getPageTableSize();++i)
   {
     page_table.setBitBalidInvalid(i,1);
@@ -205,6 +240,7 @@ void sop::memory::Module::cH_showFrames(const std::vector<const std::string> & p
     counter++;
   }
   std::cout<<std::endl;
+ 
 }
 
 void sop::memory::Module::cH_showFramesSwap(const std::vector<const std::string> & params)
@@ -239,7 +275,7 @@ void sop::memory::Module::cH_writeToMemory(const std::vector<const std::string> 
 {
   if(sop::system::Shell::hasParam(params,"-h" )|| params.size()!=3)
   {
-     std::cout<<"readFrame [-h] string PID"<<std::endl;
+     std::cout<<"writeToMemory [-h] string PID"<<std::endl;
     std::cout<<"Write string of PID to memory"<<std::endl;
     return; // wyjdzie z tej funkcji, ¿eby nie trzeba by³o robiæ else
     
@@ -257,16 +293,34 @@ void sop::memory::Module::cH_readFrame(const std::vector<const std::string> & pa
 {
   if(sop::system::Shell::hasParam(params,"-h" )|| params.size()!=2)
   {
-    std::cout<<"writeToMemory [-h] frame_nr"<<std::endl;
+    std::cout<<"readFrame [-h] frame_nr"<<std::endl;
     std::cout<<"Read specified frame from physical memory"<<std::endl;
     return; // wyjdzie z tej funkcji, ¿eby nie trzeba by³o robiæ else
   }
   std::string txt="";
+
+  // for(int i=0,j=0;i<code.size();++i,++j)
+//  {
+ //    
+ //   if( j==32)
+ //    j=0;
+      
+
+   // reference =page_table.getFrameNr(i/physical_drive.getFrameSize());//zwraca na której stronie aktualnie operujemy
+ //   reference=reference*physical_drive.getFrameSize();//adres pocz¹tkowy komórki w tablicy fizycznej
+    //physical_drive.getStorage()[reference+j]=code.at(i);//wpisanie do pamiêci
+ //stare read:
+  //int16_t reference =(sop::StringConverter::convertStringTo<uint16_t>(params[1]) * this->physical_drive.getFrameSize());
+ // for(int i =reference;i<(reference+ this->physical_drive.getFrameSize());++i)
+  //{
+ //   txt=txt.append(sop::StringConverter::convertToString(this->physical_drive.getStorage()[reference+i]));
+ // }
   
   int16_t reference =(sop::StringConverter::convertStringTo<uint16_t>(params[1]) * this->physical_drive.getFrameSize());
-  for(int i =reference;i<(reference+ this->physical_drive.getFrameSize());++i)
+  uint16_t end=reference+ this->physical_drive.getFrameSize();
+  for(int i =reference;i<end;++i)
   {
-    txt=txt.append(sop::StringConverter::convertToString(this->physical_drive.getStorage()[reference+i]));
+    txt=txt.append(sop::StringConverter::convertToString(this->physical_drive.getStorage()[i]));
   }
   std::cout<<std::endl<<"Frame: "<<sop::StringConverter::convertToString(params[1])<<" contain: "<<std::endl<<txt<<std::endl;
 }
@@ -275,7 +329,7 @@ void sop::memory::Module::cH_readFrameSwap(const std::vector<const std::string> 
 {
   if(sop::system::Shell::hasParam(params,"-h" )|| params.size()!=2)
   {
-    std::cout<<"writeToMemory [-h] frame_nr"<<std::endl;
+    std::cout<<"readFrameSwap [-h] frame_nr"<<std::endl;
     std::cout<<"Read specified frame from swap file"<<std::endl;
     return; // wyjdzie z tej funkcji, ¿eby nie trzeba by³o robiæ else
   }
@@ -306,5 +360,127 @@ void sop::memory::Module::cH_readByte(const std::vector<const std::string> & par
   }
 
    std::cout<<"Byte: "<<sop::StringConverter::convertToString(params[3])<<" is "<< sop::StringConverter::convertToString(read(tabelka_stron,sop::StringConverter::convertStringTo<uint16_t>(params[3])))<<std::endl;
+}
+
+void sop::memory::Module::cH_deallocate(const std::vector<const std::string> & params)
+{
+  if(sop::system::Shell::hasParam(params,"-h" )|| params.size()!=1)
+  {
+     std::cout<<"deallocate [-h] "<<std::endl;
+    std::cout<<"Delete one of two created pages table(first will be deleted - 2 frames,second 3 frames )"<<std::endl;
+    return; // wyjdzie z tej funkcji, ¿eby nie trzeba by³o robiæ else
+    
+  }
+  std::string kod1="SystemyOperacyjneToJedenZPrzedmiotowKierunkuInformatyka";
+  std::string kod2="3,14159 26535 89793 23846 26433 83279 50288 41971 69399 37510 58209 74944 59230 78164 ";
+
+  LogicalMemory tabelka_stron1=allocate(kod1.size(),1);
+ 
+  write(tabelka_stron1,kod1);
+   for(int i=0;i<tabelka_stron1.getPageTableSize();++i)
+  {
+    std::cout<<"Page: "+sop::StringConverter::convertToString<uint16_t>(i)+" assigned to frame: "+sop::StringConverter::convertToString<uint16_t>(tabelka_stron1.getPage(i)->frame_number) +" bit valid: "+sop::StringConverter::convertToString<uint16_t>(tabelka_stron1.getPage(i)->valid_invalid);
+    std::cout<<std::endl;
+  }
+   //////////////////////////////////////
+  std::list<uint16_t> mylist=physical_drive.getListForFreeFrames();
+  std::cout<<"List of free frames on physical drive:"<<std::endl;
+  uint16_t counter=1;
+  for (std::list<uint16_t>::iterator it=mylist.begin(); it != mylist.end(); ++it)
+  {
+    std::cout << ' ' << sop::StringConverter::convertToString<uint16_t>(*it);
+    if(counter%16==0)
+      std::cout<<std::endl;
+    counter++;
+  }
+  std::cout<<std::endl;
+  std::cout<<"Number free frames on physical drive: ";
+  std::cout << sop::StringConverter::convertToString<uint16_t>(physical_drive.getNumberOfFreeFrames());
+  std::cout<<std::endl;
+  std::cout<<"Number of taken frames on physical drive: ";
+  std::cout << sop::StringConverter::convertToString<uint16_t>(physical_drive.getNumberOfNotFreeFrames());
+  std::cout<<std::endl;
+  std::cout<<"Deque of taken frames - FIFO: "<<std::endl;
+  std::deque<uint16_t> mydeque=physical_drive.getDequeFrames();
+  counter=1;
+  for (std::deque<uint16_t>::iterator it=mydeque.begin(); it != mydeque.end(); ++it)
+  {
+    std::cout << ' ' << sop::StringConverter::convertToString<uint16_t>(*it);
+    if(counter%16==0)
+      std::cout<<std::endl;
+    counter++;
+  }
+  std::cout<<std::endl;
+  
+   ////////////////////////////////////////////
+    LogicalMemory tabelka_stron2=allocate(kod2.size(),2);
+   write(tabelka_stron2,kod2);
+   for(int i=0;i<tabelka_stron2.getPageTableSize();++i)
+  {
+    std::cout<<"Page: "+sop::StringConverter::convertToString<uint16_t>(i)+" assigned to frame: "+sop::StringConverter::convertToString<uint16_t>(tabelka_stron2.getPage(i)->frame_number) +" bit valid: "+sop::StringConverter::convertToString<uint16_t>(tabelka_stron2.getPage(i)->valid_invalid);
+    std::cout<<std::endl;
+  }
+   ////////////////////////////////////
+
+  mylist=physical_drive.getListForFreeFrames();
+  std::cout<<"List of free frames on physical drive:"<<std::endl;
+  counter=1;
+  for (std::list<uint16_t>::iterator it=mylist.begin(); it != mylist.end(); ++it)
+  {
+    std::cout << ' ' << sop::StringConverter::convertToString<uint16_t>(*it);
+    if(counter%16==0)
+      std::cout<<std::endl;
+    counter++;
+  }
+  std::cout<<std::endl;
+  std::cout<<"Number free frames on physical drive: ";
+  std::cout << sop::StringConverter::convertToString<uint16_t>(physical_drive.getNumberOfFreeFrames());
+  std::cout<<std::endl;
+  std::cout<<"Number of taken frames on physical drive: ";
+  std::cout << sop::StringConverter::convertToString<uint16_t>(physical_drive.getNumberOfNotFreeFrames());
+  std::cout<<std::endl;
+  std::cout<<"Deque of taken frames - FIFO: "<<std::endl;
+  mydeque=physical_drive.getDequeFrames();
+  counter=1;
+  for (std::deque<uint16_t>::iterator it=mydeque.begin(); it != mydeque.end(); ++it)
+  {
+    std::cout << ' ' << sop::StringConverter::convertToString<uint16_t>(*it);
+    if(counter%16==0)
+      std::cout<<std::endl;
+    counter++;
+  }
+  std::cout<<std::endl;
+  ///////////////////
+  deallocate(&tabelka_stron1);
+  //////
+  mylist=physical_drive.getListForFreeFrames();
+  std::cout<<"List of free frames on physical drive:"<<std::endl;
+  counter=1;
+  for (std::list<uint16_t>::iterator it=mylist.begin(); it != mylist.end(); ++it)
+  {
+    std::cout << ' ' << sop::StringConverter::convertToString<uint16_t>(*it);
+    if(counter%16==0)
+      std::cout<<std::endl;
+    counter++;
+  }
+  std::cout<<std::endl;
+  std::cout<<"Number free frames on physical drive: ";
+  std::cout << sop::StringConverter::convertToString<uint16_t>(physical_drive.getNumberOfFreeFrames());
+  std::cout<<std::endl;
+  std::cout<<"Number of taken frames on physical drive: ";
+  std::cout << sop::StringConverter::convertToString<uint16_t>(physical_drive.getNumberOfNotFreeFrames());
+  std::cout<<std::endl;
+  std::cout<<"Deque of taken frames - FIFO: "<<std::endl;
+  mydeque=physical_drive.getDequeFrames();
+  counter=1;
+  for (std::deque<uint16_t>::iterator it=mydeque.begin(); it != mydeque.end(); ++it)
+  {
+    std::cout << ' ' << sop::StringConverter::convertToString<uint16_t>(*it);
+    if(counter%16==0)
+      std::cout<<std::endl;
+    counter++;
+  }
+  std::cout<<std::endl;
+
 }
 
