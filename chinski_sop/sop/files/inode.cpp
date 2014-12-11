@@ -104,9 +104,11 @@ std::vector<sop::files::dirList> sop::files::Inode::listDir(std::array<Block*, s
           out.drwx = "-";
           out.size = std::to_string(disk->at(x.second)->getSize());
         }
-        out.drwx += sop::users::PermissionsUtilities::getRWXString(this->permissions);
+        out.drwx += sop::users::PermissionsUtilities::getRWXString(disk->at(x.second)->getPermissions());
         out.name = x.first;
         out.block = x.second;
+        out.username = disk->at(x.second)->getUID();
+        out.group = disk->at(x.second)->getGID();
       }
       else
       {

@@ -27,7 +27,7 @@ namespace sop
         virtual std::string getClassName() const;
 
         bool hasPermission(sop::files::Inode *node, boost::shared_ptr<sop::process::Process> process, permission_t mode);
-        bool changePermissions(sop::files::Inode *node, boost::shared_ptr<sop::process::Process> process, const Permissions & permissions); //has to have permissions
+        bool changePermissions(sop::files::Inode *node, boost::shared_ptr<sop::process::Process> process, Permissions permissions); //has to have permissions
         bool changeINodeUserPermission(sop::files::Inode *node, boost::shared_ptr<sop::process::Process> process, permission_t mode);
         bool changeINodeGroupPermission(sop::files::Inode *node, boost::shared_ptr<sop::process::Process> process, permission_t mode);
         bool changeINodeOthersPermission(sop::files::Inode *node, boost::shared_ptr<sop::process::Process> process, permission_t mode);

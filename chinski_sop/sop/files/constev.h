@@ -23,6 +23,8 @@ namespace sop
       std::string size;
       std::string name;
       uint32_t block;
+      uint32_t username;
+      uint32_t group;
     };
 
     class ConstEV

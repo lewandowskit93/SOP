@@ -581,7 +581,7 @@ void sop::users::Module::cH_access(const std::vector<const std::string> & params
     std::cout<<"Shows if current user has access to file/directory."<<std::endl;
     return;
   }
-  sop::files::File *file= _kernel->getFilesModule()->fsxxxx->openFile(0,getPathFromParam(params[1]),"r");
+  sop::files::File *file= _kernel->getFilesModule()->fsxxxx->openFile(sop::process::getProcess(0),getPathFromParam(params[1]),"r");
   if(!file)
   {
     std::cout<<"Access problem."<<std::endl;
@@ -607,7 +607,7 @@ void sop::users::Module::cH_chmod(const std::vector<const std::string> & params)
     std::cout<<"Changes permissions to a file."<<std::endl;
     return;
   }
-  sop::files::File *file= _kernel->getFilesModule()->fsxxxx->openFile(0,getPathFromParam(params[1]),"w");
+  sop::files::File *file= _kernel->getFilesModule()->fsxxxx->openFile(sop::process::getProcess(0),getPathFromParam(params[1]),"w");
   if(!file)
   {
     std::cout<<"Access problem."<<std::endl;
@@ -637,7 +637,7 @@ void sop::users::Module::cH_chown(const std::vector<const std::string> & params)
     std::cout<<"Changes file owner."<<std::endl;
     return;
   }
-  sop::files::File *file= _kernel->getFilesModule()->fsxxxx->openFile(0,getPathFromParam(params[1]),"w");
+  sop::files::File *file= _kernel->getFilesModule()->fsxxxx->openFile(sop::process::getProcess(0),getPathFromParam(params[1]),"w");
   if(!file)
   {
     std::cout<<"Access problem."<<std::endl;
@@ -663,7 +663,7 @@ void sop::users::Module::cH_chgrp(const std::vector<const std::string> & params)
     std::cout<<"Changes filename group owner."<<std::endl;
     return;
   }
-  sop::files::File *file= _kernel->getFilesModule()->fsxxxx->openFile(0,getPathFromParam(params[1]),"w");
+  sop::files::File *file= _kernel->getFilesModule()->fsxxxx->openFile(sop::process::getProcess(0),getPathFromParam(params[1]),"w");
   if(!file)
   {
     std::cout<<"Access problem."<<std::endl;

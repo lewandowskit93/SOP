@@ -47,13 +47,16 @@ bool sop::users::PermissionsManager::hasPermission(sop::files::Inode *node, boos
   }
 }
 
-bool sop::users::PermissionsManager::changePermissions(sop::files::Inode *node, boost::shared_ptr<sop::process::Process> process, const Permissions & permissions)
+bool sop::users::PermissionsManager::changePermissions(sop::files::Inode *node, boost::shared_ptr<sop::process::Process> process, Permissions permissions)
 {
   _module->getKernel()->getLogger()->logUsers(sop::logger::Logger::Level::INFO,"Changing inode permissions.");
   if(hasPermission(node,process,Permissions::kW))
   {
     _module->getKernel()->getLogger()->logUsers(sop::logger::Logger::Level::FINE,"Permissions changed.");
-    node->getPermissions()=permissions;
+    node->getPermissions().user=permissions.user;
+    node->getPermissions().group=permissions.group;
+    node->getPermissions().others=permissions.others;
+    std::cout<<node<<std::endl;
     return true;
   }
   return false;

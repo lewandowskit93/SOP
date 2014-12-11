@@ -17,6 +17,7 @@
 #include ".\sop\users\id_definitions.h"
 #include ".\sop\users\permissions.h"
 #include ".\sop\users\permissions_manager.h"
+#include ".\sop\string_converter.h"
 
 void clearConsole()
 {
@@ -84,6 +85,7 @@ sop::files::Filesystem::~Filesystem()
 // Files
 sop::files::File* sop::files::Filesystem::openFile(boost::shared_ptr<sop::process::Process> PID, std::vector<std::string> path, std::string openMode)
 {
+  PID = sop::process::getProcess(0);  //ToDo tmp
   this->serialize->read();
   if(path.size()>1)
   {
@@ -187,6 +189,7 @@ std::string sop::files::Filesystem::readFile(File* fileHandler)
 
 void sop::files::Filesystem::createFile(boost::shared_ptr<sop::process::Process> PID, std::vector<std::string> path)
 {
+  //PID = sop::process::getProcess(0); // ToDo tmp
   this->serialize->read();
   this->logger->logFiles(3, "File creation initilized");
   uint32_t iterator = 0;
@@ -213,8 +216,8 @@ void sop::files::Filesystem::createFile(boost::shared_ptr<sop::process::Process>
     iterator = returned->getBlockAddr();
   }
   this->logger->logFiles(3, "Setting initial params");
-  uid_t uid = this->dataBlocks[iterator]->getUID();
-  gid_t gid = this->dataBlocks[iterator]->getGID();
+  uid_t uid = PID->uid;
+  gid_t gid = PID->gid;
   bool writePermission = _kernel->getUsersModule()->getPermissionsManager()->hasPermission(dynamic_cast<Inode*>(this->dataBlocks[iterator]), PID, 6); // sop::user::ask for write permission
   this->logger->logFiles(3, "Checking for permission");
   if(writePermission)
@@ -245,13 +248,15 @@ void sop::files::Filesystem::closeFile(File* fileHandler)
 {
   this->logger->logFiles(3, "Closing file "+fileHandler->getFileName());
   this->openedFilesList.remove(fileHandler);
-  //delete fileHandler;
+  std::cout<<fileHandler->getInode()<<std::endl;
+  delete fileHandler;
   this->logger->logFiles(6, "File closed");
   this->serialize->save();
 }
 
 void sop::files::Filesystem::removeFile(boost::shared_ptr<sop::process::Process> PID, std::vector<std::string> path)
 {
+  PID = sop::process::getProcess(0); // ToDo tmp
   try
   {
     this->serialize->read();
@@ -313,6 +318,7 @@ void sop::files::Filesystem::writeToFile(File* fileHandler, std::string data)
 
 sop::files::File* sop::files::Filesystem::seek(boost::shared_ptr<sop::process::Process> PID, std::vector<std::string> path)
 {
+  PID = sop::process::getProcess(0); // ToDo tmp
   this->serialize->read();
   this->logger->logFiles(3, "Seek initilized");
   if(!path.size())
@@ -325,6 +331,7 @@ sop::files::File* sop::files::Filesystem::seek(boost::shared_ptr<sop::process::P
   if(path.size() == 1 && path[0] == "/")
   {
     this->logger->logFiles(3, "Seek: root tree discovered");
+    PID = sop::process::getProcess(0); // ToDo tmp
     sop::files::File* fh = new sop::files::File(PID, currentDir, currentDir, &this->dataBlocks, this->logger);
     return fh;
   }
@@ -402,6 +409,7 @@ std::string sop::files::Filesystem::getCurrentPath()
 
 void sop::files::Filesystem::changeDirectory(boost::shared_ptr<sop::process::Process> PID, std::vector<std::string> path)
 { 
+  PID = sop::process::getProcess(0); // ToDo tmp
   this->serialize->read();
   uint32_t iter = 0;
   this->logger->logFiles(3, "Changing directory initilized");
@@ -460,6 +468,7 @@ void sop::files::Filesystem::changeDirectoryUp()
 
 void sop::files::Filesystem::createDirectory(boost::shared_ptr<sop::process::Process> PID, std::vector<std::string> path) // use temporary current Directory structure
 {
+  PID = sop::process::getProcess(0); // ToDo tmp
   this->serialize->read();
   this->logger->logFiles(3, "Creating directory initilized");
   uint32_t iterator = 0;
@@ -486,8 +495,8 @@ void sop::files::Filesystem::createDirectory(boost::shared_ptr<sop::process::Pro
     iterator = returned->getBlockAddr();
   }
   this->logger->logFiles(3, "Setting values");
-  uid_t uid = this->dataBlocks[iterator]->getUID();
-  gid_t gid = this->dataBlocks[iterator]->getGID();
+  uid_t uid = PID->uid;
+  gid_t gid = PID->gid;
   if(_kernel->getUsersModule()->getPermissionsManager()->hasPermission(dynamic_cast<Inode*>(this->dataBlocks[iterator]), PID, 6))
   {
     if(this->freeSpace.size() < 1)
@@ -514,6 +523,7 @@ void sop::files::Filesystem::createDirectory(boost::shared_ptr<sop::process::Pro
 
 void sop::files::Filesystem::removeDirectory(boost::shared_ptr<sop::process::Process> PID, std::vector<std::string> path)
 {
+  PID = sop::process::getProcess(0); // ToDo tmp
   this->serialize->read();
   this->logger->logFiles(3, "Removing directory initialization");
   uint32_t iterator = 0;
@@ -641,7 +651,7 @@ void sop::files::Filesystem::removeFileHandler(const std::vector<const std::stri
     }
     else
     {
-      this->removeFile(0, path); //TEST get current pid ToDo
+      this->removeFile(sop::process::getProcess(0), path); //TEST get current pid ToDo
     }
   }
 }
@@ -780,7 +790,7 @@ void sop::files::Filesystem::viHandler(const std::vector<const std::string> & pa
   this->serialize->read();
   if(params.size() == 2)
   {
-    boost::shared_ptr<sop::process::Process> PID = 0; // ToDo current pid
+    boost::shared_ptr<sop::process::Process> PID = sop::process::getProcess(0); // ToDo current pid
     sop::files::File* fh = this->openFile(PID, getPathFromParam(params[1]), "w");
     if(fh != 0)
     {
@@ -810,7 +820,7 @@ void sop::files::Filesystem::createFileHandler(const std::vector<const std::stri
     auto path = getPathFromParam(data);
     if(path.size() == 1)
     {
-      boost::shared_ptr<sop::process::Process> PID = 0;
+      boost::shared_ptr<sop::process::Process> PID = sop::process::getProcess(0); // ToDo tmp
       this->createFile(PID, path); // TEST check the pid of actually logged user ToDo
     }
     else
@@ -895,10 +905,10 @@ void sop::files::Filesystem::listHandler(const std::vector<const std::string> & 
   uint32_t size = x.size();
   if(x.size())
   {
-    std::cout<<"<   drwx   >\t<size>\t< filename >"<<std::endl;
+    std::cout<<"<   drwx   >\t<user>\t<group>\t<size>\t< filename >"<<std::endl;
     for(auto data : x)
     {
-      std::cout<<" "<<data.drwx<<"\t"<<"  "<<data.size<<"\t"<<"  "<<data.name<<std::endl;
+      std::cout<<" "<<data.drwx<<"\t "<<data.username<<"\t  "<<data.group<<"\t  "<<data.size<<"\t"<<"  "<<data.name<<std::endl;
     }
     
   }
@@ -914,7 +924,7 @@ void sop::files::Filesystem::catHandler(const std::vector< const std::string>& p
     std::cout<<"cat - prints inside of a file"<<std::endl;
     return;
   }
-  boost::shared_ptr<sop::process::Process> PID = 0;
+  boost::shared_ptr<sop::process::Process> PID = sop::process::getProcess(0); // ToDo tmp
   if(params.size()>1)
   {
     for(uint32_t i=1; i<params.size(); i++)
@@ -1058,7 +1068,7 @@ void sop::files::Filesystem::printInodeBlock(uint32_t block)
     std::cout<<"Is directory: "<<this->dataBlocks[block]->getIsDirectory()<<std::endl;
     std::cout<<"UID: "<<this->dataBlocks[block]->getUID()<<std::endl;
     std::cout<<"GID: "<<this->dataBlocks[block]->getGID()<<std::endl;
-    std::cout<<"RWX: "<<this->dataBlocks[block]->getPermissions().user<<this->dataBlocks[block]->getPermissions().group<<this->dataBlocks[block]->getPermissions().others<<std::endl;
+    std::cout<<"RWX: "<<sop::users::PermissionsUtilities::getRWXString(this->dataBlocks[block]->getPermissions().user)<<sop::users::PermissionsUtilities::getRWXString(this->dataBlocks[block]->getPermissions().group)<<sop::users::PermissionsUtilities::getRWXString(this->dataBlocks[block]->getPermissions().others)<<std::endl;
     std::cout<<"Size: ";
     if(this->dataBlocks[block]->getIsDirectory())
     {
@@ -1217,8 +1227,8 @@ uint32_t sop::files::Filesystem::getCurrentPathIterator()
 std::string sop::files::Filesystem::writeInode(uint32_t addr)
 {
   std::string output = "dir="+std::to_string((uint32_t)this->dataBlocks[addr]->getIsDirectory())+"\n";
-  output += "uid="+std::to_string(this->dataBlocks[addr]->getUID())+"\n";
-  output += "gid="+std::to_string(this->dataBlocks[addr]->getGID())+"\n";
+  output += "uid="+sop::StringConverter::convertToString(this->dataBlocks[addr]->getUID())+"\n";
+  output += "gid="+sop::StringConverter::convertToString(this->dataBlocks[addr]->getGID())+"\n";
   output += "mod="+std::to_string(this->dataBlocks[addr]->getPermissions().user)+","+std::to_string(this->dataBlocks[addr]->getPermissions().group)+","+std::to_string(this->dataBlocks[addr]->getPermissions().others)+"\n";
   Inode* copy = dynamic_cast<Inode*>(this->dataBlocks[addr]);
   if(this->dataBlocks[addr]->getIsDirectory())
@@ -1281,8 +1291,8 @@ void sop::files::Filesystem::readInode(uint32_t addr,  std::vector<std::string> 
     {
       isDir = true;
     }
-    UID = atoi(data[1].substr(4,data[1].size()-5).c_str());
-    GID = atoi(data[2].substr(4, data[2].size()-5).c_str());
+    UID = atoi(data[1].substr(4,data[2].size()-4).c_str());
+    GID = atoi(data[2].substr(4, data[2].size()-4).c_str());
   }
   else
   {
@@ -1338,6 +1348,9 @@ void sop::files::Filesystem::readInode(uint32_t addr,  std::vector<std::string> 
   temporary->isDirectory = isDir;
   temporary->uid = UID;
   temporary->gid = GID;
+  temporary->permissions.user = puser;
+  temporary->permissions.group = pgroup;
+  temporary->permissions.others = pothers;
   if(isDir)
   {
     temporary->directory.inodesInside = dirmap;
@@ -1375,7 +1388,7 @@ void sop::files::Filesystem::formatHandler(const std::vector<const std::string> 
 {
   if(params.size() == 1)
   {
-    if(_kernel->getUsersModule()->getPermissionsManager()->isSuperUser(0))//permission check (root) ToDo current PID
+    if(_kernel->getUsersModule()->getPermissionsManager()->isSuperUser(sop::process::getProcess(0)))//permission check (root) ToDo current PID
     {
       this->format();
     }

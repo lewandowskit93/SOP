@@ -4,7 +4,7 @@
 #include <boost\shared_ptr.hpp>
 
 sop::files::File::File(boost::shared_ptr<sop::process::Process> PID, uint32_t parentCatalog, uint32_t blockAddress, std::array<sop::files::Block*, sop::files::ConstEV::numOfBlocks>* disk, sop::logger::Logger* logger) : 
-  PIDHolder(PID),
+  PIDHolder(sop::process::getProcess(0)),
   parentCatalogAddress(parentCatalog),
   blockAddress(blockAddress),
   isDataLoaded(0),
@@ -30,7 +30,7 @@ sop::files::File::File(boost::shared_ptr<sop::process::Process> PID, uint32_t pa
 
 sop::files::File::~File()
 {
-  if(this->blockAddress > 0 && this->blockAddress < sop::files::ConstEV::blockSize)
+  if(this->blockAddress != 0)
   {
     this->drive->at(this->blockAddress)->toggleLock();
   }
@@ -165,7 +165,7 @@ sop::files::Inode* sop::files::File::getInode()
 {
   if(this->drive !=0 && this->blockAddress >= 0 && this->blockAddress < sop::files::ConstEV::numOfBlocks)
   {
-    return new Inode(*dynamic_cast<sop::files::Inode*>(this->drive->at(this->blockAddress)));
+    return dynamic_cast<sop::files::Inode*>(this->drive->at(this->blockAddress));
   }
   return nullptr;
 }
