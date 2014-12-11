@@ -51,7 +51,7 @@ namespace sop
         //funkcja zabijajaca proces
         void kill(boost::shared_ptr<sop::process::Process>);
         //funkcja zamykajaca proces
-        void exit(boost::shared_ptr<sop::process::Process>);
+        void exit(boost::shared_ptr<sop::process::Process>, uint8_t ExitCode);
         //definicja kolejki PIDow
         std::queue <uint16_t> PIDlist;
         //funkcja wype³niaj¹ca kolejke PIDami
