@@ -84,8 +84,11 @@ sop::files::gid_t sop::files::File::getGID()
 void sop::files::File::loadData()
 {
   this->logger->logFiles(3, "File: loading data");
-  sop::files::Block* filenode = this->drive->at(this->blockAddress);
-  this->data = filenode->getData_i(this->drive);
+  if(this->blockAddress != 0)
+  {
+    sop::files::Block* filenode = this->drive->at(this->blockAddress);
+    this->data = filenode->getData_i(this->drive);
+  }
 }
 
 void sop::files::File::writeToFile(std::string text, std::vector<uint32_t>* freeSpace)

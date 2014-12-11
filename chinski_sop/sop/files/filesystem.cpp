@@ -1325,7 +1325,7 @@ void sop::files::Filesystem::readInode(uint32_t addr,  std::vector<std::string> 
     data[5].erase(data[5].find("indirect="), 9);
     while(data[5].size())
     {
-      indirect.push_back(atoi(data[4].substr(0, data[5].find(",")).c_str()));
+      indirect.push_back(atoi(data[5].substr(0, data[5].find(",")).c_str()));
       data[5].erase(0, data[5].find(",")+1);
     }
     data[6].erase(data[6].find("size="), 5);
@@ -1352,9 +1352,9 @@ void sop::files::Filesystem::readInode(uint32_t addr,  std::vector<std::string> 
       temporary->file.directBlockAddr[i] = direct[i];
     }
     temporary->file.indirectBlockAddr.clear();
-    for(auto x : indirect)
+    for(uint32_t i=0; i<indirect.size(); i++)
     {
-      temporary->file.indirectBlockAddr.push_back(x);
+      temporary->file.indirectBlockAddr.push_back(indirect[i]);
     }
     temporary->file.size = size;
   }
