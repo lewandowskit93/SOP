@@ -144,11 +144,11 @@ std::string sop::interpreter::InterpreterHandler::interpretLine(boost::shared_pt
   }
   else if (_command_part == "CAL")
   {
-    //////narazie nie
+    sop::processor::ProcessorHandler::savesReturnAdresOnStack(&p->procek);
   }
   else if (_command_part == "RET")
   {
-    //////narazie nie
+    sop::processor::ProcessorHandler::loadsValueFromStackAndJumpOnIt(&p->procek);
   }
   else if (_command_part == "JMP")
   {
@@ -206,6 +206,11 @@ std::string sop::interpreter::InterpreterHandler::interpretLine(boost::shared_pt
   else if (_command_part == "WRU")
   {
     sop::processor::ProcessorHandler::printsOutRegisterWithoutSign(&p->procek);
+  }
+  else if (_command_part == "SWB")
+  {
+    char reg = _data_part[0];
+    sop::processor::ProcessorHandler::swapBytes(&p->procek);
   }
   else if (_command_part == "FRK")
   {
