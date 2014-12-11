@@ -38,7 +38,8 @@ public:
   void popFrontListOfFreeFrames();//usuwa ramke bedaca z przodu listy wolnych ramek
   void pushEndListOfFreeFrames(uint16_t frame_nr);//wstawia na koniec listy nr wolnej ramki
   void FindAndEraseFromDeque(uint16_t frame_nr);//usuniêcie ramki z kolejki ramek
-  
+  std::list <uint16_t> getListForFreeFrames();//zwrca  listê wolnych ramek
+  std::deque <uint16_t>getDequeFrames();//zwraca kolejke na zajmowane kolejki wg FIFO
 protected:
   
 private:

@@ -24,7 +24,7 @@ public:
   void setPage(uint8_t frame_nr,char val_inv,uint8_t page_nr);//ustawia poszczególnej strony i jej parametrów
   char getBitValidInvalid(uint8_t page_nr);//zwraca wartosc bitu valid/invalid
   uint16_t getFrameNr(uint8_t page_nr);//zwraca nr ramki ze struktury strona
-  
+  void setBitBalidInvalid(uint8_t page_nr, char bit);
 protected:
 
 private:

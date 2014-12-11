@@ -6,7 +6,7 @@
 
 
 sop::memory::Module::Module(sop::system::Kernel *kernel):
-  sop::system::Module(kernel),physical_drive(4096,32,_kernel->getLogger()),swap_drive(4096,32,_kernel->getLogger())//stworzenie pamiêci fizycznej i pliku wymiany o rozmiarze ca³kowitym, rozmairze 1 ramki
+  sop::system::Module(kernel),physical_drive(1024,32,_kernel->getLogger()),swap_drive(1024,32,_kernel->getLogger())//stworzenie pamiêci fizycznej i pliku wymiany o rozmiarze ca³kowitym, rozmairze 1 ramki
 {
 
 }
@@ -30,6 +30,7 @@ void sop::memory::Module::initialize()
   //inicjalizacja komend
   
   _kernel->getShell()->registerCommand("allocate",&sop::memory::Module::cH_allocate,this);
+  _kernel->getShell()->registerCommand("lsFrames",&sop::memory::Module::cH_showFrames,this);
  
 }
 
@@ -97,8 +98,13 @@ void sop::memory::Module::write(LogicalMemory page_table, std::string code)
       physical_drive.getStorage()[page_table.getFrameNr(i/physical_drive.getFrameSize())*physical_drive.getFrameSize()+j]=code.at(i);
     }
   }
+  for(int i=0;i<page_table.getPageTableSize();++i)
+  {
+    page_table.setBitBalidInvalid(i,1);
+  }
    _kernel->getLogger()->logMemory(sop::logger::Logger::Level::INFO,"Program has been loaded to memory");
 
+   //bit valid na 1
 }
 
 //kody komend
@@ -120,6 +126,44 @@ void sop::memory::Module::cH_allocate(const std::vector<const std::string> & par
     std::cout<<"Page: "+sop::StringConverter::convertToString<uint16_t>(i)+" assigned to frame: "+sop::StringConverter::convertToString<uint16_t>(tabelka_stron.getPage(i)->frame_number) +" bit valid: "+sop::StringConverter::convertToString<uint16_t>(tabelka_stron.getPage(i)->valid_invalid);
     std::cout<<std::endl;
   }
+}
+
+void sop::memory::Module::cH_showFrames(const std::vector<const std::string> & params)
+{
+  if(sop::system::Shell::hasParam(params,"-h" )|| params.size()>1)
+  {
+    std::cout<<"lsFrames [-h] "<<std::endl;
+    std::cout<<"Display a frames statistics"<<std::endl;
+    return; // wyjdzie z tej funkcji, ¿eby nie trzeba by³o robiæ else
+  }
+  std::list<uint16_t> mylist=physical_drive.getListForFreeFrames();
+  std::cout<<"List of free frames:"<<std::endl;
+  uint16_t counter=1;
+  for (std::list<uint16_t>::iterator it=mylist.begin(); it != mylist.end(); ++it)
+  {
+    std::cout << ' ' << sop::StringConverter::convertToString<uint16_t>(*it);
+    if(counter%16==0)
+      std::cout<<std::endl;
+    counter++;
+  }
+  std::cout<<std::endl;
+  std::cout<<"Number free frames: ";
+  std::cout << sop::StringConverter::convertToString<uint16_t>(physical_drive.getNumberOfFreeFrames());
+   std::cout<<std::endl;
+  std::cout<<"Number of taken frames: ";
+  std::cout << sop::StringConverter::convertToString<uint16_t>(physical_drive.getNumberOfNotFreeFrames());
+  std::cout<<std::endl;
+  std::cout<<"Deque of taken frames - FIFO: "<<std::endl;
+  std::deque<uint16_t> mydeque=physical_drive.getDequeFrames();
+  counter=1;
+   for (std::deque<uint16_t>::iterator it=mydeque.begin(); it != mydeque.end(); ++it)
+  {
+    std::cout << ' ' << sop::StringConverter::convertToString<uint16_t>(*it);
+    if(counter%16==0)
+      std::cout<<std::endl;
+    counter++;
+  }
+    std::cout<<std::endl;
 }
 
 

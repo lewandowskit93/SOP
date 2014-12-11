@@ -38,7 +38,9 @@ namespace sop
         PhysicalMemory physical_drive;//nasza pamiêæ fizyczna, pierwszy argument to rozmair w bajtach, a drugi rozmiar ramki
         uint8_t calculatePages(uint16_t program_size); //zwraca liczbê stron niezbêdn¹ dla danego programu
         SwapFile swap_drive;
+        //komendy
         void cH_allocate(const std::vector<const std::string> & params); //definicja polecenia do shella odpowidzialnej za przydzielenie pamiêci
+        void cH_showFrames(const std::vector<const std::string> & params);
     };
   }
 }

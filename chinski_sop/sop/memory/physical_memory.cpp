@@ -12,7 +12,7 @@ sop::memory::PhysicalMemory::PhysicalMemory(uint16_t storage_size,uint8_t frame_
   setNubmerOfFreeFrames(getNumberOfFrames());
   setNumberOfNotFreeFrames(getNumberOfFrames() - getNumberOfFreeFrames());
   this->guardian_of_free_frames=(uint8_t)ceil((float)getNumberOfFrames()*0.1);
-  for(int i=0;i<getNumberOfFrames();++i)//< czy <= ??
+  for(int i=0;i<getNumberOfFrames()-getGuardianLevelofFreeFrames();++i)
   {
     list_of_free_frames.push_back(i);
   }
@@ -97,6 +97,16 @@ void::sop::memory::PhysicalMemory::pushEndListOfFreeFrames(uint16_t frame_nr)
   this->list_of_free_frames.push_back(frame_nr);
 }
 
+std::list <uint16_t> sop::memory::PhysicalMemory::getListForFreeFrames()
+{
+  return this->list_of_free_frames;
+}
+
+std::deque <uint16_t> sop::memory::PhysicalMemory::getDequeFrames()
+{
+  return this->assigned_frames_deque;
+}
+
 void::sop::memory::PhysicalMemory::FindAndEraseFromDeque(uint16_t frame_nr)
 {
   uint16_t temp=0;//zmienna sluzaca do przeusniecia iteratora tak zeby usunac to co trzeba
@@ -144,6 +154,7 @@ void sop::memory::PhysicalMemory::getFreeFrames(uint8_t pages_needed,sop::memory
    //   if(tabelaProcesu->getPage(i)->frame_number == this->assigned_frames_deque.front())
    //     victim_page=i;
    // } 
+      //TO DO wypisc ze program nie moze byc wieksyz niz dostepna pamiec
     swap(file_swap,table_of_pages,victim_page,this->assigned_frames_deque.front());//przerzucenie zawartosci struktury ramka do swapa
     this->setNubmerOfFreeFrames(this->getNumberOfFreeFrames()+1);//zwiêkszenie liczby wolnych ramek
     this->setNumberOfNotFreeFrames(this->getNumberOfFrames() - this->getNumberOfFreeFrames());//zmniejszenie liczby zajêtych ramek
@@ -158,8 +169,8 @@ void sop::memory::PhysicalMemory::getFreeFrames(uint8_t pages_needed,sop::memory
     //jeœli poziom wolnych ramek jest odpowiedni po zabraniu ramek to wykonaj:
     for(int i=0;i<pages_needed;++i)
     {
-      ///dobrze zmiana liczby strony?
-      table_of_pages->setPage(this->list_of_free_frames.front(),1,i);//przydzielenie ramki danej stronie i ustawienie valid na 1
+      
+      table_of_pages->setPage(this->list_of_free_frames.front(),0,i);//przydzielenie ramki danej stronie i ustawienie valid na 0 bo jeszcze nie w pamieci
       this->setNubmerOfFreeFrames(this->getNumberOfFreeFrames()-1);//zmniejsza liczbê wolnych ramek
       this->setNumberOfNotFreeFrames(this->getNumberOfFrames() - this->getNumberOfFreeFrames());//zwiêksza liczbê zajêtych ramek
       this->setFrame(pid,i,this->list_of_free_frames.front());//przypisanie strony danej ramce, informacje o tym zapisane w tabeli ramek

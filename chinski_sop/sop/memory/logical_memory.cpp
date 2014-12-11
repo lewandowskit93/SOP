@@ -45,5 +45,8 @@ void sop::memory::LogicalMemory::setPage(uint8_t frame_nr,char val_inv,uint8_t p
   this->page_table[page_nr].valid_invalid=val_inv;
 }
 
-
+void sop::memory::LogicalMemory::setBitBalidInvalid(uint8_t page_nr, char bit)
+{
+  this->page_table[page_nr].valid_invalid=bit;
+}
 
