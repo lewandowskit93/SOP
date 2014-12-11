@@ -11,6 +11,15 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="sop\files\block.h" />
+    <ClInclude Include="sop\files\data.h" />
+    <ClInclude Include="sop\files\constev.h" />
+    <ClInclude Include="sop\files\file.h" />
+    <ClInclude Include="sop\files\filesystem.h" />
+    <ClInclude Include="sop\files\filesystem_s.h" />
+    <ClInclude Include="sop\files\inode.h" />
+    <ClInclude Include="sop\files\serialize.h" />
+    <ClInclude Include="sop\files\temporary.h" />
     <ClInclude Include="sop\initializable.h" />
     <ClInclude Include="sop\exception.h" />
     <ClInclude Include="sop\files\exceptions\module_exception.h" />
@@ -44,6 +53,13 @@
     <ClInclude Include="sop\users\users_manager.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="sop\files\block.cpp" />
+    <ClCompile Include="sop\files\data.cpp" />
+    <ClCompile Include="sop\files\file.cpp" />
+    <ClCompile Include="sop\files\filesystem.cpp" />
+    <ClCompile Include="sop\files\filesystem_s.cpp" />
+    <ClCompile Include="sop\files\inode.cpp" />
+    <ClCompile Include="sop\files\serialize.cpp" />
     <ClCompile Include="sop\initializable.cpp" />
     <ClCompile Include="sop\exception.cpp" />
     <ClCompile Include="sop\files\exceptions\module_exception.cpp" />
@@ -76,6 +92,9 @@
     <ClCompile Include="sop\users\priority_manager.cpp" />
     <ClCompile Include="sop\users\user.cpp" />
     <ClCompile Include="sop\users\users_manager.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ClassDiagram.cd" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{A7530614-D6A8-4614-BDCA-4ADCEF9E4DDD}</ProjectGuid>
