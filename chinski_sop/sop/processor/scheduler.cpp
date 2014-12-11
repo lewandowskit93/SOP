@@ -132,10 +132,12 @@ bool sop::processor::Scheduler::secondIsActive()
   else return false;
 }
 
-sop::processor::Scheduler::Scheduler():
+sop::processor::Scheduler::Scheduler(sop::logger::Logger* logger):
+  logger(logger),
   _isFirstActive(true),
   _isSecondActive(false)
   {
+    this->logger->logProcessor(3,"Scheduler initialized!");
     for (uint8_t i = 0 ; i < 10 ; i++)
     {
       _first_task_array.push_back(std::queue<boost::shared_ptr<sop::process::Process> >());

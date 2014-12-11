@@ -5,19 +5,20 @@
 #include <iostream>
 sop::processor::ExecutiveUnit::ExecutiveUnit(sop::logger::Logger* logger):
   logger(logger),
-  _standardQuantTime(1)
+  interpreter(logger),
+  scheduler(logger),
+  _standardQuantTime(100)
   {
-    this->logger->logProcessor(3,"Initializing processing unit.");
-    this->logger->logProcessor(3,"Looking for errors...");
+    this->logger->logProcessor(3,"Processing unit initialized!");
+    //this->logger->logProcessor(3,"Looking for errors...");
     resetQuantTime();
-    this->logger->logProcessor(3,"Initialization done.");
+    //this->logger->logProcessor(3,"Initialization done.");
     testerMethod();
   }
 
 void sop::processor::ExecutiveUnit::testerMethod()
 {
   boost::shared_ptr<sop::process::Process> test (new sop::process::Process());
-  test->procek.a = 0;
   scheduler.addToActiveTaskArray(test);
 }
 
@@ -39,10 +40,18 @@ void sop::processor::ExecutiveUnit::resetQuantTime()
 }
 std::string sop::processor::ExecutiveUnit::processorTick()
 {
-  interpreter.buildProgramLine(_runningProcess); 
-  std::string msg = interpreter.interpretLine(_runningProcess);
-  interpreter.interpreterReset();
-  return msg;
+  if (_runningProcess==0)
+  {
+    return "EXT";
+  }
+  else 
+  {
+    interpreter.buildProgramLine(_runningProcess); 
+    std::string msg = interpreter.interpretLine(_runningProcess);
+    interpreter.interpreterReset();
+    return msg;
+  }
+  
 }
 
 void sop::processor::ExecutiveUnit::mainExecutiveLoop()
@@ -76,7 +85,7 @@ void sop::processor::ExecutiveUnit::cH_showQuantTimeLeft(const std::vector<const
   }
   else if(sop::system::Shell::hasParam(params,"-h") || params.size()==1)
   {
-    std::cout<<"sqtleft [-h]"<<std::endl;
+    std::cout<<"quanttime [-h]"<<std::endl;
     std::cout<<"Shows the quant time that is left"<<std::endl;
   }
 }
@@ -117,6 +126,10 @@ void sop::processor::ExecutiveUnit::cH_showActualProcessorState(const std::vecto
      {
        //if(_lastUsedProcess) 
         ProcessorHandler::printOutProcessorState(&_lastUsedProcess->procek);
+     }
+     else 
+     {
+       std::cout<<"No processor state to show!"<<std::endl;
      }
    }
    else if(sop::system::Shell::hasParam(params,"-h") || params.size()==1)

@@ -4,6 +4,7 @@
 #include "./sop/processor/processor.h"
 #include "./sop/processes/class_process.h"
 #include "./sop/string_converter.h"
+#include "./sop/logger/logger.h"
 #include <boost\smart_ptr.hpp>
 #include <string.h>
 #include <iostream>
@@ -27,6 +28,9 @@ namespace sop
 
       std::string getDataPart();
       std::string getCommandPart();
+
+      InterpreterHandler(sop::logger::Logger* logger);
+      sop::logger::Logger* logger;
     protected:
     private:
       std::string _command_part; 

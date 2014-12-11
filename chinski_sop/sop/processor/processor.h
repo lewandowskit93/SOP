@@ -44,7 +44,7 @@ namespace sop
       static void printsOutRegisterWithoutSign(processor *proc); // prints uint16_t on output
       //WRU
       static void printsOutRegisterWithSign(processor *proc); // prints int16_t
-      //SWB
+      //SWP
       static void swapBytes(processor *proc, char reg); // swapping bytes of selecte processor//SWB
       
       //General functions 

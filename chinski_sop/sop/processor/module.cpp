@@ -22,7 +22,7 @@ void sop::processor::Module::initialize()
   
   sop::system::Shell* shell = this->_kernel->getShell();
   sop::logger::Logger* logger = this->_kernel->getLogger();
-  shell->registerCommand("sqtleft",&ExecutiveUnit::cH_showQuantTimeLeft,(this->ExUnit));
+  shell->registerCommand("quanttime",&ExecutiveUnit::cH_showQuantTimeLeft,(this->ExUnit));
   shell->registerCommand("sacttask",&ExecutiveUnit::cH_showActiveTaskQueue,(this->ExUnit));
   shell->registerCommand("suacttask",&ExecutiveUnit::cH_showUnactiveTaskQueue,(this->ExUnit));
   shell->registerCommand("procstate",&ExecutiveUnit::cH_showActualProcessorState,(this->ExUnit));

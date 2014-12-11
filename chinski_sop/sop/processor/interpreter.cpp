@@ -1,5 +1,8 @@
 #include "./sop/processor/interpreter.h"
-
+sop::interpreter::InterpreterHandler::InterpreterHandler(sop::logger::Logger* logger):logger(logger)
+{
+  this->logger->logProcessor(3,"Interpreter initialized!");
+}
 char sop::interpreter::InterpreterHandler::getByteFromMemory(boost::shared_ptr<sop::process::Process> p)
 {
   //char x = sop::memory::.. pobranie byte'u danych od Fiszera  
@@ -15,7 +18,7 @@ std::string sop::interpreter::InterpreterHandler::interpretLine(boost::shared_pt
   pickCommandPart(_program_line);
   if (_program_line.size() > 3)
     pickDataPart(_program_line);
-  p->procek.ip += _program_line.size()+1;
+  p->procek.ip += _program_line.size();
   if (_command_part == "ADD")
   {
     char src = _data_part[0];
@@ -24,6 +27,7 @@ std::string sop::interpreter::InterpreterHandler::interpretLine(boost::shared_pt
   }
   else if (_command_part == "ADV")
   {
+    this->logger->logProcessor(6,"Interpreting ADV cmd");
     char reg = _data_part[0];
     std::string s_value = _data_part.substr(2);
     uint16_t value = sop::StringConverter::convertStringToHex<uint16_t>(s_value);
@@ -98,6 +102,7 @@ std::string sop::interpreter::InterpreterHandler::interpretLine(boost::shared_pt
   }
   else if (_command_part == "MOV")
   {
+    this->logger->logProcessor(6,"Interpreting MOV cmd");
     char reg = _data_part[0];
     std::string s_value = _data_part.substr(2);
     uint16_t value = sop::StringConverter::convertStringToHex<uint16_t>(s_value);
@@ -105,6 +110,7 @@ std::string sop::interpreter::InterpreterHandler::interpretLine(boost::shared_pt
   }
   else if (_command_part == "MOR")
   {
+    this->logger->logProcessor(6,"Interpreting MOR cmd");
     char src = _data_part[0];
     char dst = _data_part[2];
     sop::processor::ProcessorHandler::copySourceRegisterToDestinationRegister(&p->procek,dst,src);
@@ -129,7 +135,13 @@ std::string sop::interpreter::InterpreterHandler::interpretLine(boost::shared_pt
   }
   else if (_command_part == "MOM")
   {
-    //MOM - wczytuje zaw. z pamieci pod rej. D do rej. C
+    this->logger->logProcessor(6,"Interpreting MOM cmd");
+    std::string buf = "MOV D,0117\nMOM\nMOR B,C\nSSS B\nWRC\nSWP B\nWRC\nADV D,0002\nMOM\nMOR B,C\nSWP B\nWRC\nSWP B\nWRC\nADV D,0002\nMOM\nMOR B,C\nSWP B\nWRC\nSWP B\nWRC\nADV D,0002\nMOM\nMOR B,C\nSWP B\nWRC\nSWP B\nWRC\nADV D,0002\nMOM\nMOR B,C\nSWP B\nWRC\nSWP B\nWRC\nADV D,0002\nMOM\nMOR B,C\nSWP B\nWRC\nSWP B\nWRC\nADV D,0002\nEXT 0000\n\nHello world!\n";
+    uint16_t *off = &p->procek.c;
+    uint8_t *byte = (uint8_t*) off;
+    byte[1] = buf[(p->procek.d)]; 
+    byte[0] = buf[(p->procek.d)+1]; 
+    //MOM - wczytuje zaw. z pamieci zapisanym pod adresem w rej. D do rej. C
     //funkcja fiszerowa
   }
   else if (_command_part == "CPY")
@@ -197,6 +209,7 @@ std::string sop::interpreter::InterpreterHandler::interpretLine(boost::shared_pt
   }
   else if (_command_part == "WRC")
   {
+    this->logger->logProcessor(6,"Interpreting WRC cmd");
     sop::processor::ProcessorHandler::printsOutYoungestByteAsASCII(&p->procek);
   }
   else if (_command_part == "WRI")
@@ -207,10 +220,11 @@ std::string sop::interpreter::InterpreterHandler::interpretLine(boost::shared_pt
   {
     sop::processor::ProcessorHandler::printsOutRegisterWithoutSign(&p->procek);
   }
-  else if (_command_part == "SWB")
+  else if (_command_part == "SWP")
   {
+    this->logger->logProcessor(6,"Interpreting SWP cmd");
     char reg = _data_part[0];
-    sop::processor::ProcessorHandler::swapBytes(&p->procek);
+    sop::processor::ProcessorHandler::swapBytes(&p->procek, reg);
   }
   else if (_command_part == "FRK")
   {
@@ -271,17 +285,20 @@ std::string sop::interpreter::InterpreterHandler::getCommandPart()
 }
 void sop::interpreter::InterpreterHandler::buildProgramLine(boost::shared_ptr<sop::process::Process> p)
 {
-
-  char getChar = '\n'; 
+  
+  _program_line = "";
+  uint16_t ibuf = p->procek.ip;
+   std::string buf = "MOV D,0117\nMOM\nMOR B,C\nSWP B\nWRC\nSWP B\nWRC\nADV D,0002\nMOM\nMOR B,C\nSWP B\nWRC\nSWP B\nWRC\nADV D,0002\nMOM\nMOR B,C\nSWP B\nWRC\nSWP B\nWRC\nADV D,0002\nMOM\nMOR B,C\nSWP B\nWRC\nSWP B\nWRC\nADV D,0002\nMOM\nMOR B,C\nSWP B\nWRC\nSWP B\nWRC\nADV D,0002\nMOM\nMOR B,C\nSWP B\nWRC\nSWP B\nWRC\nADV D,0002\nEXT 0000\n\nHello world!\n";
+  char getChar = 's';
   while (getChar!='\n')
   {
-    //p->procek.ip
-    //getChar = getByteFromMemory(..)
+    _program_line += buf[ibuf];
+    getChar = buf[ibuf];
+    ibuf++;
     //program_line+ = getChar;
   }
-  _program_line = "REB";
+  _program_line = _program_line;
 }
-  
 void sop::interpreter::InterpreterHandler::interpreterReset()
 {
   _command_part = "";

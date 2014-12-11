@@ -21,6 +21,9 @@ namespace sop
         virtual std::string getClassName() const;
         virtual void initialize();
         ExecutiveUnit *ExUnit;
+
+
+
       protected:
 
       private:

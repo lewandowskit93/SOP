@@ -3,6 +3,7 @@
 #include "./sop/processor/processor.h"
 #include "./sop/processor/interpreter.h"
 #include "./sop/processes/class_process.h"
+#include "./sop/logger/logger.h"
 #include <vector>
 #include <queue>
 namespace sop
@@ -29,7 +30,8 @@ namespace sop
       void printOutActiveTasks();
       void printOutUnactiveTasks();
       void printOutHelperMethod(int i, bool which);
-      Scheduler();
+      Scheduler(sop::logger::Logger* logger);
+      sop::logger::Logger* logger;
       ~Scheduler();
     protected:
     private:
