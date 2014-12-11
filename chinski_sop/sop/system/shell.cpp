@@ -50,7 +50,7 @@ const sop::system::Kernel * sop::system::Shell::getKernel() const
 
 void sop::system::Shell::step()
 {
-  _kernel->getLogger()->logShell(sop::logger::Logger::Level::INFO, "Executing next shell step.");
+  _kernel->getLogger()->logShell(sop::logger::Logger::Level::FINE, "Executing next shell step.");
   if(!std::cin.good())
   {
     _kernel->getLogger()->logShell(sop::logger::Logger::Level::INFO, "End of standard intput. Shutting down the kernel.");
@@ -59,14 +59,14 @@ void sop::system::Shell::step()
   }
   std::cout<<"$ ";
   std::getline(std::cin,_last_input_line);
-  _kernel->getLogger()->logShell(sop::logger::Logger::Level::INFO, "Shell command readed.");
+  _kernel->getLogger()->logShell(sop::logger::Logger::Level::FINER, "Shell command readed.");
   _kernel->getLogger()->logShell(sop::logger::Logger::Level::FINEST,"Readed line: "+_last_input_line);
   try
   {
     std::vector<std::string> parameters = parse(_last_input_line);
     if(parameters.size()==0)
     {
-        _kernel->getLogger()->logShell(sop::logger::Logger::Level::FINER,"Empty shell command.");
+        _kernel->getLogger()->logShell(sop::logger::Logger::Level::FINEST,"Empty shell command.");
         return;
     }
     std::string command=parameters[0];

@@ -113,13 +113,13 @@ namespace sop
         template <typename HandlerType>
         bool doRegisterCommand(const std::string & command, HandlerType command_handler)
         {
-          _kernel->getLogger()->logShell(sop::logger::Logger::Level::INFO, "Registering shell command: "+command);
+          _kernel->getLogger()->logShell(sop::logger::Logger::Level::FINE, "Registering shell command: "+command);
           if(_commands.count(command) == 0)
           {
             boost::shared_ptr<CommandHandlerSignal> handler(new CommandHandlerSignal);
             handler->connect(command_handler);
             _commands[command]=handler;
-            _kernel->getLogger()->logShell(sop::logger::Logger::Level::INFO, "Command registered.");
+            _kernel->getLogger()->logShell(sop::logger::Logger::Level::FINE, "Command registered.");
             return true;
           }
           else
