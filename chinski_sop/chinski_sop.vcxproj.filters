@@ -192,6 +192,33 @@
     <ClInclude Include="sop\users\encryptors.h">
       <Filter>Header Files\sop\users</Filter>
     </ClInclude>
+    <ClInclude Include="sop\files\block.h">
+      <Filter>Header Files\sop\files</Filter>
+    </ClInclude>
+    <ClInclude Include="sop\files\constev.h">
+      <Filter>Header Files\sop\files</Filter>
+    </ClInclude>
+    <ClInclude Include="sop\files\data.h">
+      <Filter>Header Files\sop\files</Filter>
+    </ClInclude>
+    <ClInclude Include="sop\files\file.h">
+      <Filter>Header Files\sop\files</Filter>
+    </ClInclude>
+    <ClInclude Include="sop\files\filesystem.h">
+      <Filter>Header Files\sop\files</Filter>
+    </ClInclude>
+    <ClInclude Include="sop\files\filesystem_s.h">
+      <Filter>Header Files\sop\files</Filter>
+    </ClInclude>
+    <ClInclude Include="sop\files\inode.h">
+      <Filter>Header Files\sop\files</Filter>
+    </ClInclude>
+    <ClInclude Include="sop\files\serialize.h">
+      <Filter>Header Files\sop\files</Filter>
+    </ClInclude>
+    <ClInclude Include="sop\files\temporary.h">
+      <Filter>Header Files\sop\files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="sop\system\shell.cpp">
@@ -214,9 +241,6 @@
     </ClCompile>
     <ClCompile Include="sop\logger\console_logger.cpp">
       <Filter>Source Files\sop\logger</Filter>
-    </ClCompile>
-    <ClCompile Include="main.cpp">
-      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="sop\users\module.cpp">
       <Filter>Source Files\sop\users</Filter>
@@ -290,5 +314,32 @@
     <ClCompile Include="sop\users\groups_manager.cpp">
       <Filter>Source Files\sop\users</Filter>
     </ClCompile>
+    <ClCompile Include="main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="sop\files\block.cpp">
+      <Filter>Source Files\sop\files</Filter>
+    </ClCompile>
+    <ClCompile Include="sop\files\data.cpp">
+      <Filter>Source Files\sop\files</Filter>
+    </ClCompile>
+    <ClCompile Include="sop\files\file.cpp">
+      <Filter>Source Files\sop\files</Filter>
+    </ClCompile>
+    <ClCompile Include="sop\files\filesystem.cpp">
+      <Filter>Source Files\sop\files</Filter>
+    </ClCompile>
+    <ClCompile Include="sop\files\filesystem_s.cpp">
+      <Filter>Source Files\sop\files</Filter>
+    </ClCompile>
+    <ClCompile Include="sop\files\inode.cpp">
+      <Filter>Source Files\sop\files</Filter>
+    </ClCompile>
+    <ClCompile Include="sop\files\serialize.cpp">
+      <Filter>Source Files\sop\files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ClassDiagram.cd" />
   </ItemGroup>
 </Project>
