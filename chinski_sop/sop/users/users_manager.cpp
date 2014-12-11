@@ -6,7 +6,6 @@
 #include ".\sop\logger\logger.h"
 #include ".\sop\string_converter.h"
 #include ".\sop\users\encryptors.h"
-#include ".\sop\users\fakers.h"
 
 const boost::regex sop::users::UsersManager::username_regex = boost::regex("^[a-zA-Z][0-9a-zA-Z_]*$");
 const boost::regex sop::users::UsersManager::password_regex = boost::regex("^(([a-zA-Z]([a-zA-Z0-9!@#$%^&*_]){2,}))?$");
@@ -284,7 +283,7 @@ boost::shared_ptr<sop::users::Encryptor> sop::users::UsersManager::getEncryptor(
   return _encryptor;
 }
 
-bool sop::users::UsersManager::login(boost::shared_ptr<fakers::pcb> process, const std::string & username, const std::string & password)
+bool sop::users::UsersManager::login(boost::shared_ptr<sop::process::Process> process, const std::string & username, const std::string & password)
 {
   _module->getKernel()->getLogger()->logUsers(sop::logger::Logger::Level::INFO,"Trying to log.");
   if(!process){

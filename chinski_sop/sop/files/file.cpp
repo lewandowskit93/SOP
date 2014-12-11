@@ -127,7 +127,7 @@ void sop::files::File::setMode(char mode)
 {
   this->logger->logFiles(3, "File: setting mode");
   // TEST if permissions are valid
-  if(mode == 'w' || mode == 'x')
+  /*if(mode == 'w' || mode == 'x')
   {
     sop::users::PermissionsManager pm;
     if(mode == 'w')
@@ -142,9 +142,9 @@ void sop::files::File::setMode(char mode)
     }
   }
   else
-  {
+  {*/
     this->openMode = mode;
-  }
+  //}
 }
 
 uint32_t sop::files::File::getSize()

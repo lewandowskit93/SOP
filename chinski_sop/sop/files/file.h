@@ -9,7 +9,10 @@
 #include "inode.h"
 #include "filesystem.h"
 #include "constev.h"
-#include "temporary.h"
+#include ".\sop\temporary.h"
+#include ".\sop\users\id_definitions.h"
+#include ".\sop\users\permissions.h"
+#include ".\sop\users\permissions_manager.h"
 
 namespace sop
 {

@@ -8,6 +8,7 @@
 #include ".\sop\users\id_definitions.h"
 #include ".\sop\object.h"
 #include ".\sop\users\user.h"
+#include ".\sop\temporary.h"
 
 //#define PASSWD_FILE_INTEGRATED;
 
@@ -49,7 +50,7 @@ namespace sop
         static bool checkPasswordFormat(const std::string & password);
         bool isPasswordValid(boost::shared_ptr<User> user, const std::string & password);
         boost::shared_ptr<Encryptor> getEncryptor();
-        bool login(boost::shared_ptr<fakers::pcb> process, const std::string & username, const std::string & password);
+        bool login(boost::shared_ptr<sop::process::Process> process, const std::string & username, const std::string & password);
 
       protected:
 

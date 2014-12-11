@@ -15,8 +15,15 @@
 #include "./sop/files/serialize.h"
 //#include "./sop/system/kernel.h"
 
+std::vector<std::string> getPathFromParam(std::string path);
+
 namespace sop
 {
+  namespace system
+  {
+    class Kernel;
+  }
+
   namespace files
   {
     class File;
@@ -39,7 +46,7 @@ namespace sop
     class Filesystem
     {
     public:
-      Filesystem(sop::logger::Logger* _logger, std::string diskFileName);
+      Filesystem(sop::system::Kernel *kernel,sop::logger::Logger* _logger, std::string diskFileName);
       ~Filesystem();
 
       // Creates empty disk
@@ -198,7 +205,7 @@ namespace sop
       std::string writeData(uint32_t);
 
       // Kernel holder
-      //sop::system::Kernel* _kernel;
+      sop::system::Kernel* _kernel;
 
       friend class Filesystem_s;
     };

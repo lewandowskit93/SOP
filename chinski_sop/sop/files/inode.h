@@ -10,7 +10,10 @@
 #include "constev.h"
 //#include "filesystem_s.h"
 #include ".\sop\logger\logger.h"
-#include "temporary.h"
+#include ".\sop\temporary.h"
+#include ".\sop\users\id_definitions.h"
+#include ".\sop\users\permissions.h"
+#include ".\sop\users\permissions_manager.h"
 
 namespace sop
 {
@@ -94,17 +97,19 @@ namespace sop
       uint32_t getAddress(std::string name);
 
       // Returns permissions structure
-      sop::users::Permissions getPermissions();
+      sop::users::Permissions & getPermissions();
 
       // Returns inode lock
       bool getLock();
+
+      uint32_t uid;
+      uint32_t gid;
 
     protected:
 
     private:
       bool isDirectory;
-      uint32_t uid;
-      uint32_t gid;
+
       dir_u directory;
       file_u file;
       sop::users::Permissions permissions;

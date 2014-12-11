@@ -5,8 +5,10 @@
 #include ".\sop\system\kernel.h"
 #include ".\sop\system\shell.h"
 #include ".\sop\string_converter.h"
-#include ".\sop\users\fakers.h"
 #include ".\sop\users\encryptors.h"
+#include ".\sop\files\inode.h"
+#include ".\sop\files\filesystem.h"
+#include ".\sop\temporary.h"
 
 sop::users::Module::Module(sop::system::Kernel *kernel):
   sop::system::Module(kernel),
@@ -74,6 +76,11 @@ sop::users::PriorityManager* sop::users::Module::getPriorityManager()
   return &_priority_manager;
 }
 
+sop::users::PermissionsManager* sop::users::Module::getPermissionsManager()
+{
+  return &_permissions_manager;
+}
+
 void sop::users::Module::cH_useradd(const std::vector<const std::string> & params)
 {
   if(sop::system::Shell::hasParam(params,"-h") || params.size()==1)
@@ -83,7 +90,7 @@ void sop::users::Module::cH_useradd(const std::vector<const std::string> & param
   }
   else
   {
-    if(!_permissions_manager.isSuperUser(fakers::getProcess(0)))
+    if(!_permissions_manager.isSuperUser(sop::process::getProcess(0)))
     {
       std::cout<<"Not a super user."<<std::endl;
       return;
@@ -206,14 +213,14 @@ void sop::users::Module::cH_userdel(const std::vector<const std::string> & param
   {
     // ToDo:
     // save the file
-    if(!_permissions_manager.isSuperUser(fakers::getProcess(0)))
+    if(!_permissions_manager.isSuperUser(sop::process::getProcess(0)))
     {
       std::cout<<"Not a super user."<<std::endl;
       return;
     }
 
     boost::shared_ptr<User> user = _users_manager.findUser(params[params.size()-1]);
-    if(fakers::getProcess(0)->uid==user->uid)
+    if(sop::process::getProcess(0)->uid==user->uid)
     {
       std::cout<<"User cannot be logged in."<<std::endl;
       return;
@@ -294,7 +301,7 @@ void sop::users::Module::cH_groupadd(const std::vector<const std::string> & para
   }
   else
   {
-    if(!_permissions_manager.isSuperUser(fakers::getProcess(0)))
+    if(!_permissions_manager.isSuperUser(sop::process::getProcess(0)))
     {
       std::cout<<"Not a super user."<<std::endl;
       return;
@@ -353,7 +360,7 @@ void sop::users::Module::cH_groupdel(const std::vector<const std::string> & para
   }
   else
   {
-    if(!_permissions_manager.isSuperUser(fakers::getProcess(0)))
+    if(!_permissions_manager.isSuperUser(sop::process::getProcess(0)))
     {
       std::cout<<"Not a super user."<<std::endl;
       return;
@@ -420,7 +427,7 @@ void sop::users::Module::cH_groupchange(const std::vector<const std::string> & p
   }
   else
   {
-    if(!_permissions_manager.isSuperUser(fakers::getProcess(0)))
+    if(!_permissions_manager.isSuperUser(sop::process::getProcess(0)))
     {
       std::cout<<"Not a super user."<<std::endl;
       return;
@@ -461,7 +468,7 @@ void sop::users::Module::cH_nice(const std::vector<const std::string> & params)
 
   if(sop::system::Shell::hasParam(params,"-s"))
   {
-    if(!_permissions_manager.isSuperUser(fakers::getProcess(0)))
+    if(!_permissions_manager.isSuperUser(sop::process::getProcess(0)))
     {
       std::cout<<"Not a super user."<<std::endl;
       return;
@@ -477,7 +484,7 @@ void sop::users::Module::cH_nice(const std::vector<const std::string> & params)
 
   if(priority<kDefault_priority)
   {
-    if(!_permissions_manager.isSuperUser(fakers::getProcess(0)))
+    if(!_permissions_manager.isSuperUser(sop::process::getProcess(0)))
     {
       std::cout<<"Not a super user."<<std::endl;
       return;
@@ -528,7 +535,7 @@ void sop::users::Module::cH_whois(const std::vector<const std::string> & params)
     std::cout<<"Prints username of currently logged user."<<std::endl;
     return;
   }
-  boost::shared_ptr<fakers::pcb> shell_process = fakers::getProcess(0);
+  boost::shared_ptr<sop::process::Process> shell_process = sop::process::getProcess(0);
   if(!shell_process)
   {
     std::cout<<"No shell process?!"<<std::endl;
@@ -553,7 +560,7 @@ void sop::users::Module::cH_login(const std::vector<const std::string> & params)
     std::cout<<"Logins on user specified by username."<<std::endl;
     return;
   }
-  boost::shared_ptr<fakers::pcb> shell_process = fakers::getProcess(0);
+  boost::shared_ptr<sop::process::Process> shell_process = sop::process::getProcess(0);
   std::string password="";
   if(sop::system::Shell::hasParam(params,"-p"))password=sop::system::Shell::getParamValue(params,"-p");
   if(!_users_manager.login(shell_process,params[1],password))
@@ -574,8 +581,13 @@ void sop::users::Module::cH_access(const std::vector<const std::string> & params
     std::cout<<"Shows if current user has access to file/directory."<<std::endl;
     return;
   }
-  fakers::inode *file_inode = fakers::getFile(params[1]);
-  boost::shared_ptr<fakers::pcb> shell_process = fakers::getProcess(0);
+  sop::files::File *file= _kernel->getFilesModule()->fsxxxx->openFile(0,getPathFromParam(params[1]),"r");
+  if(!file)
+  {
+    std::cout<<"Access problem."<<std::endl;
+  }
+  sop::files::Inode *file_inode = file->getInode();
+  boost::shared_ptr<sop::process::Process> shell_process = sop::process::getProcess(0);
   if(_permissions_manager.hasPermission(file_inode,shell_process,PermissionsUtilities::getFromRWXString(params[2])))
   {
     std::cout<<"You have permissions to that file."<<std::endl;
@@ -584,6 +596,7 @@ void sop::users::Module::cH_access(const std::vector<const std::string> & params
   {
     std::cout<<"You dont have permissions to that file."<<std::endl;
   }
+  _kernel->getFilesModule()->fsxxxx->closeFile(file);
 }
 
 void sop::users::Module::cH_chmod(const std::vector<const std::string> & params)
@@ -594,8 +607,13 @@ void sop::users::Module::cH_chmod(const std::vector<const std::string> & params)
     std::cout<<"Changes permissions to a file."<<std::endl;
     return;
   }
-  fakers::inode *file_inode = fakers::getFile(params[1]);
-  boost::shared_ptr<fakers::pcb> shell_process = fakers::getProcess(0);
+  sop::files::File *file= _kernel->getFilesModule()->fsxxxx->openFile(0,getPathFromParam(params[1]),"w");
+  if(!file)
+  {
+    std::cout<<"Access problem."<<std::endl;
+  }
+  sop::files::Inode *file_inode = file->getInode();
+  boost::shared_ptr<sop::process::Process> shell_process = sop::process::getProcess(0);
   Permissions permissions;
   permissions.user=PermissionsUtilities::getFromRWXString(params[2]);
   permissions.group=PermissionsUtilities::getFromRWXString(params[3]);
@@ -608,6 +626,7 @@ void sop::users::Module::cH_chmod(const std::vector<const std::string> & params)
   {
     std::cout<<"Mods not changed."<<std::endl;
   }
+  _kernel->getFilesModule()->fsxxxx->closeFile(file);
 }
 
 void sop::users::Module::cH_chown(const std::vector<const std::string> & params)
@@ -618,8 +637,13 @@ void sop::users::Module::cH_chown(const std::vector<const std::string> & params)
     std::cout<<"Changes file owner."<<std::endl;
     return;
   }
-  fakers::inode *file_inode = fakers::getFile(params[1]);
-  boost::shared_ptr<fakers::pcb> shell_process = fakers::getProcess(0);
+  sop::files::File *file= _kernel->getFilesModule()->fsxxxx->openFile(0,getPathFromParam(params[1]),"w");
+  if(!file)
+  {
+    std::cout<<"Access problem."<<std::endl;
+  }
+  sop::files::Inode *file_inode = file->getInode();
+  boost::shared_ptr<sop::process::Process> shell_process = sop::process::getProcess(0);
   if(_permissions_manager.changeOwner(file_inode,shell_process,StringConverter::convertStringTo<uid_t>(params[2])))
   {
     std::cout<<"Owner changed."<<std::endl;
@@ -628,6 +652,7 @@ void sop::users::Module::cH_chown(const std::vector<const std::string> & params)
   {
     std::cout<<"Owner not changed."<<std::endl;
   }
+  _kernel->getFilesModule()->fsxxxx->closeFile(file);
 }
 
 void sop::users::Module::cH_chgrp(const std::vector<const std::string> & params)
@@ -638,8 +663,13 @@ void sop::users::Module::cH_chgrp(const std::vector<const std::string> & params)
     std::cout<<"Changes filename group owner."<<std::endl;
     return;
   }
-  fakers::inode *file_inode = fakers::getFile(params[1]);
-  boost::shared_ptr<fakers::pcb> shell_process = fakers::getProcess(0);
+  sop::files::File *file= _kernel->getFilesModule()->fsxxxx->openFile(0,getPathFromParam(params[1]),"w");
+  if(!file)
+  {
+    std::cout<<"Access problem."<<std::endl;
+  }
+  sop::files::Inode *file_inode = file->getInode();
+  boost::shared_ptr<sop::process::Process> shell_process = sop::process::getProcess(0);
   if(_permissions_manager.changeGroup(file_inode,shell_process,StringConverter::convertStringTo<gid_t>(params[2])))
   {
     std::cout<<"Group changed."<<std::endl;
@@ -648,4 +678,5 @@ void sop::users::Module::cH_chgrp(const std::vector<const std::string> & params)
   {
     std::cout<<"Group not changed."<<std::endl;
   }
+  _kernel->getFilesModule()->fsxxxx->closeFile(file);
 }

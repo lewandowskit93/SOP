@@ -2,7 +2,10 @@
 #include ".\sop\files\block.h"
 #include ".\sop\files\constev.h"
 #include ".\sop\files\data.h"
-#include ".\sop\files\temporary.h"
+#include ".\sop\temporary.h"
+#include ".\sop\users\id_definitions.h"
+#include ".\sop\users\permissions.h"
+#include ".\sop\users\permissions_manager.h"
 
 #include <vector>
 #include <iostream>
@@ -101,7 +104,7 @@ std::vector<sop::files::dirList> sop::files::Inode::listDir(std::array<Block*, s
           out.drwx = "-";
           out.size = std::to_string(disk->at(x.second)->getSize());
         }
-        out.drwx += sop::users::PermissionsUtilities::getRWXString(&this->permissions);
+        out.drwx += sop::users::PermissionsUtilities::getRWXString(this->permissions);
         out.name = x.first;
         out.block = x.second;
       }
@@ -361,7 +364,7 @@ uint32_t sop::files::Inode::getSize()
   }
 }
 
-sop::users::Permissions sop::files::Inode::getPermissions()
+sop::users::Permissions & sop::files::Inode::getPermissions()
 {
   return this->permissions;
 }

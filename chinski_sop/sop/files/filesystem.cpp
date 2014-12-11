@@ -4,20 +4,23 @@
 #include <math.h>
 #include <algorithm>
 #include <cstdint>
-#include <Windows.h>
+//#include <Windows.h>
 #include <boost\make_shared.hpp>
-#include <boost\make_shared.hpp>
+#include ".\sop\system\kernel.h"
 #include ".\sop\files\filesystem.h"
 #include ".\sop\files\file.h"
 #include ".\sop\files\inode.h"
 #include ".\sop\files\data.h"
 #include ".\sop\logger\logger.h"
 #include ".\sop\files\serialize.h"
-#include "temporary.h"
+#include ".\sop\temporary.h"
+#include ".\sop\users\id_definitions.h"
+#include ".\sop\users\permissions.h"
+#include ".\sop\users\permissions_manager.h"
 
 void clearConsole()
 {
-  COORD topLeft={0,0};
+  /*COORD topLeft={0,0};
   HANDLE console = GetStdHandle(STD_OUTPUT_HANDLE);
   CONSOLE_SCREEN_BUFFER_INFO screen;
   DWORD written;
@@ -25,7 +28,7 @@ void clearConsole()
   GetConsoleScreenBufferInfo(console, &screen);
   FillConsoleOutputCharacterA(console, ' ', screen.dwSize.X * screen.dwSize.Y, topLeft, &written);
   FillConsoleOutputAttribute(console, FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_RED, screen.dwSize.X * screen.dwSize.Y, topLeft, &written);
-  SetConsoleCursorPosition(console, topLeft);
+  SetConsoleCursorPosition(console, topLeft);*/
 }
 
 std::vector<std::string> getPathFromParam(std::string path)
@@ -48,8 +51,9 @@ std::vector<std::string> getPathFromParam(std::string path)
   return outPath;
 }
 
-sop::files::Filesystem::Filesystem(sop::logger::Logger* _logger, std::string diskFileName) :
-  logger(_logger)
+sop::files::Filesystem::Filesystem(sop::system::Kernel *kernel,sop::logger::Logger* _logger, std::string diskFileName) :
+  logger(_logger),
+  _kernel(kernel)
 {
   this->logger->logFiles(6, "Initilizing filesystem");
   this->logger->logFiles(3, "Restore filesystem initilized");
@@ -101,7 +105,6 @@ sop::files::File* sop::files::Filesystem::openFile(boost::shared_ptr<sop::proces
     tmp.pop_back();
     this->changeDirectory(PID, tmp);
     File* out = this->seek(PID, path);
-    sop::users::PermissionsManager pm;
     sop::users::permission_t perm;
     switch(openMode[0])
     {
@@ -115,7 +118,7 @@ sop::files::File* sop::files::Filesystem::openFile(boost::shared_ptr<sop::proces
       perm = 1;
       break;
     }
-    if(out != 0 && pm.hasPermission(out->getInode(), PID, perm))
+    if(out != 0 && _kernel->getUsersModule()->getPermissionsManager()->hasPermission(out->getInode(), PID, perm))
     {
       out->setMode((char)openMode[0]);
       out->setFilename(path.at(path.size()-1));
@@ -134,7 +137,6 @@ sop::files::File* sop::files::Filesystem::openFile(boost::shared_ptr<sop::proces
   if(path.size() == 1)
   {
     File* out = this->seek(PID, path);
-    sop::users::PermissionsManager pm;
     sop::users::permission_t perm;
     switch(openMode[0])
     {
@@ -148,7 +150,7 @@ sop::files::File* sop::files::Filesystem::openFile(boost::shared_ptr<sop::proces
       perm = 1;
       break;
     }
-    if(out != 0 && pm.hasPermission(out->getInode(),PID, perm))
+    if(out != 0 && _kernel->getUsersModule()->getPermissionsManager()->hasPermission(out->getInode(),PID, perm))
     {
       out->setMode((char)openMode[0]);
       out->setFilename(path.at(path.size()-1));
@@ -213,8 +215,7 @@ void sop::files::Filesystem::createFile(boost::shared_ptr<sop::process::Process>
   this->logger->logFiles(3, "Setting initial params");
   uid_t uid = this->dataBlocks[iterator]->getUID();
   gid_t gid = this->dataBlocks[iterator]->getGID();
-  sop::users::PermissionsManager pm;
-  bool writePermission = pm.hasPermission(dynamic_cast<Inode*>(this->dataBlocks[iterator]), PID, 6); // sop::user::ask for write permission
+  bool writePermission = _kernel->getUsersModule()->getPermissionsManager()->hasPermission(dynamic_cast<Inode*>(this->dataBlocks[iterator]), PID, 6); // sop::user::ask for write permission
   this->logger->logFiles(3, "Checking for permission");
   if(writePermission)
   {
@@ -259,10 +260,9 @@ void sop::files::Filesystem::removeFile(boost::shared_ptr<sop::process::Process>
     std::vector<std::string> tmp(path);
     tmp.pop_back();  
     this->logger->logFiles(3, "Removing file");
-    sop::users::PermissionsManager pm;
     if(fh != 0 && !fh->getInode()->getIsDirectory())
     {
-      if(pm.hasPermission(fh->getInode(), PID, 6))
+      if(_kernel->getUsersModule()->getPermissionsManager()->hasPermission(fh->getInode(), PID, 6))
       {
         fh->removeFile(&this->freeSpace);
         if(tmp.size())
@@ -301,8 +301,7 @@ void sop::files::Filesystem::removeFile(boost::shared_ptr<sop::process::Process>
 
 void sop::files::Filesystem::writeToFile(File* fileHandler, std::string data)
 {
-  sop::users::PermissionsManager pm;
-  if(pm.hasPermission(fileHandler->getInode(), fileHandler->getPID(), 6))
+  if(_kernel->getUsersModule()->getPermissionsManager()->hasPermission(fileHandler->getInode(), fileHandler->getPID(), 6))
   {
     this->serialize->read();
     this->logger->logFiles(3, "Write to file initilized");
@@ -489,8 +488,7 @@ void sop::files::Filesystem::createDirectory(boost::shared_ptr<sop::process::Pro
   this->logger->logFiles(3, "Setting values");
   uid_t uid = this->dataBlocks[iterator]->getUID();
   gid_t gid = this->dataBlocks[iterator]->getGID();
-  sop::users::PermissionsManager pm;
-  if(pm.hasPermission(dynamic_cast<Inode*>(this->dataBlocks[iterator]), PID, 6))
+  if(_kernel->getUsersModule()->getPermissionsManager()->hasPermission(dynamic_cast<Inode*>(this->dataBlocks[iterator]), PID, 6))
   {
     if(this->freeSpace.size() < 1)
     {
@@ -535,8 +533,7 @@ void sop::files::Filesystem::removeDirectory(boost::shared_ptr<sop::process::Pro
     }
     iterator = returned->getBlockAddr();
   }
-  sop::users::PermissionsManager pm;
-  if(pm.hasPermission(dynamic_cast<Inode*>(this->dataBlocks[iterator]), PID, 6))
+  if(_kernel->getUsersModule()->getPermissionsManager()->hasPermission(dynamic_cast<Inode*>(this->dataBlocks[iterator]), PID, 6))
   {
     if(this->dataBlocks[iterator]->getIsDirectory())
     {
@@ -1378,8 +1375,7 @@ void sop::files::Filesystem::formatHandler(const std::vector<const std::string> 
 {
   if(params.size() == 1)
   {
-    sop::users::PermissionsManager pm;
-    if(pm.isSuperUser(0))//permission check (root) ToDo current PID
+    if(_kernel->getUsersModule()->getPermissionsManager()->isSuperUser(0))//permission check (root) ToDo current PID
     {
       this->format();
     }

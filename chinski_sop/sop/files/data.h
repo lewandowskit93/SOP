@@ -40,12 +40,13 @@ namespace sop
       uint32_t getAddress(std::string name){ return 0; }
       void removeFile(std::vector<uint32_t>* freeSpace, std::array<Block*, sop::files::ConstEV::numOfBlocks>* drive){}
       void removeDir(std::vector<uint32_t>* freeSpace, std::array<Block*, sop::files::ConstEV::numOfBlocks>* drive){}
-      sop::users::Permissions getPermissions(){ return sop::users::Permissions(); }
+      sop::users::Permissions & getPermissions(){ return _perm; }
       bool getLock(){ return false; }
 
     protected:
 
     private:
+      sop::users::Permissions _perm;
       std::array<char, sop::files::ConstEV::blockSize> containter;
 
       friend class Filesystem;

@@ -183,9 +183,6 @@
     <ClInclude Include="sop\users\permissions.h">
       <Filter>Header Files\sop\users</Filter>
     </ClInclude>
-    <ClInclude Include="sop\users\fakers.h">
-      <Filter>Header Files\sop\users</Filter>
-    </ClInclude>
     <ClInclude Include="sop\users\permissions_manager.h">
       <Filter>Header Files\sop\users</Filter>
     </ClInclude>
@@ -216,8 +213,8 @@
     <ClInclude Include="sop\files\serialize.h">
       <Filter>Header Files\sop\files</Filter>
     </ClInclude>
-    <ClInclude Include="sop\files\temporary.h">
-      <Filter>Header Files\sop\files</Filter>
+    <ClInclude Include="sop\temporary.h">
+      <Filter>Header Files\sop</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -302,9 +299,6 @@
     <ClCompile Include="sop\users\permissions.cpp">
       <Filter>Source Files\sop\users</Filter>
     </ClCompile>
-    <ClCompile Include="sop\users\fakers.cpp">
-      <Filter>Source Files\sop\users</Filter>
-    </ClCompile>
     <ClCompile Include="sop\users\permissions_manager.cpp">
       <Filter>Source Files\sop\users</Filter>
     </ClCompile>
@@ -337,6 +331,9 @@
     </ClCompile>
     <ClCompile Include="sop\files\serialize.cpp">
       <Filter>Source Files\sop\files</Filter>
+    </ClCompile>
+    <ClCompile Include="sop\temporary.cpp">
+      <Filter>Source Files\sop</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
