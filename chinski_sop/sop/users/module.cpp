@@ -169,6 +169,8 @@ void sop::users::Module::cH_useradd(const std::vector<const std::string> & param
         group->users_list.push_back(_users_manager.findUser(user.uid));
       }
       // ToDo: create user dir if not exist, save users and groups files
+      _users_manager.saveUsersToFile("etc/passwd");
+      _groups_manager.saveGroupsToFile("etc/group");
     }
   }
 }
@@ -231,7 +233,8 @@ void sop::users::Module::cH_userdel(const std::vector<const std::string> & param
       if(group && _users_manager.deleteUser(user->username))
       {
         group->users_list.remove(user);
-        //if(group->users_list.size()==0)_groups_manager.deleteGroup(group->group_name); // do not delete group to allow empty groups to exist
+        _users_manager.saveUsersToFile("etc/passwd");
+        _groups_manager.saveGroupsToFile("etc/group");
       }
     }
   }
@@ -284,7 +287,11 @@ void sop::users::Module::cH_chpasswd(const std::vector<const std::string> & para
 
     if(user)
     {
-      if(_users_manager.isPasswordValid(user,old_pass))user->password=new_pass; // ToDo: save file
+      if(_users_manager.isPasswordValid(user,old_pass)){
+        user->password=new_pass;
+        _users_manager.saveUsersToFile("etc/passwd");
+        _groups_manager.saveGroupsToFile("etc/group");
+      }
       else std::cout<<"Wrong password."<<std::endl;
     }
     else std::cout<<"Invalid user."<<std::endl;
@@ -318,7 +325,8 @@ void sop::users::Module::cH_groupadd(const std::vector<const std::string> & para
     }
 
     _groups_manager.addGroup(group);
-    // ToDo: save file
+    _users_manager.saveUsersToFile("etc/passwd");
+    _groups_manager.saveGroupsToFile("etc/group");
   }
 }
 
@@ -366,7 +374,8 @@ void sop::users::Module::cH_groupdel(const std::vector<const std::string> & para
       return;
     }
     _groups_manager.deleteGroup(params[params.size()-1]);
-    // ToDo: save the file
+    _users_manager.saveUsersToFile("etc/passwd");
+    _groups_manager.saveGroupsToFile("etc/group");
   }
 }
 
@@ -438,7 +447,7 @@ void sop::users::Module::cH_groupchange(const std::vector<const std::string> & p
       std::cout<<"User not found"<<std::endl;
       return;
     }
-    boost::shared_ptr<Group> new_group = _groups_manager.findGroup(params[params.size()-1]);
+    boost::shared_ptr<Group> new_group = _groups_manager.findGroup(sop::StringConverter::convertStringTo<gid_t>(params[params.size()-1]));
     if(!new_group)
     {
       std::cout<<"New group not found"<<std::endl;
@@ -454,6 +463,8 @@ void sop::users::Module::cH_groupchange(const std::vector<const std::string> & p
     }
 
     user->gid=new_group->gid;
+    _users_manager.saveUsersToFile("etc/passwd");
+    _groups_manager.saveGroupsToFile("etc/group");
   }
 }
 
@@ -462,7 +473,7 @@ void sop::users::Module::cH_nice(const std::vector<const std::string> & params)
   if(sop::system::Shell::hasParam(params,"-h") || params.size()==1)
   {
     std::cout<<"nice [-h] [-s] gid priority"<<std::endl;
-    std::cout<<"Shows nice priority of group/user. -s saves current nice settings"<<std::endl;
+    std::cout<<"Shows nice priority of group/user. -s saves current nice settings (saving not supported)"<<std::endl;
     return;
   }
 

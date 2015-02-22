@@ -35,11 +35,11 @@ sop::system::Kernel::Kernel(uint16_t logging_level):
   _kernel_state(State::PRE_INIT)
 {
   _modules.reserve(5);
-  _modules.push_back(&_users_module);
-  _modules.push_back(&_files_module);
-  _modules.push_back(&_processes_module);
-  _modules.push_back(&_memory_module);
   _modules.push_back(&_processor_module);
+  _modules.push_back(&_memory_module);
+  _modules.push_back(&_processes_module);
+  _modules.push_back(&_files_module);
+  _modules.push_back(&_users_module);  
 }
 
 sop::system::Kernel::~Kernel()

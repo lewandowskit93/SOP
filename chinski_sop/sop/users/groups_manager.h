@@ -9,7 +9,7 @@
 #include ".\sop\object.h"
 #include ".\sop\users\group.h"
 
-//#define GROUP_FILE_INTEGRATED
+#define GROUP_FILE_INTEGRATED
 
 namespace sop
 {

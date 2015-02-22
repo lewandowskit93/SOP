@@ -10,7 +10,7 @@
 #include ".\sop\users\user.h"
 #include ".\sop\temporary.h"
 
-//#define PASSWD_FILE_INTEGRATED;
+#define PASSWD_FILE_INTEGRATED
 
 namespace sop
 {

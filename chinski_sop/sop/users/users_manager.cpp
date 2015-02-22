@@ -6,6 +6,8 @@
 #include ".\sop\logger\logger.h"
 #include ".\sop\string_converter.h"
 #include ".\sop\users\encryptors.h"
+#include ".\sop\files\filesystem.h"
+#include <boost\algorithm\string.hpp>
 
 const boost::regex sop::users::UsersManager::username_regex = boost::regex("^[a-zA-Z][0-9a-zA-Z_]*$");
 const boost::regex sop::users::UsersManager::password_regex = boost::regex("^(([a-zA-Z]([a-zA-Z0-9!@#$%^&*_]){2,}))?$");
@@ -232,7 +234,6 @@ bool sop::users::UsersManager::isUsernameFree(const std::string & username)
 void sop::users::UsersManager::loadUsersFromFile(const std::string & filename)
 {
 #ifdef PASSWD_FILE_INTEGRATED
-  //ToDo: Loading from files module
 #else
   //ToDo: Loading from windows file
 #endif
@@ -241,7 +242,20 @@ void sop::users::UsersManager::loadUsersFromFile(const std::string & filename)
 void sop::users::UsersManager::saveUsersToFile(const std::string & filename)
 {
 #ifdef PASSWD_FILE_INTEGRATED
-  //ToDo: Saving to files module
+  sop::files::File* f=_module->getKernel()->getFilesModule()->fsxxxx->openFile(sop::process::getProcess(0),getPathFromParam(filename),"w");
+  if(f)
+  {
+    std::stringstream stream;
+    std::list<boost::shared_ptr<User>>::iterator it=_users_list.begin();
+    for(;it!=_users_list.end();++it)
+    {
+      stream<<(*it)->username<<":"<<(*it)->password<<":"<<sop::StringConverter::convertToString((*it)->uid)<<":";
+      stream<<sop::StringConverter::convertToString((*it)->gid)<<":"<<(*it)->info<<":"<<(*it)->home_dir;
+      stream<<std::endl;
+    }
+    _module->getKernel()->getFilesModule()->fsxxxx->writeToFile(f,stream.str());
+    _module->getKernel()->getFilesModule()->fsxxxx->closeFile(f);
+  }
 #else
   //ToDo: Saving to windows file
 #endif
@@ -286,6 +300,10 @@ boost::shared_ptr<sop::users::Encryptor> sop::users::UsersManager::getEncryptor(
 bool sop::users::UsersManager::login(boost::shared_ptr<sop::process::Process> process, const std::string & username, const std::string & password)
 {
   _module->getKernel()->getLogger()->logUsers(sop::logger::Logger::Level::INFO,"Trying to log.");
+  if(username=="nobody"){
+    _module->getKernel()->getLogger()->logUsers(sop::logger::Logger::Level::FINE,"Cannot log on nobody.");
+    return false;
+  }
   if(!process){
     _module->getKernel()->getLogger()->logUsers(sop::logger::Logger::Level::SEVERE,"No shell process?!");
     return false;

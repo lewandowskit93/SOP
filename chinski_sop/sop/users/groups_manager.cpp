@@ -1,10 +1,12 @@
 #include <boost\regex.hpp>
+#include <sstream>
 #include ".\sop\users\groups_manager.h"
 #include ".\sop\users\module.h"
 #include ".\sop\system\kernel.h"
 #include ".\sop\system\shell.h"
 #include ".\sop\logger\logger.h"
 #include ".\sop\string_converter.h"
+#include ".\sop\files\filesystem.h"
 
 const boost::regex sop::users::GroupsManager::group_name_regex = boost::regex("^[a-zA-Z][0-9a-zA-Z_]*$");
 
@@ -232,6 +234,18 @@ void sop::users::GroupsManager::loadGroupsFromFile(const std::string & filename)
 {
 #ifdef GROUP_FILE_INTEGRATED
   //ToDo: Loading from files module
+  sop::files::File* f=_module->getKernel()->getFilesModule()->fsxxxx->openFile(sop::process::getProcess(0),getPathFromParam("/ect/group"),"r");
+  if(f)
+  {
+    /*std::string groups_string = _module->getKernel()->getFilesModule()->fsxxxx->readFile(f);
+    std::stringstream stream;
+    stream<<groups_string;
+    while(stream.good())
+    {
+
+    }
+    _module->getKernel()->getFilesModule()->fsxxxx->closeFile(f);*/
+  }
 #else
   //ToDo: Loading from windows file
 #endif
@@ -241,6 +255,25 @@ void sop::users::GroupsManager::saveGroupsToFile(const std::string & filename)
 {
 #ifdef GROUP_FILE_INTEGRATED
   //ToDo: Saving to files module
+  sop::files::File* f=_module->getKernel()->getFilesModule()->fsxxxx->openFile(sop::process::getProcess(0),getPathFromParam(filename),"w");
+  if(f)
+  {
+    std::stringstream stream;
+    std::list<boost::shared_ptr<Group>>::iterator gr_it=_groups_list.begin();
+    for(;gr_it!=_groups_list.end();++gr_it)
+    {
+      stream<<(*gr_it)->group_name<<":"<<sop::StringConverter::convertToString((*gr_it)->gid)<<":";
+      std::list<boost::shared_ptr<User>>::iterator us_it=(*gr_it)->users_list.begin();
+      for(;us_it!=(*gr_it)->users_list.end();++us_it)
+      {
+        if(us_it!=(*gr_it)->users_list.begin())stream<<",";
+        stream<<(*us_it)->username;
+      }
+      stream<<std::endl;
+    }
+    _module->getKernel()->getFilesModule()->fsxxxx->writeToFile(f,stream.str());
+    _module->getKernel()->getFilesModule()->fsxxxx->closeFile(f);
+  }
 #else
   //ToDo: Saving to windows file
 #endif
