@@ -18,6 +18,11 @@ namespace sop
     public:	
       explicit LogicalMemory(uint8_t number_of_page,sop::logger::Logger* log);//konstruktor tworz¹cy tablicê stron o podanej liczbie stron
       ~LogicalMemory();//destruktor, stworzono dla mo¿liwoœci zapisania do loggera ze coœ zosta³o zniszczone
+      LogicalMemory()
+          {
+        setPageTableSize(0);
+         page_table=nullptr;
+          }//konstruktor domyslny
       void setPageTableSize(uint8_t size);//ustawia liczbê stron
       uint8_t getPageTableSize();//zwraca liczbê stron
       page* getPage(uint8_t page_nr);//zwraca wskazan¹ stronê

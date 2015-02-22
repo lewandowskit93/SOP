@@ -28,7 +28,7 @@ namespace sop
       void setNubmerOfFreeSwapFrames(uint16_t change);//ustawia liczbê wolnych ramek w pliku wymiany
       swapFrame* getSwapFrame(uint16_t swap_frame_number);//zwraca opis danej ramki z tabeli ramek
       void setSwapFrame(uint16_t pid,uint8_t page_number,uint16_t swap_frame_number);//ustawia rekord w tabeli ramek na podstawie podanych argumentów
-      bool getIsThereAnyFrameValue();//zwraca czy swap nie jest zapchany
+      bool getIsThereAnyFrameValue(uint8_t pages_needed);//zwraca czy swap nie jest zapchany
       uint8_t getFreeFrame();//zwraca pierwsza¹ woln¹ ramkê
       void popFrontListOfFreeSwapFrames();//usuwa ramke bedaca z przodu listy wolnych ramek
       void pushEndListOfFreeSwapFrames(uint16_t frame_nr);//wstawia na koniec lisy nr wolnej ramki
@@ -37,7 +37,7 @@ namespace sop
     protected:
 
     private:
-      bool isThereAnyFrame();//funkcja zwracaj¹ca czy swap nie jest zapchany
+      bool isThereAnyFrame(uint8_t pages_needed);//funkcja zwracaj¹ca czy swap nie jest zapchany,tzn czy pomiesci dany program 
       uint8_t swap_frame_size;//rozmiar ramki w swapie, czyli tak sam jak ramki fizycznej
       uint16_t swap_size; //zmienna odpowiadaj¹ca za rozmiar pamiêci swapa
       uint16_t number_of_swap_frames;//liczba ramek w swapie

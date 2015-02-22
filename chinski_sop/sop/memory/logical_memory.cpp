@@ -9,6 +9,12 @@ sop::memory::LogicalMemory::LogicalMemory(uint8_t number_of_page, sop::logger::L
 
 }
 
+//sop::memory::LogicalMemory::LogicalMemory():loggg(log)
+//{
+ // setPageTableSize(0);
+ // page_table=nullptr;
+//}
+
 sop::memory::LogicalMemory::~LogicalMemory()
 {
   this->loggg->logMemory(sop::logger::Logger::Level::INFO,"page table for this process has been removed");
