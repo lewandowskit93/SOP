@@ -133,18 +133,18 @@ void sop::memory::PhysicalMemory::swap(SwapFile* file_swap,LogicalMemory* page_t
   //SWAP jeszze raz napisac
   //zawartosc_ramki_do_swapa przerzucic(assigned_frames_deque.front()
   
-  for(int p=0;p<page_table->getPageTableSize();++p)//pêtla odpowiedzialna za przeniesienie ca³ego programu do swapa
+  for(uint8_t p=0;p<page_table->getPageTableSize();++p)//pêtla odpowiedzialna za przeniesienie ca³ego programu do swapa
   {
-  uint8_t frame=page_table->getFrameNr(p);//podstawia strone ktora zostanie przenisionea
+  uint16_t frame=page_table->getFrameNr(p);//podstawia strone ktora zostanie przenisionea
 
-  for(int i=this->getFrameSize()*frame,j=this->getFrameSize()*file_swap->getFreeFrame();i<this->getFrameSize();++i,++j)//przenosi strone do swapa
-  {
+    for(uint16_t i=this->getFrameSize()*frame,j=this->getFrameSize()*file_swap->getFreeFrame();i<this->getFrameSize();++i,++j)//przenosi strone do swapa
+    {
     file_swap->getSwap()[j]=this->getStorage()[i];
-  }
+    }
   
   page_table->setPage(file_swap->getFreeFrame(),0,p);//numer ramki w tablicy stron ustawiony na numer ramki ze swapa valid na 0
   file_swap->setSwapFrame(this->getFrame(frame)->pid,p,file_swap->getFreeFrame());//zapisanie informacji o ramce na swapie w tabeli ramek, 
-  this->loggg->logMemory(sop::logger::Logger::Level::INFO,"Page: "+sop::StringConverter::convertToString(p)+" is loacted in swap in frame: "+sop::StringConverter::convertToString(file_swap->getFreeFrame())+"and bit valid is: "+ sop::StringConverter::convertToString(page_table->getBitValidInvalid(p)));
+  this->loggg->logMemory(sop::logger::Logger::Level::INFO,"Page: "+sop::StringConverter::convertToString((int)p)+" is loacted in swap in frame: "+sop::StringConverter::convertToString(file_swap->getFreeFrame())+"and bit valid is: "+ sop::StringConverter::convertToString(page_table->getBitValidInvalid(p)));
   this->setFrame(0,0,frame);//czyscimy ramke przerzucon¹ na swapa
  
   file_swap->popFrontListOfFreeSwapFrames();//usuniecie ramki z listy wolnych ramek w swapie
@@ -189,13 +189,13 @@ uint8_t sop::memory::PhysicalMemory::getFreeFrames(uint8_t pages_needed,sop::mem
       // } 
       
     
- 
+    uint8_t tmp_size=tabela_procesow[findBestToSwap(tabela_procesow,pages_needed)].getPageTableSize();//zmienna przetrzymuje
       for(int i=0;i<tabela_procesow[findBestToSwap(tabela_procesow,pages_needed)].getPageTableSize();++i)
         //wrzucenie do listy wolnych ramek te ktore zostana wymiecione
         this->list_of_free_frames.push_back(tabela_procesow[findBestToSwap(tabela_procesow,pages_needed)].getFrameNr(i));
       ///tabela_procesow[findBestToSwap(tabela_procesow,pages_needed)]
        swap(file_swap,&tabela_procesow[findBestToSwap(tabela_procesow,pages_needed)]);//przerzucenie zawartosci struktury ramka do swapa
-      this->setNubmerOfFreeFrames(this->getNumberOfFreeFrames()+1);//zwiêkszenie liczby wolnych ramek
+       this->setNubmerOfFreeFrames(this->getNumberOfFreeFrames()+tmp_size-table_of_pages->getPageTableSize());//zwiêkszenie liczby wolnych ramek
       this->setNumberOfNotFreeFrames(this->getNumberOfFrames() - this->getNumberOfFreeFrames());//zmniejszenie liczby zajêtych ramek
 
 

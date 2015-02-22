@@ -154,6 +154,21 @@ char sop::memory::Module::read(LogicalMemory page_table, uint16_t byte_number)
   }
   if(page_table.getBitValidInvalid(byte_number/swap_drive.getSwapFrameSize())==0)
   {
+    ///sprawdzic czy jest odpowiednio miejsce w pamieci fizycznej na to by program przeniesc
+//    if(physical_drive.getNumberOfFreeFrames()>=page_table.getPageTableSize())//sprawdza czy pamiec ma tyle ramek zeby przeniesc program
+//    {//jesli tak to przeniesie i zmieni invalid na valid
+
+//    }
+//    else
+//    {//jesli nie to sprawdza czy mozna wymiesc jakis proces zeby zyskac to miejsce, gdzie miejsce uzyskane >= rozmiar procesu sciagany ze swapa
+
+
+//    }
+
+      //jesli tak to przenosimy i zmieniamy valid/invalid
+    //jesli nie to sprawdzic czy mozna przeniesc jakis plik zeby uzyskac miejsce, miejsce uzysakne >= rozmiar procesu ktory chcemy przeniesc
+    //jesli nie ma wystarczajaco miejsca to error(rozwiazaniem mogloby byc usuniecie procesu ale to musi byc powiazane z warstawami nizej)
+    
   uint8_t page_nr=byte_number/swap_drive.getSwapFrameSize();//obliczenie ktora strona jest podaba przez byte
   uint16_t reference=page_table.getFrameNr(page_nr)*swap_drive.getSwapFrameSize();//ustawienie która komórkê zczytaæ
    byte_number=(int)byte_number%physical_drive.getFrameSize();
