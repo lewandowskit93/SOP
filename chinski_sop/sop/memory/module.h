@@ -31,7 +31,7 @@ namespace sop
       virtual void initialize();
 
       LogicalMemory allocate(uint16_t program_size,uint16_t pid);//przydzia³ ramek stronom, zwraca wskaznik na tabelê stron
-      void deallocate(LogicalMemory* page_table);//zwalnianie pamiêci
+      void deallocate(LogicalMemory* page_table,uint16_t pid);//zwalnianie pamiêci
       char read(LogicalMemory page_table, uint16_t byte_number);//zczytanie bajtu z pamiêci
       void write(LogicalMemory page_table, std::string code);//wpisanie do pamieci ca³ego kodu w postaci stringa
       ///////////testowe rzeczy
@@ -43,8 +43,8 @@ namespace sop
       LogicalMemory* tablica_procesow;//tablica procesów, lokalizacja=pid, 10 procesow mozliwych=procesy pid 0-9
       std::deque<int> wolne_pid;
       bool check_pid(uint16_t pid);//zwraca czy pid jest wolne,
-      void usun_pid(uint16_t pid);//usunie pid z kolejki
-      void dodaj_pid(uint16_t pid);//doda pid do kolejki
+      void usun_pid(uint16_t pid);//usunie pid z kolejki wolnych pidow
+      void dodaj_pid(uint16_t pid);//doda pid do kolejki wolnych pidow
       ///////////////////////
     protected:
 

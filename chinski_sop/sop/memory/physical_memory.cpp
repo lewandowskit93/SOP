@@ -104,30 +104,27 @@ std::list <uint16_t> sop::memory::PhysicalMemory::getListForFreeFrames()
   return this->list_of_free_frames;
 }
 
-/*
-std::deque <uint16_t> sop::memory::PhysicalMemory::getDequeFrames()
+
+std::deque <uint16_t> sop::memory::PhysicalMemory::getDequePID()
 {
-  return this->assigned_frames_deque;
+  return this->assigned_PID_deque;
 }
-*/
 
-/*
-
-void::sop::memory::PhysicalMemory::FindAndEraseFromDeque(uint16_t frame_nr)
+void::sop::memory::PhysicalMemory::FindAndEraseFromDeque(uint16_t pid)
 {
   uint16_t temp=0;//zmienna sluzaca do przeusniecia iteratora tak zeby usunac to co trzeba
-  std::deque<uint16_t>::iterator it = this->assigned_frames_deque.begin();//iterator na poczatek kolejki
-  for (uint16_t i=0; i<this->assigned_frames_deque.size(); ++i)//znalezienie ramki w kolejce i ustawienie tempa
+  std::deque<uint16_t>::iterator it = this->assigned_PID_deque.begin();//iterator na poczatek kolejki
+  for (uint16_t i=0; i<this->assigned_PID_deque.size(); ++i)//znalezienie ramki w kolejce i ustawienie tempa
   {
-    if(assigned_frames_deque.at(i)==frame_nr)
+    if(assigned_PID_deque.at(i)==pid)
       break;
     temp=temp+1;
 
 
   }
-  this->assigned_frames_deque.erase (it+temp,it+temp+1);//usuniecie znalezionego elementu z kolejki
+  this->assigned_PID_deque.erase (it+temp,it+temp+1);//usuniecie znalezionego elementu z kolejki
 }
-*/
+
 void sop::memory::PhysicalMemory::swap(SwapFile* file_swap,LogicalMemory* page_table)
 {
   //SWAP jeszze raz napisac
@@ -137,7 +134,7 @@ void sop::memory::PhysicalMemory::swap(SwapFile* file_swap,LogicalMemory* page_t
   {
   uint16_t frame=page_table->getFrameNr(p);//podstawia strone ktora zostanie przenisionea
 
-    for(uint16_t i=this->getFrameSize()*frame,j=this->getFrameSize()*file_swap->getFreeFrame();i<this->getFrameSize();++i,++j)//przenosi strone do swapa
+    for(uint16_t i=this->getFrameSize()*frame,j=this->getFrameSize()*file_swap->getFreeFrame();i<this->getFrameSize()*frame+this->getFrameSize();++i,++j)//przenosi strone do swapa
     {
     file_swap->getSwap()[j]=this->getStorage()[i];
     }
@@ -153,7 +150,7 @@ void sop::memory::PhysicalMemory::swap(SwapFile* file_swap,LogicalMemory* page_t
   }
    //////////////////////zerowanie
   uint16_t reference;
-  char zerowanie='0';
+  char zerowanie='=';
   for(int i=0,j=0;i<page_table->getPageTableSize()* this->getFrameSize();++i,++j)
   {
      
@@ -177,7 +174,7 @@ uint8_t sop::memory::PhysicalMemory::getFreeFrames(uint8_t pages_needed,sop::mem
   {
 
    
-    if(file_swap->getIsThereAnyFrameValue(pages_needed)==true)//sprawdzenie czy swap nie jest zapchany
+    if(file_swap->getIsThereAnyFrameValue(tabela_procesow[getDequePID().front()].getPageTableSize())==true)//sprawdzenie czy swap nie jest zapchany
     {
 
       //LogicalMemory victim_page_table = find(this->frame_table[this->assigned_frames_deque.front()].pid); //funkcja find ma zwrocic tabele stron/proces ktorego ramka jest na 1. miesjscu w kolejce, na podstawie PID
@@ -188,19 +185,18 @@ uint8_t sop::memory::PhysicalMemory::getFreeFrames(uint8_t pages_needed,sop::mem
       //     victim_page=i;
       // } 
       
-    
-    uint8_t tmp_size=tabela_procesow[findBestToSwap(tabela_procesow,pages_needed)].getPageTableSize();//zmienna przetrzymuje
-      for(int i=0;i<tabela_procesow[findBestToSwap(tabela_procesow,pages_needed)].getPageTableSize();++i)
+   ////TODO sprawdzic czy wystarczy jeden czy wiecej niz dwa 
+      uint8_t tmp_size=tabela_procesow[getDequePID().front()].getPageTableSize();//zmienna przetrzymuje
+      for(int i=0;i<tmp_size;++i)
         //wrzucenie do listy wolnych ramek te ktore zostana wymiecione
-        this->list_of_free_frames.push_back(tabela_procesow[findBestToSwap(tabela_procesow,pages_needed)].getFrameNr(i));
-      ///tabela_procesow[findBestToSwap(tabela_procesow,pages_needed)]
-       swap(file_swap,&tabela_procesow[findBestToSwap(tabela_procesow,pages_needed)]);//przerzucenie zawartosci struktury ramka do swapa
-       this->setNubmerOfFreeFrames(this->getNumberOfFreeFrames()+tmp_size-table_of_pages->getPageTableSize());//zwiêkszenie liczby wolnych ramek
+        this->list_of_free_frames.push_back(tabela_procesow[getDequePID().front()].getFrameNr(i));
+     
+       swap(file_swap,&tabela_procesow[getDequePID().front()]);//przerzucenie zawartosci procesu do swapa
+      //TODO poprawic okreslanie liczby ramek po przydziale
+       
+      this->setNubmerOfFreeFrames(this->getNumberOfFreeFrames()+tmp_size);//zwiêkszenie liczby wolnych ramek
       this->setNumberOfNotFreeFrames(this->getNumberOfFrames() - this->getNumberOfFreeFrames());//zmniejszenie liczby zajêtych ramek
-
-
-     //ZMIENIC: this->list_of_free_frames.push_back(this->assigned_frames_deque.front());//wrzucenie ramki, ktorej strona zosta³a wymieciona na liste wolnych ramek
-     // this->assigned_frames_deque.pop_front();//wyrzucenie ramkie, której strona zosta³a wymieciona z kolejki zaalokowanych ramek
+      this->assigned_PID_deque.pop_front();//wyrzucenie pid z kolejki
 
     }
     else 
@@ -220,9 +216,10 @@ uint8_t sop::memory::PhysicalMemory::getFreeFrames(uint8_t pages_needed,sop::mem
     this->setNubmerOfFreeFrames(this->getNumberOfFreeFrames()-1);//zmniejsza liczbê wolnych ramek
     this->setNumberOfNotFreeFrames(this->getNumberOfFrames() - this->getNumberOfFreeFrames());//zwiêksza liczbê zajêtych ramek
     this->setFrame(pid,i,this->list_of_free_frames.front());//przypisanie strony danej ramce, informacje o tym zapisane w tabeli ramek
-    //this->assigned_frames_deque.push_back(this->list_of_free_frames.front());//zapisuje w kolejce która ramka zosta³a przypisana
+   
     this->list_of_free_frames.pop_front();//usuwa przydzielon¹ ramkê z listy wolnych ramek
   }
+   this->assigned_PID_deque.push_back(pid);//zapisuje w kolejce która ramka zosta³a przypisana
   return 1;//jest ok
 
 }

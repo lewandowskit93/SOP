@@ -42,6 +42,9 @@ namespace sop
       //usuniete: stronicowanie(ca³y program przenoszony) nie wymaga kolejki
      // void FindAndEraseFromDeque(uint16_t frame_nr);//usuniêcie ramki z kolejki ramek
      // std::deque <uint16_t>getDequeFrames();//zwraca kolejke na zajmowane kolejki wg FIFO
+     
+      void FindAndEraseFromDeque(uint16_t pid);//usuniêcie ramki z kolejki procesów(pidów)
+     std::deque <uint16_t>getDequePID();//zwraca kolejke na zajmowane kolejki wg FIFO
     protected:
 
     private:
@@ -61,6 +64,8 @@ namespace sop
       //std::deque <uint16_t>assigned_frames_deque;//kolejka FIFO przydzielanych ramek, potrzebna przy wymianie stron(algorytm FIFO)
 
       ///testowe
+      std::deque <uint16_t>assigned_PID_deque;//kolejka FIFO przydzielanych procesow(PID), potrzebna przy wymianie
+
       uint8_t findBestToSwap(LogicalMemory* tabela_procesow,uint8_t pages_needed);//funkacja szukajaca, ktory proces nadaje sie najlepiej do wymiecenia, zwraca jego pozycje w tabeli procesow
     };
 

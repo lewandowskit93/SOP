@@ -101,11 +101,11 @@ sop::memory::LogicalMemory sop::memory::Module::allocate(uint16_t program_size,u
   return table_of_pages;
 }
 
-void sop::memory::Module::deallocate(sop::memory::LogicalMemory* page_table)
+void sop::memory::Module::deallocate(sop::memory::LogicalMemory* page_table, uint16_t pid)
 {
   //wyczyscic pamie fizyzna, nadpisac zeraami//ew swapa i odpowiendio tabela ramek swapa OPCJONALNIE
   uint16_t reference;
-  char zerowanie='0';
+  char zerowanie='=';
   for(int i=0,j=0;i<page_table->getPageTableSize()* physical_drive.getFrameSize();++i,++j)
   {
      
@@ -117,6 +117,9 @@ void sop::memory::Module::deallocate(sop::memory::LogicalMemory* page_table)
     reference=reference*physical_drive.getFrameSize();//adres pocz¹tkowy komórki w tablicy fizycznej
     physical_drive.getStorage()[reference+j]=zerowanie;//wpisanie do pamiêci
   }
+  if(page_table->getBitValidInvalid(0)==1)
+    this->physical_drive.FindAndEraseFromDeque(pid);//znalezienie i usuniecie pid z kolejki zajetych pidow
+
   for(int i=0;i<page_table->getPageTableSize();++i)//odpowiada za zmiane danych w tabeli ramek pamiêci fizycznje/swapa na podstawie ka¿dej ze stron
   {
     if(page_table->getBitValidInvalid(i)==1)
@@ -125,7 +128,8 @@ void sop::memory::Module::deallocate(sop::memory::LogicalMemory* page_table)
       this->physical_drive.pushEndListOfFreeFrames(page_table->getFrameNr(i));//wrzucenie danej ramki do listy wolnych ramek
       this->physical_drive.setNubmerOfFreeFrames(this->physical_drive.getNumberOfFreeFrames()+1);//zwiekszenie liczby wolnych ramek
       this->physical_drive.setNumberOfNotFreeFrames(this->physical_drive.getNumberOfFrames()-this->physical_drive.getNumberOfFreeFrames());//zmniejszenie liczby zajetych ramek
-      //this->physical_drive.FindAndEraseFromDeque(page_table->getFrameNr(i));//znalezienie i usuniecie ramki z kolejki zajetych ramek
+      
+      
     }
     if(page_table->getBitValidInvalid(i)==0)
     {
@@ -136,9 +140,7 @@ void sop::memory::Module::deallocate(sop::memory::LogicalMemory* page_table)
     }
   }
 
-
-
-
+ 
 }
 //TODO przeniesc ze swapa gdy chcemy odczytac proces juz wczytany
 char sop::memory::Module::read(LogicalMemory page_table, uint16_t byte_number)
@@ -473,9 +475,9 @@ void sop::memory::Module::cH_showFrames(const std::vector<const std::string> & p
   std::cout << sop::StringConverter::convertToString<uint16_t>(physical_drive.getNumberOfNotFreeFrames());
   std::cout<<std::endl;
   //usuniete: stronicowanie(ca³y program przenoszony) nie wymaga kolejki
-  /*
-  std::cout<<"Deque of taken frames - FIFO: "<<std::endl;
-  std::deque<uint16_t> mydeque=physical_drive.getDequeFrames();
+  
+  std::cout<<"Deque of taken PID - FIFO: "<<std::endl;
+  std::deque<uint16_t> mydeque=physical_drive.getDequePID();
   counter=1;
   for (std::deque<uint16_t>::iterator it=mydeque.begin(); it != mydeque.end(); ++it)
   {
@@ -485,7 +487,7 @@ void sop::memory::Module::cH_showFrames(const std::vector<const std::string> & p
     counter++;
   }
   std::cout<<std::endl;
- */
+ 
 }
 
 void sop::memory::Module::cH_showFramesSwap(const std::vector<const std::string> & params)
@@ -644,7 +646,7 @@ void sop::memory::Module::cH_deallocate(const std::vector<const std::string> & p
    ////////////////////////////////////////////
    
   ///////////////////
-  deallocate(&tablica_procesow[sop::StringConverter::convertStringTo<uint16_t>(params[1])]);
+  deallocate(&tablica_procesow[sop::StringConverter::convertStringTo<uint16_t>(params[1])],sop::StringConverter::convertStringTo<uint16_t>(params[1]));
   ///testowe
   dodaj_pid(sop::StringConverter::convertStringTo<uint16_t>(params[1]));
   LogicalMemory* tmp=new LogicalMemory;
